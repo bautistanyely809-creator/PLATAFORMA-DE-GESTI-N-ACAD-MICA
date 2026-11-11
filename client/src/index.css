@@ -4,7 +4,6 @@
 
 @layer base {
   body {
-    @apply bg-edunova-light text-edunova-dark font-sans;
+    @apply bg-edunova-canvas text-edunova-text font-sans;
   }
 }
-

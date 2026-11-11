@@ -26,14 +26,17 @@ export default {
           
           // 4. Fondos y Textos del Sistema
           canvas: '#F8FAFC',
+          light: '#F8FAFC',     // Alias retrocompatible
           card: '#FFFFFF',
           text: '#1E293B',
+          dark: '#1E293B',      // Alias retrocompatible
           muted: '#64748B',
           border: '#E2E8F0',
           
           // Estados de apoyo
           warning: '#EAB308',
           danger: '#DC2626',
+          success: '#059669',
         }
       },
       fontFamily: {
