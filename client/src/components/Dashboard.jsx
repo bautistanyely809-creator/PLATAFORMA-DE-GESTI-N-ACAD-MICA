@@ -17,12 +17,23 @@ import {
   FileCheck2,
   ShieldCheck,
   TrendingUp,
-  Clock
+  Clock,
+  LogOut,
+  User
 } from 'lucide-react';
 
-export default function Dashboard() {
+export default function Dashboard({ currentUser, onLogout }) {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [userRole, setUserRole] = useState('ADMIN'); // ADMIN, INSTRUCTOR, APRENDIZ
+  
+  // Usuario actual proveniente de la sesión obligatoria
+  const user = currentUser || {
+    nombre: 'Anyely Valeria',
+    apellido: 'Bautista',
+    rol: 'ADMIN',
+    correo: 'anyely.valeria@edunova.edu.co'
+  };
+
+  const initials = `${user.nombre?.charAt(0) || 'U'}${user.apellido?.charAt(0) || ''}`;
 
   return (
     <div className="flex h-screen bg-edunova-canvas font-sans text-edunova-text overflow-hidden">
@@ -56,15 +67,15 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Insignia de Estado */}
+          {/* Insignia de Estado y Rol */}
           <div className="px-6 py-3.5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-edunova-gold/30 rounded-full text-xs font-medium text-slate-200 w-full justify-between">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-edunova-gold/30 rounded-xl text-xs font-medium text-slate-200 w-full justify-between">
               <span className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-edunova-emerald animate-pulse"></span>
-                <span>Plataforma Activa</span>
+                <span>Sesión activa</span>
               </span>
-              <span className="text-[10px] uppercase font-bold text-edunova-gold tracking-wider">
-                ADSO · v1.0
+              <span className="text-[10px] uppercase font-bold text-slate-950 bg-edunova-gold px-2 py-0.5 rounded tracking-wider shadow-sm">
+                {user.rol}
               </span>
             </div>
           </div>
@@ -87,29 +98,35 @@ export default function Dashboard() {
               {activeTab === 'dashboard' && <span className="w-1.5 h-1.5 rounded-full bg-slate-950"></span>}
             </button>
 
-            <button
-              onClick={() => setActiveTab('aprendices')}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                activeTab === 'aprendices'
-                  ? 'bg-edunova-gold text-slate-950 font-bold shadow-gold'
-                  : 'text-slate-300 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              <Users size={19} className={activeTab === 'aprendices' ? 'text-slate-950' : 'text-slate-400'} />
-              <span>Aprendices</span>
-            </button>
+            {/* Accesible para Admin e Instructor */}
+            {(user.rol === 'ADMIN' || user.rol === 'INSTRUCTOR') && (
+              <button
+                onClick={() => setActiveTab('aprendices')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                  activeTab === 'aprendices'
+                    ? 'bg-edunova-gold text-slate-950 font-bold shadow-gold'
+                    : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                }`}
+              >
+                <Users size={19} className={activeTab === 'aprendices' ? 'text-slate-950' : 'text-slate-400'} />
+                <span>Aprendices</span>
+              </button>
+            )}
 
-            <button
-              onClick={() => setActiveTab('instructores')}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                activeTab === 'instructores'
-                  ? 'bg-edunova-gold text-slate-950 font-bold shadow-gold'
-                  : 'text-slate-300 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              <GraduationCap size={19} className={activeTab === 'instructores' ? 'text-slate-950' : 'text-slate-400'} />
-              <span>Instructores</span>
-            </button>
+            {/* Solo Admin */}
+            {user.rol === 'ADMIN' && (
+              <button
+                onClick={() => setActiveTab('instructores')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                  activeTab === 'instructores'
+                    ? 'bg-edunova-gold text-slate-950 font-bold shadow-gold'
+                    : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                }`}
+              >
+                <GraduationCap size={19} className={activeTab === 'instructores' ? 'text-slate-950' : 'text-slate-400'} />
+                <span>Instructores</span>
+              </button>
+            )}
 
             <button
               onClick={() => setActiveTab('cursos')}
@@ -120,7 +137,7 @@ export default function Dashboard() {
               }`}
             >
               <BookOpen size={19} className={activeTab === 'cursos' ? 'text-slate-950' : 'text-slate-400'} />
-              <span>Cursos & Fichas</span>
+              <span>{user.rol === 'APRENDIZ' ? 'Mis Cursos' : 'Cursos & Fichas'}</span>
             </button>
 
             <button
@@ -132,7 +149,7 @@ export default function Dashboard() {
               }`}
             >
               <FileCheck2 size={19} className={activeTab === 'calificaciones' ? 'text-slate-950' : 'text-slate-400'} />
-              <span>Calificaciones</span>
+              <span>{user.rol === 'APRENDIZ' ? 'Mis Calificaciones' : 'Calificaciones'}</span>
             </button>
 
             <button
@@ -144,7 +161,7 @@ export default function Dashboard() {
               }`}
             >
               <CalendarCheck size={19} className={activeTab === 'asistencia' ? 'text-slate-950' : 'text-slate-400'} />
-              <span>Control Asistencia</span>
+              <span>{user.rol === 'APRENDIZ' ? 'Mi Asistencia' : 'Control Asistencia'}</span>
             </button>
 
             <button
@@ -184,24 +201,25 @@ export default function Dashboard() {
           </nav>
         </div>
 
-        {/* Perfil del Usuario en el pie del Sidebar */}
+        {/* Perfil del Usuario en el pie del Sidebar con Botón de Cerrar Sesión */}
         <div className="p-4 border-t border-white/10 bg-black/25">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 overflow-hidden">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-edunova-gold to-amber-200 border border-edunova-gold flex items-center justify-center text-slate-950 font-black text-sm shrink-0 shadow-sm">
-                AV
+                {initials}
               </div>
               <div className="truncate">
-                <p className="text-sm font-bold text-white truncate">Anyely Valeria</p>
-                <p className="text-xs text-edunova-gold font-medium">SENA · ADSO Neiva</p>
+                <p className="text-sm font-bold text-white truncate">{user.nombre} {user.apellido}</p>
+                <p className="text-xs text-edunova-gold font-medium truncate">{user.correo}</p>
               </div>
             </div>
+            
             <button 
-              title="Cambiar rol"
-              onClick={() => setUserRole(userRole === 'ADMIN' ? 'INSTRUCTOR' : userRole === 'INSTRUCTOR' ? 'APRENDIZ' : 'ADMIN')}
-              className="px-2.5 py-1 bg-white/10 hover:bg-white/20 text-[10px] rounded-lg text-edunova-gold font-mono font-bold tracking-wider border border-edunova-gold/30"
+              title="Cerrar Sesión"
+              onClick={onLogout}
+              className="p-2 bg-white/10 hover:bg-red-500/20 hover:text-red-400 text-slate-300 rounded-xl transition-colors border border-white/10"
             >
-              {userRole}
+              <LogOut size={16} />
             </button>
           </div>
         </div>
@@ -243,13 +261,21 @@ export default function Dashboard() {
               <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-edunova-gold border-2 border-white"></span>
             </button>
 
+            <button
+              onClick={onLogout}
+              className="text-xs font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-2 rounded-xl transition-colors flex items-center gap-1.5"
+            >
+              <LogOut size={14} />
+              <span>Salir</span>
+            </button>
+
           </div>
         </header>
 
         {/* Dashboard Body */}
         <main className="p-8 max-w-7xl mx-auto w-full space-y-8">
           
-          {/* Banner de Bienvenida con Estética Académica y Colores del Escudo */}
+          {/* Banner de Bienvenida Personalizado */}
           <div className="bg-gradient-to-r from-edunova-navy via-edunova-navy-light to-edunova-navy p-7 rounded-3xl text-white shadow-navy border-2 border-edunova-gold/40 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
             
             {/* Marca de agua del escudo en el fondo */}
@@ -260,13 +286,17 @@ export default function Dashboard() {
             <div className="relative z-10 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-edunova-gold/20 border border-edunova-gold/50 text-edunova-gold text-xs font-bold uppercase tracking-wider mb-2">
                 <ShieldCheck size={14} />
-                <span>Gestión Académica de Excelencia · ADSO</span>
+                <span>Sesión Iniciada · Sección {user.rol}</span>
               </div>
               <h2 className="text-3xl font-extrabold tracking-tight text-white">
-                Panel de control EDUNOVA
+                ¡Hola, {user.nombre}!
               </h2>
               <p className="text-sm text-slate-300 mt-1 leading-relaxed">
-                Bienvenido al sistema inteligente de gestión académica. Centraliza aprendices, calificaciones, asistencia y acompañamiento formativo con el respaldo institucional.
+                {user.rol === 'APRENDIZ' 
+                  ? 'Consulta tu progreso formativo, calificaciones de evidencias y recomendaciones de aprendizaje de EDUNOVA AI.'
+                  : user.rol === 'INSTRUCTOR'
+                  ? 'Planifica tus clases, califica evidencias y registra la asistencia de tus aprendices asignados en Neiva.'
+                  : 'Bienvenido al panel central de administración y gestión académica institucional de EDUNOVA.'}
               </p>
             </div>
 
@@ -275,9 +305,11 @@ export default function Dashboard() {
                 <BarChart3 size={16} className="text-edunova-gold" />
                 Reporte Consolidado
               </button>
-              <button className="px-5 py-2.5 bg-edunova-gold hover:bg-edunova-gold-hover text-slate-950 rounded-xl text-sm font-extrabold shadow-gold transition-all flex items-center gap-2">
-                + Nueva Matrícula
-              </button>
+              {user.rol === 'ADMIN' && (
+                <button className="px-5 py-2.5 bg-edunova-gold hover:bg-edunova-gold-hover text-slate-950 rounded-xl text-sm font-extrabold shadow-gold transition-all flex items-center gap-2">
+                  + Nueva Matrícula
+                </button>
+              )}
             </div>
 
           </div>
@@ -291,16 +323,20 @@ export default function Dashboard() {
             <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-1 bg-edunova-navy"></div>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-bold text-slate-500 uppercase tracking-wider text-[11px]">Aprendices</p>
+                <p className="text-sm font-bold text-slate-500 uppercase tracking-wider text-[11px]">
+                  {user.rol === 'APRENDIZ' ? 'Compañeros Ficha' : 'Aprendices'}
+                </p>
                 <div className="w-12 h-12 rounded-xl bg-edunova-navy text-edunova-gold flex items-center justify-center font-bold shadow-sm">
                   <Users size={22} />
                 </div>
               </div>
               <div className="mt-4">
-                <h3 className="text-4xl font-extrabold text-edunova-navy tracking-tight">250</h3>
+                <h3 className="text-4xl font-extrabold text-edunova-navy tracking-tight">
+                  {user.rol === 'APRENDIZ' ? '32' : '250'}
+                </h3>
                 <p className="text-xs text-edunova-emerald font-bold mt-1.5 flex items-center gap-1">
-                  <span>↑ +12 inscripciones</span>
-                  <span className="text-slate-400 font-normal">este periodo</span>
+                  <span>↑ En formación</span>
+                  <span className="text-slate-400 font-normal">ADSO Neiva</span>
                 </p>
               </div>
             </div>
@@ -309,13 +345,17 @@ export default function Dashboard() {
             <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-1 bg-edunova-gold"></div>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-bold text-slate-500 uppercase tracking-wider text-[11px]">Cursos activos</p>
+                <p className="text-sm font-bold text-slate-500 uppercase tracking-wider text-[11px]">
+                  {user.rol === 'APRENDIZ' ? 'Mis Cursos' : 'Cursos activos'}
+                </p>
                 <div className="w-12 h-12 rounded-xl bg-edunova-gold/20 text-edunova-gold-hover flex items-center justify-center font-bold border border-edunova-gold/30">
                   <BookOpen size={22} />
                 </div>
               </div>
               <div className="mt-4">
-                <h3 className="text-4xl font-extrabold text-edunova-navy tracking-tight">12</h3>
+                <h3 className="text-4xl font-extrabold text-edunova-navy tracking-tight">
+                  {user.rol === 'APRENDIZ' ? '2' : '12'}
+                </h3>
                 <p className="text-xs text-slate-600 font-medium mt-1.5 flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-edunova-gold"></span>
                   <span>En ejecución activa · ADSO</span>
@@ -323,20 +363,28 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* 3. Instructores */}
+            {/* 3. Instructores / Evidencias */}
             <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-1 bg-edunova-navy"></div>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-bold text-slate-500 uppercase tracking-wider text-[11px]">Instructores</p>
+                <p className="text-sm font-bold text-slate-500 uppercase tracking-wider text-[11px]">
+                  {user.rol === 'APRENDIZ' ? 'Evidencias Aprobadas' : 'Instructores'}
+                </p>
                 <div className="w-12 h-12 rounded-xl bg-edunova-navy text-white flex items-center justify-center font-bold shadow-sm">
-                  <GraduationCap size={22} />
+                  {user.rol === 'APRENDIZ' ? <Award size={22} className="text-edunova-gold" /> : <GraduationCap size={22} />}
                 </div>
               </div>
               <div className="mt-4">
-                <h3 className="text-4xl font-extrabold text-edunova-navy tracking-tight">18</h3>
+                <h3 className="text-4xl font-extrabold text-edunova-navy tracking-tight">
+                  {user.rol === 'APRENDIZ' ? '8 / 10' : '18'}
+                </h3>
                 <p className="text-xs text-slate-600 font-medium mt-1.5 flex items-center gap-1">
-                  <span className="text-edunova-navy font-bold">100% asignados</span>
-                  <span className="text-slate-400 font-normal">a fichas</span>
+                  <span className="text-edunova-navy font-bold">
+                    {user.rol === 'APRENDIZ' ? '80% aprobado' : '100% asignados'}
+                  </span>
+                  <span className="text-slate-400 font-normal">
+                    {user.rol === 'APRENDIZ' ? 'sin pendientes' : 'a fichas'}
+                  </span>
                 </p>
               </div>
             </div>
@@ -345,16 +393,20 @@ export default function Dashboard() {
             <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-1 bg-edunova-emerald"></div>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-bold text-slate-500 uppercase tracking-wider text-[11px]">Asistencia promedio</p>
+                <p className="text-sm font-bold text-slate-500 uppercase tracking-wider text-[11px]">
+                  {user.rol === 'APRENDIZ' ? 'Mi Asistencia' : 'Asistencia promedio'}
+                </p>
                 <div className="w-12 h-12 rounded-xl bg-emerald-50 text-edunova-emerald flex items-center justify-center font-bold border border-emerald-200">
                   <CalendarCheck size={22} />
                 </div>
               </div>
               <div className="mt-4">
-                <h3 className="text-4xl font-extrabold text-edunova-navy tracking-tight">85%</h3>
+                <h3 className="text-4xl font-extrabold text-edunova-navy tracking-tight">
+                  {user.rol === 'APRENDIZ' ? '92%' : '85%'}
+                </h3>
                 <p className="text-xs text-edunova-emerald font-bold mt-1.5 flex items-center gap-1">
-                  <span>↑ +3.2%</span>
-                  <span className="text-slate-400 font-normal">índice de participación</span>
+                  <span>↑ Excelente</span>
+                  <span className="text-slate-400 font-normal">participación</span>
                 </p>
               </div>
             </div>
@@ -372,7 +424,9 @@ export default function Dashboard() {
                 <div>
                   <div className="flex items-center gap-2">
                     <Award size={20} className="text-edunova-gold" />
-                    <h4 className="text-lg font-bold text-edunova-navy">Rendimiento académico</h4>
+                    <h4 className="text-lg font-bold text-edunova-navy">
+                      {user.rol === 'APRENDIZ' ? 'Mi Rendimiento Formativo' : 'Rendimiento académico'}
+                    </h4>
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5">Distribución general de competencias y resultados formativos</p>
                 </div>
@@ -383,7 +437,7 @@ export default function Dashboard() {
 
               <div className="space-y-6">
                 
-                {/* Desempeño Satisfactorio (Verde Esmeralda del Checkmark) */}
+                {/* Desempeño Satisfactorio */}
                 <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100">
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2.5">
@@ -392,7 +446,9 @@ export default function Dashboard() {
                       </div>
                       <div>
                         <span className="text-sm font-bold text-slate-800">Desempeño satisfactorio</span>
-                        <p className="text-[11px] text-slate-500">187 aprendices con evidencias aprobadas (A)</p>
+                        <p className="text-[11px] text-slate-500">
+                          {user.rol === 'APRENDIZ' ? 'Evidencias aprobadas con nota sobresaliente' : '187 aprendices con evidencias aprobadas (A)'}
+                        </p>
                       </div>
                     </div>
                     <span className="text-lg font-extrabold text-edunova-emerald">75%</span>
@@ -405,7 +461,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Requiere Seguimiento (Dorado / Alerta del Escudo) */}
+                {/* Requiere Seguimiento */}
                 <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-100">
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2.5">
@@ -414,7 +470,9 @@ export default function Dashboard() {
                       </div>
                       <div>
                         <span className="text-sm font-bold text-slate-800">Requiere seguimiento</span>
-                        <p className="text-[11px] text-slate-500">63 aprendices con evidencias pendientes o inasistencias</p>
+                        <p className="text-[11px] text-slate-500">
+                          {user.rol === 'APRENDIZ' ? '1 taller pendiente por entrega' : '63 aprendices con evidencias pendientes o inasistencias'}
+                        </p>
                       </div>
                     </div>
                     <span className="text-lg font-extrabold text-amber-700">25%</span>
@@ -431,18 +489,17 @@ export default function Dashboard() {
 
               {/* Botón de acción */}
               <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-                <p className="text-xs text-slate-500">Calificaciones basadas en escala de 0.00 a 5.00 con retroalimentación.</p>
+                <p className="text-xs text-slate-500">Escala de calificación SENA: Aprobado (A) / Deficiente (D).</p>
                 <button className="text-xs font-bold text-edunova-navy hover:text-edunova-gold transition-colors flex items-center gap-1">
-                  <span>Ver listado de evidencias</span>
+                  <span>Ver todas las evidencias</span>
                   <ChevronRight size={15} />
                 </button>
               </div>
             </div>
 
-            {/* Tarjeta Destacada EDUNOVA AI con los Colores del Escudo */}
+            {/* Tarjeta Destacada EDUNOVA AI */}
             <div className="bg-gradient-to-br from-edunova-navy via-edunova-navy-dark to-[#030B14] text-white rounded-3xl p-7 shadow-2xl border-2 border-edunova-gold/40 flex flex-col justify-between relative overflow-hidden">
               
-              {/* Resplandor visual dorado */}
               <div className="absolute -top-16 -right-16 w-44 h-44 bg-edunova-gold/20 rounded-full blur-3xl pointer-events-none"></div>
 
               <div>
@@ -467,10 +524,12 @@ export default function Dashboard() {
                 <div className="mt-5 p-4 rounded-2xl bg-white/5 border border-edunova-gold/20 space-y-2">
                   <div className="flex items-center gap-2 text-xs font-bold text-edunova-gold">
                     <CheckCircle2 size={15} className="text-edunova-emerald" />
-                    <span>Recomendación pedagógica activa</span>
+                    <span>Recomendación pedagógica</span>
                   </div>
                   <p className="text-xs text-slate-300">
-                    4 aprendices de la ficha ADSO presentan oportunidad de mejora en la evidencia de <em>React & Tailwind</em>. Se sugiere taller de refuerzo práctico.
+                    {user.rol === 'APRENDIZ'
+                      ? 'Tu desempeño en JavaScript y CSS es sobresaliente (4.8/5.0). Te sugerimos practicar la integración de APIs con Axios para la próxima entrega.'
+                      : '4 aprendices de la ficha ADSO presentan oportunidad de mejora en la evidencia de React & Tailwind. Se sugiere taller de refuerzo práctico.'}
                   </p>
                 </div>
               </div>
@@ -478,7 +537,7 @@ export default function Dashboard() {
               <div className="mt-6 pt-4 border-t border-white/10">
                 <button className="w-full py-3 px-4 bg-edunova-gold hover:bg-edunova-gold-hover text-slate-950 font-extrabold rounded-xl text-sm transition-all shadow-gold flex items-center justify-center gap-2">
                   <Sparkles size={16} />
-                  Generar Diagnóstico con IA
+                  <span>{user.rol === 'APRENDIZ' ? 'Mis Recomendaciones IA' : 'Generar Diagnóstico con IA'}</span>
                 </button>
               </div>
 
