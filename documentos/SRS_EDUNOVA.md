@@ -13,7 +13,7 @@
 | **Centro de Formación:** | Centro de Formación Industrial – SENA Regional Huila (Neiva) |
 | **Modalidad:** | Desarrollo individual con asistencia de Inteligencia Artificial |
 | **Duración Estimada:** | 4 semanas (1 mes) |
-| **Versión del Documento:** | 2.1 (Optimizada para Alto Rendimiento, Streaming IA, Skeleton UI y Caché) |
+| **Versión del Documento:** | 2.2 (Sistema de Diseño Factory, Dark Terminal War Room, Streaming IA, Skeleton UI y Rendimiento) |
 | **Estado:** | Aprobado / En Ejecución Técnica |
 
 ---
@@ -27,6 +27,7 @@
 | **v1.2** | 13/11/2026 | Anyely Valeria | Actualización integral Ocean Tech Premium: paleta petróleo, turquesa, cian y ámbar; modelo MER de 13 entidades y catálogo de API REST. |
 | **v2.0** | 13/11/2026 | Anyely Valeria | Adaptación a la estructura formal integral SENA/IEEE (HU-01 a HU-26, CU-01 a CU-26, RF1 a RF26, RNF-01 a RNF-12 y Matriz de Trazabilidad). |
 | **v2.1** | 13/11/2026 | Anyely Valeria | **Sprint de Alto Rendimiento y UX Resiliente**: Diseño Skeleton para carga fluida, búsqueda con Debounce (300ms), paginación de cursos, streaming token a token de EDUNOVA AI, actualización optimista de interfaz (Optimistic UI), índices SQL en MySQL 8, prevención de consultas N+1 con Prisma, compresión Brotli/Gzip, caché Redis/In-Memory, cola de trabajos (Job Queue), timeouts en APIs externas (5000ms), code-splitting de JS (`manualChunks`) y monitoreo de usuarios reales (RUM). |
+| **v2.2** | 13/11/2026 | Anyely Valeria | **Implementación Integral del Sistema de Diseño Factory**: Reemplazo de estética pastel/glassmorphic por la estética Dark Terminal War Room (Obsidian `#101010`, Bone `#eeeeee`, Carbon `#1d1a18`, Ash `#3d3a39`, Signal Orange `#ee6018`, Metric Green `#a0ca92`), tipografía Geist / Geist Mono con tracking negativo ajustado, radio de 3px en botones y controles, tarjetas a 10px con bordes hairline nítidos y eliminación de sombras difusas. |
 
 ---
 
@@ -65,7 +66,7 @@ Desde el punto de vista pedagógico y formativo, el proyecto permite a la aprend
 * Diseño de bases de datos relacionales normalizadas en 3FN.
 * Arquitectura de software en 3 capas (Monolito Modular con React 18, Node.js, Express y MySQL).
 * Implementación de seguridad perimetral mediante JWT y hashing de contraseñas.
-* Diseño de experiencias de usuario con estándares visuales SaaS modernos (**Ocean Tech Premium Glassmorphism**).
+* Diseño de experiencias de usuario con estándares visuales SaaS de vanguardia (**Factory Design System - Dark Terminal War Room**).
 * Buenas prácticas de control de versiones con Git/GitHub y metodologías ágiles (Scrum).
 
 #### 1.3.1. Vigilancia tecnológica y referentes de mercado
@@ -230,9 +231,9 @@ El software no depende de plataformas propietarias externas para su funcionamien
 ## 3. REQUISITOS ESPECÍFICOS
 
 ### 3.1. Requisitos comunes de las interfaces
-* **Identidad Visual Unificada:** Todos los módulos aplican la paleta **Ocean Tech Premium** (`#123B50`, `#17365D`, `#19B5A5`, `#48BFE3`, `#E9B949`, `#F4F7FA`).
-* **Efecto Glassmorphism:** Paneles de cristal con `backdrop-filter: blur(20px)`, bordes blancos translúcidos y sombras difuminadas.
-* **Diseño Skeleton para Carga Inicial:** Implementación de esqueletos de carga (`BannerSkeleton`, `StatCardSkeleton`, `ChartSkeleton`, `TableSkeleton`) con animación de onda Shimmer para evitar pantallas en blanco y saltos visuales durante la carga de datos.
+* **Identidad Visual Factory (Dark Terminal War Room):** Todos los módulos aplican la paleta de tokens Factory: Obsidian `#101010` como superficie de control de medianoche, Bone `#eeeeee` para tarjetas flashlit de alto contraste, Carbon `#1d1a18` para paneles de elevación media, Ash Stroke `#3d3a39` para bordes hairline nítidos, Signal Orange `#ee6018` para estados vivos y telemetría de red, y Metric Green `#a0ca92` para datos positivos y aprobados.
+* **Tipografía e Interacción Geométrica:** Fuente tipográfica Geist y Geist Mono con espaciado y tracking negativo ajustado (`tracking-tight`), radio de 3px estricto en botones de acción y pestañas, tarjetas redondeadas a 10px y eliminación deliberada de sombras difusas o desenfoques decorativos (flat elevation).
+* **Diseño Skeleton para Carga Inicial:** Implementación de esqueletos de carga (`BannerSkeleton`, `StatCardSkeleton`, `ChartSkeleton`, `TableSkeleton`) con textura Carbon `#1d1a18` y bordes Ash `#3d3a39` con animación de onda Shimmer para evitar pantallas en blanco y saltos de layout durante la hidratación de datos.
 * **Búsqueda y Autocompletado con Debounce (300ms):** Búsqueda reactiva optimizada en Header y tablas que retrasa la ejecución 300ms mientras el usuario escribe, evitando llamadas duplicadas y re-renders innecesarios.
 * **Imágenes en Formato Moderno (WebP/AVIF):** Uso de gráficos vectoriales e imágenes en formatos de alta compresión con atributos `loading="lazy"` y `decoding="async"` para elementos fuera de pantalla.
 * **Transmisión de IA Token a Token:** Respuestas del tutor inteligente EDUNOVA AI transmitidas en streaming progresivo con cursor activo (`▍`), simulando procesamiento en tiempo real.
