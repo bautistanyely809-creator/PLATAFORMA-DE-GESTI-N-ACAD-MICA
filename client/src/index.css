@@ -3,41 +3,56 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-petroleum: #123B50;
+    --color-deep-blue: #17365D;
+    --color-midnight: #102A43;
+    --color-turquoise: #19B5A5;
+    --color-cyan: #48BFE3;
+    --color-ice-blue: #DCEEF5;
+    --color-mint: #70D6B3;
+    --color-amber: #E9B949;
+    --color-slate-grey: #EDF2F7;
+    --color-canvas: #F4F7FA;
+    --color-text-primary: #263746;
+    --color-text-secondary: #718096;
+  }
+
   html {
     scroll-behavior: smooth;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   body {
-    background-color: #F8F5FC;
-    color: #392C52;
+    background-color: #F4F7FA;
+    color: #263746;
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     background-image: 
-      radial-gradient(at 0% 0%, rgba(247, 184, 220, 0.45) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(200, 181, 245, 0.50) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(165, 216, 250, 0.45) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, rgba(252, 228, 242, 0.50) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, rgba(220, 238, 245, 0.70) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(25, 181, 165, 0.14) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(72, 191, 227, 0.16) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(220, 238, 245, 0.50) 0px, transparent 50%);
     background-attachment: fixed;
     min-height: 100vh;
   }
 }
 
-/* Efectos de Cristal / Glassmorphism */
+/* Efectos de Cristal / Glassmorphism Ocean Tech */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 10px 35px 0 rgba(167, 139, 250, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.90);
+  box-shadow: 0 10px 35px 0 rgba(18, 59, 80, 0.08);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.90);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.90);
-  box-shadow: 0 4px 20px 0 rgba(167, 139, 250, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 20px 0 rgba(18, 59, 80, 0.06);
 }
 
 .glass-card-hover {
@@ -46,11 +61,11 @@
 
 .glass-card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 36px 0 rgba(167, 139, 250, 0.18);
-  border-color: rgba(200, 181, 245, 0.60);
+  box-shadow: 0 16px 36px 0 rgba(18, 59, 80, 0.14);
+  border-color: rgba(25, 181, 165, 0.45);
 }
 
-/* Scrollbar pastel estilizado */
+/* Scrollbar estilizado Ocean Tech */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -61,12 +76,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #E2D9F3;
+  background: #DCEEF5;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #C8B5F5;
+  background: #19B5A5;
 }
 
 /* Accesibilidad de movimiento reducido */

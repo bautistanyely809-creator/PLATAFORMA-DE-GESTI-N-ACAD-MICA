@@ -18,7 +18,8 @@ import {
   GraduationCap,
   Star,
   Check,
-  FolderOpen
+  FolderOpen,
+  Zap
 } from 'lucide-react';
 import { 
   PieChart, 
@@ -58,8 +59,8 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
       fechaFin: '15 Abr 2026',
       progreso: 85,
       notaActual: 4.8,
-      colorTag: 'bg-[#FCE4F2] text-[#D6409B]',
-      progressBar: 'from-[#F7B8DC] to-[#A78BFA]',
+      colorTag: 'bg-[#EBF7FC] text-[#17365D]',
+      progressBar: 'from-[#17365D] via-[#19B5A5] to-[#48BFE3]',
       evidencias: [
         { nombre: 'Prototipo UI en Figma (Dashboard)', nota: 4.8, estado: 'APROBADO', fecha: '10 Mar 2026' },
         { nombre: 'Maquetación con React & Tailwind', nota: 4.6, estado: 'APROBADO', fecha: '25 Mar 2026' },
@@ -75,8 +76,8 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
       fechaFin: '30 Abr 2026',
       progreso: 70,
       notaActual: 4.5,
-      colorTag: 'bg-[#DCEBFA] text-[#3978F6]',
-      progressBar: 'from-[#A5D8FA] to-[#8064D8]',
+      colorTag: 'bg-[#E8F8F5] text-[#19B5A5]',
+      progressBar: 'from-[#123B50] via-[#17365D] to-[#19B5A5]',
       evidencias: [
         { nombre: 'Modelo de Datos y Script MySQL', nota: 4.7, estado: 'APROBADO', fecha: '18 Mar 2026' },
         { nombre: 'Servidor Express con Rutas y JWT', nota: 4.4, estado: 'APROBADO', fecha: '02 Abr 2026' },
@@ -85,10 +86,10 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
     }
   ];
 
-  // Datos para el Donut Chart Pastel
+  // Datos para el Donut Chart Ocean Tech
   const pieData = [
-    { name: 'Evidencias Aprobadas', value: 8, color: '#8CE2C2' }, // Verde menta
-    { name: 'Evidencias Pendientes', value: 2, color: '#F7B8DC' }, // Rosa pastel
+    { name: 'Evidencias Aprobadas', value: 8, color: '#19B5A5' }, // Turquesa
+    { name: 'Evidencias Pendientes', value: 2, color: '#E9B949' }, // Ámbar
   ];
 
   // Disparador interactivo de EDUNOVA AI
@@ -101,15 +102,15 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
       setIsProcessingAi(false);
       if (promptKey === 'analisis') {
         setAiResponse(
-          '🌸 Diagnóstico de Aprendizaje: ¡Excelente trabajo Anyely! Tu promedio ponderado es de 4.65 / 5.0. Tu mayor fortaleza se encuentra en diseño de interfaces limpias y componentes reactivos. Tu puntualidad y participación en el Centro de Formación Industrial están en el percentil superior.'
+          '⚡ Diagnóstico de Rendimiento: Tu promedio ponderado es de 4.65 / 5.0. Destacas en estructuración de arquitectura Frontend y buenas prácticas en bases de datos. Tu índice de asistencia supera el 92% en el Centro de Formación Industrial.'
         );
       } else if (promptKey === 'pendientes') {
         setAiResponse(
-          '⏳ Tareas Clave: Tu próxima evidencia por entregar es "Consumo REST con Axios & JWT" (fecha estimada: 10 de Abril). Recuerda verificar el manejo seguro de tokens en LocalStorage e interceptores para evitar fugas de autenticación.'
+          '⏳ Tareas Clave: Tu próxima entrega prioritaria es "Consumo REST con Axios & JWT" (fecha estimada: 10 de Abril). Asegúrate de validar los tokens JWT en los interceptores y centralizar las variables de entorno.'
         );
       } else if (promptKey === 'ruta') {
         setAiResponse(
-          '🎯 Plan de Refuerzo Sugerido: Dedica 40 minutos a experimentar con hooks personalizados (Custom Hooks) para la gestión del estado global en React. Te facilitará enormemente la sustentación técnica de ADSO.'
+          '🎯 Plan de Optimización: Practica la creación de hooks personalizados (useAuth, useFetch) y modularización de llamadas al backend con Express y Prisma para tu sustentación técnica de ADSO.'
         );
       }
     }, 600);
@@ -125,63 +126,63 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
     <div className="space-y-8 max-w-7xl mx-auto animate-fadeIn pb-12">
       
       {/* ============================================================ */}
-      {/* 1. HERO BANNER: PASTEL GLASSMORPHISM CON DEGRADADO VIBRANTE  */}
+      {/* 1. HERO BANNER: OCEAN TECH GRADIENT                         */}
       {/* ============================================================ */}
-      <div className="relative rounded-[32px] overflow-hidden bg-gradient-to-r from-[#F7B8DC] via-[#C8B5F5] to-[#8064D8] p-7 sm:p-10 text-white shadow-glass border border-white/60">
+      <div className="relative rounded-[32px] overflow-hidden bg-gradient-to-r from-[#123B50] via-[#17365D] to-[#19B5A5] p-7 sm:p-10 text-white shadow-glass border border-white/30">
         
-        {/* Orbes de luz y elementos flotantes decorativos */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-white/20 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
-        <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-[#A5D8FA]/30 rounded-full blur-2xl pointer-events-none"></div>
+        {/* Orbes de luz tecnológica */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-[#48BFE3]/25 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+        <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-[#19B5A5]/25 rounded-full blur-2xl pointer-events-none"></div>
 
-        {/* Tarjeta flotante decorativa en el banner */}
-        <div className="hidden xl:block absolute right-10 top-1/2 -translate-y-1/2 p-4 rounded-2xl bg-white/20 backdrop-blur-xl border border-white/40 shadow-lg text-white max-w-xs">
-          <div className="flex items-center gap-2 text-xs font-bold mb-1">
-            <Sparkles size={16} className="text-[#FFE49B]" />
-            <span>Progreso Sobresaliente</span>
+        {/* Tarjeta flotante decorativa tecnológica */}
+        <div className="hidden xl:block absolute right-10 top-1/2 -translate-y-1/2 p-5 rounded-2xl bg-[#102A43]/50 backdrop-blur-xl border border-white/20 shadow-xl text-white max-w-xs">
+          <div className="flex items-center gap-2 text-xs font-bold mb-1 text-[#48BFE3]">
+            <Zap size={16} className="text-[#E9B949]" />
+            <span>Rendimiento Sobresaliente</span>
           </div>
-          <p className="text-[11px] text-white/90 leading-relaxed">
-            Has completado el 80% de evidencias formativas con calificación superior a 4.5.
+          <p className="text-[11px] text-slate-200 leading-relaxed">
+            Has superado el 80% de evidencias formativas con calificación superior a 4.5 en el programa ADSO.
           </p>
         </div>
 
         <div className="relative z-10 max-w-2xl space-y-4">
           
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/25 backdrop-blur-md border border-white/40 text-white text-xs font-bold uppercase tracking-wider shadow-sm">
-            <Sparkles size={14} className="text-[#FFE49B]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-white text-xs font-bold uppercase tracking-wider shadow-sm">
+            <Sparkles size={14} className="text-[#48BFE3]" />
             <span>Portal del Aprendiz · ADSO 2026</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
-            ¡Hola, {user?.nombre || 'Anyely Valeria'}! 🌸
+            ¡Hola, {user?.nombre || 'Anyely Valeria'}! ⚡
           </h1>
 
-          <p className="text-xs sm:text-sm text-white/95 leading-relaxed font-medium">
-            Bienvenida a tu espacio de formación tecnológica. Tu progreso académico actual alcanza el <strong className="text-[#FFE49B] underline decoration-wavy">92% de cumplimiento general</strong> en el programa <strong className="text-white font-extrabold">{fichaInfo.programa}</strong>.
+          <p className="text-xs sm:text-sm text-slate-100 leading-relaxed font-medium">
+            Bienvenida a tu plataforma de gestión académica tecnológica. Tu avance formativo actual alcanza el <strong className="text-[#E9B949] font-bold">92% de cumplimiento general</strong> en el programa <strong className="text-white font-extrabold">{fichaInfo.programa}</strong>.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs text-white/90 pt-1">
-            <span className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20">
-              <BookOpen size={14} className="text-[#FFE49B]" />
-              <span>Ficha: <strong>#{fichaInfo.codigo}</strong></span>
+          <div className="flex flex-wrap items-center gap-4 text-xs text-slate-200 pt-1">
+            <span className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
+              <BookOpen size={14} className="text-[#48BFE3]" />
+              <span>Ficha: <strong className="text-white">#{fichaInfo.codigo}</strong></span>
             </span>
-            <span className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20">
-              <GraduationCap size={14} className="text-edunova-mint" />
+            <span className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
+              <GraduationCap size={14} className="text-[#70D6B3]" />
               <span>Centro de Formación Industrial · Neiva</span>
             </span>
           </div>
 
-          {/* Botones de Acción Rápida en Cristal */}
+          {/* Botones de Acción Rápida */}
           <div className="pt-3 flex flex-wrap items-center gap-3">
             <button 
               onClick={() => onNavigate && onNavigate('calificaciones')}
-              className="px-5 py-2.5 rounded-2xl bg-white text-edunova-violet font-extrabold text-xs sm:text-sm shadow-md hover:bg-white/90 hover:scale-[1.02] transition-all flex items-center gap-2"
+              className="px-5 py-2.5 rounded-2xl bg-white text-[#123B50] font-extrabold text-xs sm:text-sm shadow-md hover:bg-[#DCEEF5] hover:scale-[1.02] transition-all flex items-center gap-2"
             >
               <span>Mis Calificaciones</span>
               <ArrowRight size={15} />
             </button>
             <button 
               onClick={() => onNavigate && onNavigate('reportes')}
-              className="px-5 py-2.5 rounded-2xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs sm:text-sm border border-white/40 backdrop-blur-md transition-all flex items-center gap-2"
+              className="px-5 py-2.5 rounded-2xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs sm:text-sm border border-white/30 backdrop-blur-md transition-all flex items-center gap-2"
             >
               <FileText size={15} />
               <span>Ver Reporte Académico</span>
@@ -193,99 +194,99 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
       </div>
 
       {/* ============================================================ */}
-      {/* 2. TARJETAS ESTADÍSTICAS: CADA UNA CON IDENTIDAD CROMÁTICA   */}
+      {/* 2. TARJETAS ESTADÍSTICAS: CADA UNA CON IDENTIDAD OCEAN TECH  */}
       {/* ============================================================ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         
-        {/* Tarjeta 1: Compañeros de Ficha (Azul Cielo: #A5D8FA) */}
+        {/* Tarjeta 1: Compañeros de Ficha (Azul Profundo: #17365D) */}
         <div className="glass-card glass-card-hover rounded-[26px] p-6 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold text-edunova-textSecondary uppercase tracking-wider">
               Compañeros de Ficha
             </span>
-            <div className="w-12 h-12 rounded-2xl bg-[#DCEBFA] text-[#3978F6] flex items-center justify-center font-bold shadow-sm group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-2xl bg-[#DCEEF5] text-[#17365D] flex items-center justify-center font-bold shadow-sm group-hover:scale-110 transition-transform">
               <Users size={22} />
             </div>
           </div>
           <div className="mt-4">
             <div className="flex items-baseline gap-2">
-              <h3 className="text-3xl font-extrabold text-edunova-textPrimary tracking-tight">
+              <h3 className="text-3xl font-extrabold text-[#123B50] tracking-tight">
                 {fichaInfo.aprendicesCount}
               </h3>
               <span className="text-xs font-semibold text-edunova-textSecondary">aprendices</span>
             </div>
-            <div className="mt-3 flex items-center justify-between text-xs font-bold text-[#3978F6] bg-[#DCEBFA]/50 px-3 py-1.5 rounded-xl border border-blue-100">
+            <div className="mt-3 flex items-center justify-between text-xs font-bold text-[#17365D] bg-[#DCEEF5]/60 px-3 py-1.5 rounded-xl border border-blue-100">
               <span>Ficha #{fichaInfo.codigo}</span>
-              <span className="w-2 h-2 rounded-full bg-[#3978F6] animate-pulse"></span>
+              <span className="w-2 h-2 rounded-full bg-[#17365D] animate-pulse"></span>
             </div>
           </div>
         </div>
 
-        {/* Tarjeta 2: Mis Cursos (Violeta / Lila: #C8B5F5) */}
+        {/* Tarjeta 2: Mis Cursos (Cian: #48BFE3) */}
         <div className="glass-card glass-card-hover rounded-[26px] p-6 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold text-edunova-textSecondary uppercase tracking-wider">
               Mis Cursos
             </span>
-            <div className="w-12 h-12 rounded-2xl bg-[#EDE7FA] text-edunova-violet flex items-center justify-center font-bold shadow-sm group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-2xl bg-[#EBF7FC] text-[#48BFE3] flex items-center justify-center font-bold shadow-sm group-hover:scale-110 transition-transform">
               <BookOpen size={22} />
             </div>
           </div>
           <div className="mt-4">
             <div className="flex items-baseline gap-2">
-              <h3 className="text-3xl font-extrabold text-edunova-textPrimary tracking-tight">
+              <h3 className="text-3xl font-extrabold text-[#123B50] tracking-tight">
                 {misCursos.length}
               </h3>
               <span className="text-xs font-semibold text-edunova-textSecondary">activos</span>
             </div>
-            <div className="mt-3 flex items-center justify-between text-xs font-bold text-edunova-violet bg-[#EDE7FA]/60 px-3 py-1.5 rounded-xl border border-purple-100">
+            <div className="mt-3 flex items-center justify-between text-xs font-bold text-[#123B50] bg-[#EBF7FC]/80 px-3 py-1.5 rounded-xl border border-cyan-100">
               <span>Frontend + Backend</span>
-              <span>100% al día</span>
+              <span className="text-[#19B5A5]">100% al día</span>
             </div>
           </div>
         </div>
 
-        {/* Tarjeta 3: Evidencias Aprobadas (Verde Menta: #8CE2C2) */}
+        {/* Tarjeta 3: Evidencias Aprobadas (Verde Turquesa: #19B5A5) */}
         <div className="glass-card glass-card-hover rounded-[26px] p-6 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold text-edunova-textSecondary uppercase tracking-wider">
               Evidencias Aprobadas
             </span>
-            <div className="w-12 h-12 rounded-2xl bg-[#E6F9F2] text-[#16A36A] flex items-center justify-center font-bold shadow-sm group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-2xl bg-[#E8F8F5] text-[#19B5A5] flex items-center justify-center font-bold shadow-sm group-hover:scale-110 transition-transform">
               <CheckCircle2 size={22} />
             </div>
           </div>
           <div className="mt-4">
             <div className="flex items-baseline gap-2">
-              <h3 className="text-3xl font-extrabold text-edunova-textPrimary tracking-tight">
+              <h3 className="text-3xl font-extrabold text-[#123B50] tracking-tight">
                 {fichaInfo.evidenciasAprobadas} <span className="text-lg font-bold text-slate-400">/ {fichaInfo.evidenciasTotales}</span>
               </h3>
-              <span className="text-xs font-extrabold text-[#16A36A]">80%</span>
+              <span className="text-xs font-extrabold text-[#19B5A5]">80%</span>
             </div>
             
-            {/* Barra de progreso menta */}
-            <div className="w-full bg-[#E6F9F2] rounded-full h-2.5 mt-3 overflow-hidden border border-emerald-100">
+            {/* Barra de progreso turquesa */}
+            <div className="w-full bg-[#E8F8F5] rounded-full h-2.5 mt-3 overflow-hidden border border-emerald-100">
               <div 
-                className="bg-gradient-to-r from-edunova-mint to-[#16A36A] h-full rounded-full transition-all duration-1000"
+                className="bg-gradient-to-r from-[#70D6B3] to-[#19B5A5] h-full rounded-full transition-all duration-1000"
                 style={{ width: '80%' }}
               ></div>
             </div>
           </div>
         </div>
 
-        {/* Tarjeta 4: Mi Asistencia (Rosa Pastel: #F7B8DC) */}
+        {/* Tarjeta 4: Mi Asistencia (Ámbar: #E9B949) */}
         <div className="glass-card glass-card-hover rounded-[26px] p-6 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold text-edunova-textSecondary uppercase tracking-wider">
               Mi Asistencia
             </span>
-            <div className="w-12 h-12 rounded-2xl bg-[#FCE4F2] text-[#D6409B] flex items-center justify-center font-bold shadow-sm group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-2xl bg-[#FEF8EC] text-[#E9B949] flex items-center justify-center font-bold shadow-sm group-hover:scale-110 transition-transform">
               <CalendarCheck size={22} />
             </div>
           </div>
           <div className="mt-4">
             <div className="flex items-baseline gap-2">
-              <h3 className="text-3xl font-extrabold text-edunova-textPrimary tracking-tight">
+              <h3 className="text-3xl font-extrabold text-[#123B50] tracking-tight">
                 {fichaInfo.asistenciaPorcentaje}%
               </h3>
               <span className="text-xs font-semibold text-edunova-textSecondary">
@@ -293,10 +294,10 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
               </span>
             </div>
             
-            {/* Barra de progreso rosa */}
-            <div className="w-full bg-[#FCE4F2] rounded-full h-2.5 mt-3 overflow-hidden border border-pink-100">
+            {/* Barra de progreso ámbar */}
+            <div className="w-full bg-[#FEF8EC] rounded-full h-2.5 mt-3 overflow-hidden border border-amber-100">
               <div 
-                className="bg-gradient-to-r from-[#F7B8DC] to-[#D6409B] h-full rounded-full transition-all duration-1000"
+                className="bg-gradient-to-r from-[#F5C94A] to-[#E9B949] h-full rounded-full transition-all duration-1000"
                 style={{ width: `${fichaInfo.asistenciaPorcentaje}%` }}
               ></div>
             </div>
@@ -306,20 +307,20 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
       </div>
 
       {/* ============================================================ */}
-      {/* 3. SECCIÓN: RENDIMIENTO FORMATIVO + EDUNOVA AI GLASS         */}
+      {/* 3. SECCIÓN: RENDIMIENTO FORMATIVO + EDUNOVA AI               */}
       {/* ============================================================ */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Tarjeta de Rendimiento Académico con Recharts Donut (7 Columnas) */}
         <div className="lg:col-span-7 glass-panel rounded-[30px] p-6 sm:p-8 space-y-6">
           
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-100/70 pb-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-5">
             <div>
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[#FFF6DC] text-[#DCA91F] flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-[#E8F8F5] text-[#19B5A5] flex items-center justify-center font-bold">
                   <Award size={18} />
                 </div>
-                <h3 className="text-lg font-bold text-edunova-textPrimary">
+                <h3 className="text-lg font-bold text-[#123B50]">
                   Rendimiento Formativo Integral
                 </h3>
               </div>
@@ -328,7 +329,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
               </p>
             </div>
             
-            <span className="self-start sm:self-auto px-3 py-1 bg-[#E6F9F2] text-[#16A36A] border border-emerald-200/80 rounded-xl text-xs font-extrabold flex items-center gap-1.5">
+            <span className="self-start sm:self-auto px-3 py-1 bg-[#E8F8F5] text-[#19B5A5] border border-[#19B5A5]/30 rounded-xl text-xs font-extrabold flex items-center gap-1.5">
               <CheckCircle2 size={14} />
               <span>Estado: Sobresaliente (A)</span>
             </span>
@@ -343,12 +344,12 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                 <PieChart>
                   <RechartsTooltip 
                     contentStyle={{ 
-                      backgroundColor: 'rgba(57, 44, 82, 0.95)', 
+                      backgroundColor: 'rgba(18, 59, 80, 0.95)', 
                       borderRadius: '16px', 
                       border: 'none', 
                       color: '#FFF', 
                       fontSize: '12px',
-                      boxShadow: '0 10px 30px rgba(128, 100, 216, 0.25)' 
+                      boxShadow: '0 10px 30px rgba(18, 59, 80, 0.25)' 
                     }}
                   />
                   <Pie
@@ -369,40 +370,40 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
 
               {/* Centro del Donut */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-2xl font-black text-edunova-textPrimary">80%</span>
+                <span className="text-2xl font-black text-[#123B50]">80%</span>
                 <span className="text-[10px] font-bold text-edunova-textSecondary uppercase tracking-wider">Aprobado</span>
               </div>
             </div>
 
-            {/* Desglose de Evidencias Pastel (7 columnas) */}
+            {/* Desglose de Evidencias */}
             <div className="sm:col-span-7 space-y-3">
               
-              <div className="p-3.5 rounded-2xl bg-[#E6F9F2]/70 border border-emerald-100 flex items-center justify-between">
+              <div className="p-3.5 rounded-2xl bg-[#E8F8F5]/80 border border-emerald-100 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-edunova-mint text-[#16A36A] flex items-center justify-center font-bold shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-[#19B5A5] text-white flex items-center justify-center font-bold shrink-0">
                     <CheckCircle2 size={17} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-edunova-textPrimary">8 Evidencias Aprobadas</p>
+                    <p className="text-xs font-bold text-[#123B50]">8 Evidencias Aprobadas</p>
                     <p className="text-[11px] text-edunova-textSecondary">Promedio actual: 4.65 / 5.0</p>
                   </div>
                 </div>
-                <span className="text-xs font-extrabold text-[#16A36A] bg-white px-2.5 py-1 rounded-xl shadow-sm border border-emerald-100">
+                <span className="text-xs font-extrabold text-[#19B5A5] bg-white px-2.5 py-1 rounded-xl shadow-sm border border-emerald-100">
                   80%
                 </span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-[#FCE4F2]/70 border border-pink-100 flex items-center justify-between">
+              <div className="p-3.5 rounded-2xl bg-[#FEF8EC]/80 border border-amber-100 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-edunova-pinkPastel text-[#D6409B] flex items-center justify-center font-bold shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-[#E9B949] text-white flex items-center justify-center font-bold shrink-0">
                     <Clock size={17} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-edunova-textPrimary">2 Evidencias Pendientes</p>
+                    <p className="text-xs font-bold text-[#123B50]">2 Evidencias Pendientes</p>
                     <p className="text-[11px] text-edunova-textSecondary">Entrega programada para Abril 2026</p>
                   </div>
                 </div>
-                <span className="text-xs font-extrabold text-[#D6409B] bg-white px-2.5 py-1 rounded-xl shadow-sm border border-pink-100">
+                <span className="text-xs font-extrabold text-[#E9B949] bg-white px-2.5 py-1 rounded-xl shadow-sm border border-amber-100">
                   20%
                 </span>
               </div>
@@ -412,19 +413,19 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
           </div>
 
           {/* Comparativa por Asignatura */}
-          <div className="pt-4 border-t border-purple-100/70 space-y-3.5">
-            <p className="text-xs font-extrabold text-edunova-textPrimary uppercase tracking-wider">
+          <div className="pt-4 border-t border-slate-100 space-y-3.5">
+            <p className="text-xs font-extrabold text-[#123B50] uppercase tracking-wider">
               Desempeño por Asignatura Técnica
             </p>
 
             <div className="space-y-3">
               {misCursos.map((c) => (
-                <div key={c.id} className="space-y-1.5 p-3 rounded-2xl bg-white/70 border border-purple-50">
+                <div key={c.id} className="space-y-1.5 p-3 rounded-2xl bg-[#F4F7FA]/70 border border-slate-100">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="font-bold text-edunova-textPrimary truncate">{c.nombre}</span>
-                    <span className="font-extrabold text-edunova-violet">{c.notaActual} / 5.0 (A)</span>
+                    <span className="font-bold text-[#123B50] truncate">{c.nombre}</span>
+                    <span className="font-extrabold text-[#19B5A5]">{c.notaActual} / 5.0 (A)</span>
                   </div>
-                  <div className="w-full bg-purple-100/50 rounded-full h-2.5 overflow-hidden">
+                  <div className="w-full bg-slate-200/60 rounded-full h-2.5 overflow-hidden">
                     <div 
                       className={`bg-gradient-to-r ${c.progressBar} h-full rounded-full transition-all duration-1000`}
                       style={{ width: `${(c.notaActual / 5.0) * 100}%` }}
@@ -437,69 +438,72 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
 
         </div>
 
-        {/* Módulo EDUNOVA AI: Glassmorphism Violeta/Rosa (5 Columnas) */}
-        <div className="lg:col-span-5 glass-panel rounded-[30px] p-6 sm:p-8 flex flex-col justify-between border-2 border-white/90 relative overflow-hidden bg-gradient-to-br from-white/90 via-[#FCE4F2]/40 to-[#EDE7FA]/60 shadow-glass">
+        {/* Módulo EDUNOVA AI: Noche Tecnológica Ocean Tech (5 Columnas) */}
+        <div className="lg:col-span-5 rounded-[30px] p-6 sm:p-8 flex flex-col justify-between border border-[#17365D] relative overflow-hidden bg-gradient-to-br from-[#102A43] via-[#123B50] to-[#17365D] text-white shadow-2xl">
           
-          <div className="space-y-4">
+          {/* Luz ambiental cian */}
+          <div className="absolute top-0 right-0 w-48 h-48 bg-[#48BFE3]/20 rounded-full blur-2xl pointer-events-none"></div>
+
+          <div className="space-y-4 relative z-10">
             
             {/* Header del Tutor IA */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#F7B8DC] via-[#C8B5F5] to-[#8064D8] flex items-center justify-center p-2.5 shadow-md shadow-purple-200/50">
-                  <Sparkles size={22} className="text-white animate-spin-slow" />
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#123B50] via-[#17365D] to-[#19B5A5] flex items-center justify-center p-2.5 shadow-md shadow-[#19B5A5]/30 border border-[#48BFE3]/40">
+                  <Sparkles size={22} className="text-[#48BFE3] animate-spin-slow" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-black tracking-tight text-edunova-textPrimary flex items-center gap-1.5">
+                  <h4 className="text-lg font-black tracking-tight text-white flex items-center gap-1.5">
                     EDUNOVA AI
                   </h4>
-                  <p className="text-[11px] text-edunova-violet font-semibold">
+                  <p className="text-[11px] text-[#48BFE3] font-semibold">
                     Tutor Pedagógico Inteligente
                   </p>
                 </div>
               </div>
 
-              <span className="px-3 py-1 rounded-full bg-[#EDE7FA] border border-purple-200/80 text-edunova-violet text-[10px] font-mono font-bold uppercase tracking-wider">
+              <span className="px-3 py-1 rounded-full bg-[#19B5A5]/20 border border-[#19B5A5]/40 text-[#48BFE3] text-[10px] font-mono font-bold uppercase tracking-wider">
                 IA ACTIVA
               </span>
             </div>
 
-            <p className="text-xs text-edunova-textSecondary leading-relaxed">
+            <p className="text-xs text-slate-300 leading-relaxed">
               Analizo tus calificaciones, asistencia y evidencias formativas en tiempo real para recomendarte estrategias de estudio personalizadas.
             </p>
 
             {/* Burbuja de Sugerencia del Asistente */}
-            <div className="p-4 rounded-2xl bg-white/80 border border-purple-100/80 space-y-2 shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-bold text-edunova-violet">
-                <Lightbulb size={16} className="text-[#FFE49B]" />
+            <div className="p-4 rounded-2xl bg-[#102A43]/80 border border-[#17365D] space-y-2 shadow-sm">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#48BFE3]">
+                <Lightbulb size={16} className="text-[#E9B949]" />
                 <span>Recomendación del Día</span>
               </div>
-              <p className="text-xs text-edunova-textPrimary leading-relaxed">
-                "Excelente dominio de componentes y maquetación Tailwind. Te sugerimos repasar la configuración de <strong>interceptores en Axios</strong> para la entrega de la próxima semana."
+              <p className="text-xs text-slate-200 leading-relaxed">
+                "Excelente dominio de componentes y maquetación Tailwind. Te sugerimos repasar la configuración de <strong className="text-white">interceptores en Axios</strong> para la entrega de la próxima semana."
               </p>
             </div>
 
-            {/* Botones de Consulta Rápida Pastel */}
+            {/* Botones de Consulta Rápida */}
             <div className="space-y-2 pt-1">
-              <p className="text-[10px] font-extrabold text-[#9A90AC] uppercase tracking-wider">
+              <p className="text-[10px] font-extrabold text-[#718096] uppercase tracking-wider">
                 Consultas Rápidas de IA:
               </p>
               
               <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => handleAiPromptClick('analisis')}
-                  className="px-2.5 py-2 bg-white/90 hover:bg-[#FCE4F2] rounded-xl text-[11px] font-bold text-edunova-textPrimary transition-all border border-purple-100 text-center truncate shadow-sm"
+                  className="px-2.5 py-2 bg-white/10 hover:bg-[#19B5A5]/25 rounded-xl text-[11px] font-bold text-white transition-all border border-white/10 hover:border-[#19B5A5]/40 text-center truncate shadow-sm"
                 >
-                  🌸 Mi Estado
+                  ⚡ Mi Estado
                 </button>
                 <button
                   onClick={() => handleAiPromptClick('pendientes')}
-                  className="px-2.5 py-2 bg-white/90 hover:bg-[#FFF6DC] rounded-xl text-[11px] font-bold text-edunova-textPrimary transition-all border border-purple-100 text-center truncate shadow-sm"
+                  className="px-2.5 py-2 bg-white/10 hover:bg-[#E9B949]/25 rounded-xl text-[11px] font-bold text-white transition-all border border-white/10 hover:border-[#E9B949]/40 text-center truncate shadow-sm"
                 >
                   ⏳ Pendientes
                 </button>
                 <button
                   onClick={() => handleAiPromptClick('ruta')}
-                  className="px-2.5 py-2 bg-white/90 hover:bg-[#DCEBFA] rounded-xl text-[11px] font-bold text-edunova-textPrimary transition-all border border-purple-100 text-center truncate shadow-sm"
+                  className="px-2.5 py-2 bg-white/10 hover:bg-[#48BFE3]/25 rounded-xl text-[11px] font-bold text-white transition-all border border-white/10 hover:border-[#48BFE3]/40 text-center truncate shadow-sm"
                 >
                   🎯 Plan Guía
                 </button>
@@ -508,10 +512,10 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
 
             {/* Respuesta Procesada en Vivo */}
             {(isProcessingAi || aiResponse) && (
-              <div className="p-4 rounded-2xl bg-white/95 border border-purple-200 text-xs text-edunova-textPrimary animate-slideUp shadow-md">
+              <div className="p-4 rounded-2xl bg-[#102A43] border border-[#19B5A5]/40 text-xs text-slate-200 animate-slideUp shadow-xl">
                 {isProcessingAi ? (
-                  <div className="flex items-center gap-2 text-edunova-violet font-bold">
-                    <span className="w-2 h-2 rounded-full bg-edunova-violet animate-ping"></span>
+                  <div className="flex items-center gap-2 text-[#48BFE3] font-bold">
+                    <span className="w-2 h-2 rounded-full bg-[#19B5A5] animate-ping"></span>
                     <span>Procesando análisis formativo con EDUNOVA AI...</span>
                   </div>
                 ) : (
@@ -523,10 +527,10 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
           </div>
 
           {/* Botón Principal del Módulo IA */}
-          <div className="pt-5 mt-4 border-t border-purple-100/60">
+          <div className="pt-5 mt-4 border-t border-[#17365D]/80 relative z-10">
             <button 
               onClick={() => handleAiPromptClick('analisis')}
-              className="w-full py-3 px-4 bg-gradient-to-r from-[#F7B8DC] via-[#C8B5F5] to-[#8064D8] hover:opacity-95 text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-pastel-violet transition-all flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 bg-gradient-to-r from-[#17365D] via-[#19B5A5] to-[#48BFE3] hover:opacity-95 text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-ocean-glow transition-all flex items-center justify-center gap-2"
             >
               <Brain size={16} />
               <span>Generar Informe de Aprendizaje con IA</span>
@@ -540,13 +544,13 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
       {/* ============================================================ */}
       {/* 4. TABLA GLASSMORPHISM: MIS CURSOS MATRICULADOS             */}
       {/* ============================================================ */}
-      <div className="glass-panel rounded-[30px] border border-white/80 overflow-hidden shadow-glass">
+      <div className="glass-panel rounded-[30px] border border-white/90 overflow-hidden shadow-glass">
         
         {/* Cabecera con Buscador Dinámico */}
-        <div className="p-6 sm:p-7 border-b border-purple-100/70 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-white/90 to-purple-50/30">
+        <div className="p-6 sm:p-7 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-white/95 to-[#DCEEF5]/30">
           <div>
-            <h3 className="text-lg font-bold text-edunova-textPrimary flex items-center gap-2">
-              <FolderOpen size={20} className="text-edunova-violet" />
+            <h3 className="text-lg font-bold text-[#123B50] flex items-center gap-2">
+              <FolderOpen size={20} className="text-[#19B5A5]" />
               <span>Mis Cursos Matriculados</span>
             </h3>
             <p className="text-xs text-edunova-textSecondary mt-0.5">
@@ -562,11 +566,11 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar por curso o docente..."
-                className="w-full pl-9 pr-3.5 py-2 bg-white/90 border border-purple-100 rounded-full text-xs text-edunova-textPrimary focus:bg-white focus:border-edunova-lavender focus:outline-none transition-all"
+                className="w-full pl-9 pr-3.5 py-2 bg-white border border-slate-200 rounded-full text-xs text-edunova-textPrimary focus:bg-white focus:border-[#19B5A5] focus:outline-none transition-all"
               />
             </div>
             
-            <span className="hidden sm:inline-flex px-3 py-1.5 bg-white/80 border border-purple-100 rounded-full text-xs font-bold text-edunova-violet">
+            <span className="hidden sm:inline-flex px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-bold text-[#17365D]">
               {filteredCursos.length} Cursos
             </span>
           </div>
@@ -575,7 +579,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
         {/* Tabla Glassmorphism */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-edunova-textSecondary">
-            <thead className="bg-[#FAF8FD] text-[11px] font-extrabold text-[#8A819C] uppercase tracking-wider border-b border-purple-100/60">
+            <thead className="bg-[#F4F7FA] text-[11px] font-extrabold text-[#718096] uppercase tracking-wider border-b border-slate-100">
               <tr>
                 <th className="px-6 py-4">Curso / Ficha</th>
                 <th className="px-6 py-4">Instructor Titular</th>
@@ -585,18 +589,18 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                 <th className="px-6 py-4 text-right">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-purple-50">
+            <tbody className="divide-y divide-slate-100">
               
               {filteredCursos.length > 0 ? (
                 filteredCursos.map((c) => (
-                  <tr key={c.id} className="hover:bg-white/60 transition-colors">
+                  <tr key={c.id} className="hover:bg-white/80 transition-colors">
                     
                     {/* Curso */}
                     <td className="px-6 py-4">
-                      <div className="font-bold text-edunova-textPrimary text-xs sm:text-sm">
+                      <div className="font-bold text-[#123B50] text-xs sm:text-sm">
                         {c.nombre}
                       </div>
-                      <div className="text-[11px] text-[#A59CB7] font-mono mt-0.5">
+                      <div className="text-[11px] text-[#718096] font-mono mt-0.5">
                         {c.codigo} · Programa ADSO
                       </div>
                     </td>
@@ -604,12 +608,12 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                     {/* Instructor */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#FCE4F2] to-[#DCEBFA] text-edunova-violet font-extrabold text-xs flex items-center justify-center shrink-0 border border-white">
+                        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#DCEEF5] to-[#EBF7FC] text-[#17365D] font-extrabold text-xs flex items-center justify-center shrink-0 border border-slate-200">
                           {c.instructor.split(' ').map(n => n[0]).join('')}
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-edunova-textPrimary">{c.instructor}</p>
-                          <p className="text-[11px] text-[#9A90AC]">{c.especialidad}</p>
+                          <p className="text-xs font-bold text-[#123B50]">{c.instructor}</p>
+                          <p className="text-[11px] text-[#718096]">{c.especialidad}</p>
                         </div>
                       </div>
                     </td>
@@ -622,10 +626,10 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                     {/* Progreso */}
                     <td className="px-6 py-4">
                       <div className="w-32 space-y-1">
-                        <div className="flex justify-between text-[11px] font-bold text-edunova-textPrimary">
+                        <div className="flex justify-between text-[11px] font-bold text-[#123B50]">
                           <span>{c.progreso}%</span>
                         </div>
-                        <div className="w-full bg-purple-100/50 h-2 rounded-full overflow-hidden">
+                        <div className="w-full bg-slate-200/70 h-2 rounded-full overflow-hidden">
                           <div 
                             className={`bg-gradient-to-r ${c.progressBar} h-full rounded-full transition-all duration-700`}
                             style={{ width: `${c.progreso}%` }}
@@ -636,7 +640,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
 
                     {/* Calificación */}
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-extrabold bg-[#E6F9F2] text-[#16A36A] border border-emerald-100 shadow-sm">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-extrabold bg-[#E8F8F5] text-[#19B5A5] border border-[#19B5A5]/20 shadow-sm">
                         {c.notaActual} / 5.0 (A)
                       </span>
                     </td>
@@ -645,7 +649,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                     <td className="px-6 py-4 text-right">
                       <button 
                         onClick={() => onNavigate && onNavigate('calificaciones')}
-                        className="text-xs font-extrabold text-edunova-violet hover:text-[#5B3EBD] transition-colors inline-flex items-center gap-1 bg-white/80 hover:bg-white px-3 py-1.5 rounded-xl border border-purple-100 shadow-sm"
+                        className="text-xs font-extrabold text-[#17365D] hover:text-[#19B5A5] transition-colors inline-flex items-center gap-1 bg-white hover:bg-[#F4F7FA] px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm"
                       >
                         <span>Evidencias</span>
                         <ChevronRight size={14} />
