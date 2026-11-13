@@ -28,7 +28,7 @@ Toda la especificación técnica formal y viva de este proyecto se encuentra doc
 - **Programa de Formación:** Tecnólogo en Análisis y Desarrollo de Software (ADSO) – Ficha 2874102
 - **Centro de Formación:** Centro de Formación Industrial – SENA Regional Huila
 - **Ubicación:** Neiva, Huila, Colombia
-- **Versión del Sistema:** v1.2 (Ocean Tech Premium)
+- **Versión del Sistema:** v2.2 (Factory Design System & High Performance Architecture)
 - **Duración Estimada:** 4 Semanas (1 Mes · Metodología Ágil Scrum)
 - **Modalidad:** Desarrollo individual asistido por Inteligencia Artificial
 
@@ -39,24 +39,26 @@ Toda la especificación técnica formal y viva de este proyecto se encuentra doc
 
 ---
 
-## 🎨 Identidad Visual Oficial: Ocean Tech Premium
+## ⚙️ Identidad Visual Oficial: Factory Design System (Dark Terminal War Room)
 
-La interfaz de EDUNOVA utiliza un diseño moderno de **Glassmorphism**, tarjetas flotantes, iluminación ambiental sutil y una paleta cromática tecnológica:
+La interfaz de EDUNOVA aplica el sistema de diseño **Factory**, un estándar estético de alta precisión concebido como una superficie de control de medianoche con alto contraste, bordes hairline nítidos y cero sombras difusas:
 
-| Color | Código HEX | Rol en la Interfaz | Aplicación Visual |
+| Token / Color | Código HEX | Rol en la Interfaz | Aplicación Visual |
 | :--- | :--- | :--- | :--- |
-| **Azul Petróleo** | `#123B50` | Base institucional, inicio de gradientes y encabezados | `rgb(18, 59, 80)` |
-| **Azul Profundo** | `#17365D` | Navegación, fondo del Sidebar y serie de datos | `rgb(23, 54, 93)` |
-| **Azul Noche** | `#102A43` | Superficie de EDUNOVA AI y tarjetas de alto contraste | `rgb(16, 42, 67)` |
-| **Turquesa** | `#19B5A5` | Acentos interactivos, estados activos y aprobaciones | `rgb(25, 181, 165)` |
-| **Cian** | `#48BFE3` | Destellos tecnológicos, métricas y badges | `rgb(72, 191, 227)` |
-| **Azul Hielo** | `#DCEEF5` | Orbes de luz ambiental y contenedores suaves | `rgb(220, 238, 245)` |
-| **Verde Menta** | `#70D6B3` | Barras de progreso formativo y estado sobresaliente | `rgb(112, 214, 179)` |
-| **Ámbar** | `#E9B949` | Control de asistencia, alertas y pendientes | `rgb(233, 185, 73)` |
-| **Gris Azulado** | `#EDF2F7` | Bordes delicados de cristal y fondos auxiliares | `rgb(237, 242, 247)` |
-| **Fondo Canvas** | `#F4F7FA` | Superficie limpia, profesional y luminosa | `rgb(244, 247, 250)` |
-| **Texto Principal** | `#263746` | Tipografía principal de alta legibilidad | `rgb(38, 55, 70)` |
-| **Texto Secundario** | `#718096` | Subtítulos, metadatos y fechas | `rgb(113, 128, 150)` |
+| **Obsidian** | `#101010` | Superficie de control base y canvas de medianoche | Fondo de pantalla, Auth Ground y cabeceras de tablas |
+| **Carbon Lift** | `#1d1a18` | Paneles y elevación de componentes | Contenedores de métricas, fichas, catálogo y consola IA |
+| **Ash Stroke** | `#3d3a39` | Bordes hairline de separación | Divisores de tarjetas, marcos de inputs y celdas |
+| **Bone Card** | `#eeeeee` | Tarjeta flashlit de máximo impacto | Hero Banner de despacho para aprendices y dirección |
+| **Chalk** | `#fafafa` | Botones principales y acciones primarias | Botones de envío, despacho de IA y login primario |
+| **Signal Orange** | `#ee6018` | Telemetría viva y estados en tiempo real | Pulsos de red activa, insignias de rol y cursores |
+| **Metric Green** | `#a0ca92` | Datos positivos y aprobaciones | Notas aprobatorias (A), asistencia $\ge 90\%$ y checks |
+| **Granite / Slate** | `#8c8682` | Metadatos y etiquetas secundarias | Fechas, identificadores de ficha y etiquetas de campo |
+
+### Principios Fundamentales del Sistema Factory:
+* **Tipografía Geist y Geist Mono:** Tipografía moderna con tracking negativo ajustado (`tracking-tight`) y pesos balanceados (Geist 400/500).
+* **Radio Estricto de 3px:** Aplicado en todos los botones, badges e inputs para una sensación táctil y precisa de consola de control.
+* **Tarjetas a 10px con Borde Hairline:** Estructura geométrica clara y plana con bordes Ash `#3d3a39`.
+* **Elevación Plana:** Eliminación de sombras difusas o desenfoques cromáticos; la jerarquía se establece mediante el contraste absoluto Obsidian vs. Bone.
 
 ---
 

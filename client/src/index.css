@@ -4,92 +4,162 @@
 
 @layer base {
   :root {
-    --color-petroleum: #123B50;
-    --color-deep-blue: #17365D;
-    --color-midnight: #102A43;
-    --color-turquoise: #19B5A5;
-    --color-cyan: #48BFE3;
-    --color-ice-blue: #DCEEF5;
-    --color-mint: #70D6B3;
-    --color-amber: #E9B949;
-    --color-slate-grey: #EDF2F7;
-    --color-canvas: #F4F7FA;
-    --color-text-primary: #263746;
-    --color-text-secondary: #718096;
+    --color-obsidian-canvas: #101010;
+    --color-carbon-lift: #1d1a18;
+    --color-ash-stroke: #3d3a39;
+    --color-graphite-mid: #4d4947;
+    --color-warm-granite: #8a8380;
+    --color-pale-stone: #b8b3b0;
+    --color-bone: #eeeeee;
+    --color-chalk: #fafafa;
+    --color-signal-orange: #ee6018;
+    --color-metric-green: #a0ca92;
+
+    --font-geist: 'Geist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-geist-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    --radius-sm: 3px;
+    --radius-lg: 10px;
+    --radius-2xl: 20px;
   }
 
   html {
     scroll-behavior: smooth;
+    background-color: #101010;
+    color: #eeeeee;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   body {
-    background-color: #F4F7FA;
-    color: #263746;
-    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #101010;
+    color: #eeeeee;
+    font-family: var(--font-geist);
     -webkit-font-smoothing: antialiased;
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(220, 238, 245, 0.70) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(25, 181, 165, 0.14) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(72, 191, 227, 0.16) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, rgba(220, 238, 245, 0.50) 0px, transparent 50%);
-    background-attachment: fixed;
     min-height: 100vh;
   }
 }
 
-/* Efectos de Cristal / Glassmorphism Ocean Tech */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.90);
-  box-shadow: 0 10px 35px 0 rgba(18, 59, 80, 0.08);
+/* ============================================================ */
+/* FACTORY DESIGN SURFACES                                     */
+/* ============================================================ */
+
+/* Bone Card: The signature figure on dark ground */
+.bone-card {
+  background-color: #eeeeee;
+  color: #101010;
+  border-radius: 10px;
+  border: 1px solid #eeeeee;
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.90);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.95);
-  box-shadow: 0 4px 20px 0 rgba(18, 59, 80, 0.06);
+/* Carbon Lift Panel: Raised dark control surface */
+.carbon-panel {
+  background-color: #1d1a18;
+  border: 1px solid #3d3a39;
+  border-radius: 10px;
 }
 
-.glass-card-hover {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+/* Metric Tile: Flat instrument data cell with 1px hairline divider */
+.metric-tile {
+  background-color: #101010;
+  border: 1px solid #3d3a39;
+  border-radius: 10px;
+  padding: 20px;
+  transition: border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.glass-card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 36px 0 rgba(18, 59, 80, 0.14);
-  border-color: rgba(25, 181, 165, 0.45);
+.metric-tile:hover {
+  border-color: #8a8380;
 }
 
-/* Scrollbar estilizado Ocean Tech */
-::-webkit-scrollbar {
+/* Botones con estilo Factory */
+.factory-btn-primary {
+  background-color: #fafafa;
+  color: #101010;
+  border-radius: 3px;
+  padding: 0 14px;
+  height: 36px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.factory-btn-primary:hover {
+  opacity: 0.9;
+}
+
+.factory-btn-dark {
+  background-color: #1d1a18;
+  color: #eeeeee;
+  border: 1px solid #3d3a39;
+  border-radius: 3px;
+  padding: 0 14px;
+  height: 36px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.15s;
+}
+
+.factory-btn-dark:hover {
+  border-color: #8a8380;
+  background-color: #262220;
+}
+
+.factory-btn-ghost {
+  background: transparent;
+  color: #eeeeee;
+  border: 1px solid #3d3a39;
+  border-radius: 3px;
+  padding: 0 14px;
+  height: 36px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.factory-btn-ghost:hover {
+  border-color: #eeeeee;
+  color: #fafafa;
+}
+
+/* Status Pulse: 6px filled circle */
+.status-pulse-orange {
   width: 6px;
   height: 6px;
+  border-radius: 9999px;
+  background-color: #ee6018;
+  display: inline-block;
+}
+
+.status-pulse-green {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: #a0ca92;
+  display: inline-block;
+}
+
+/* Scrollbar terminal */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #101010;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #DCEEF5;
-  border-radius: 9999px;
+  background: #3d3a39;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #19B5A5;
-}
-
-/* Accesibilidad de movimiento reducido */
-@media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+  background: #8a8380;
 }

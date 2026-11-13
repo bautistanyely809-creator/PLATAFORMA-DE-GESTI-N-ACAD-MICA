@@ -10,7 +10,8 @@ import {
   ArrowRight, 
   Sparkles,
   CheckCircle2, 
-  AlertCircle
+  AlertCircle,
+  Terminal
 } from 'lucide-react';
 
 export default function Auth({ onLoginSuccess }) {
@@ -41,31 +42,31 @@ export default function Auth({ onLoginSuccess }) {
 
   const roleConfig = {
     APRENDIZ: {
-      title: 'Portal del Aprendiz',
-      subtitle: 'Consulta de calificaciones, control de asistencia y tutoría con IA',
+      code: 'PORTAL_01',
+      title: 'Apprentice Portal',
+      subtitle: 'Grades telemetry, attendance tracking, and AI tutoring',
       icon: Users,
-      badge: 'Aprendiz ADSO',
+      badge: 'APRENDIZ ADSO',
       demoEmail: 'anyely.valeria@edunova.edu.co',
-      demoPass: 'Aprendiz123*',
-      activeTheme: 'from-[#123B50] via-[#17365D] to-[#19B5A5]'
+      demoPass: 'Aprendiz123*'
     },
     INSTRUCTOR: {
-      title: 'Portal del Instructor',
-      subtitle: 'Calificación de evidencias, planilla de asistencia y seguimiento pedagógico',
+      code: 'PORTAL_02',
+      title: 'Instructor Portal',
+      subtitle: 'Evidence evaluation, gradebook records, and cohort monitoring',
       icon: GraduationCap,
-      badge: 'Docente Titular',
+      badge: 'DOCENTE TITULAR',
       demoEmail: 'carlos.mendoza@edunova.edu.co',
-      demoPass: 'Instructor123*',
-      activeTheme: 'from-[#102A43] via-[#17365D] to-[#48BFE3]'
+      demoPass: 'Instructor123*'
     },
     ADMIN: {
-      title: 'Gestión Administrativa',
-      subtitle: 'Administración de usuarios, fichas formativas y reportes institucionales',
+      code: 'PORTAL_03',
+      title: 'Executive Admin',
+      subtitle: 'Directory management, curricular tracks, and system telemetry',
       icon: ShieldCheck,
-      badge: 'Administrador General',
+      badge: 'ADMINISTRADOR',
       demoEmail: 'admin@edunova.edu.co',
-      demoPass: 'Admin123*',
-      activeTheme: 'from-[#102A43] via-[#123B50] to-[#E9B949]'
+      demoPass: 'Admin123*'
     }
   };
 
@@ -77,7 +78,7 @@ export default function Auth({ onLoginSuccess }) {
     setErrorMsg('');
 
     if (!loginEmail || !loginPassword) {
-      setErrorMsg('Por favor completa todos los campos.');
+      setErrorMsg('Please enter both identifier and secret key.');
       return;
     }
 
@@ -121,7 +122,7 @@ export default function Auth({ onLoginSuccess }) {
       localStorage.setItem('edunova_current_user', JSON.stringify(userObj));
       onLoginSuccess(userObj);
     } else {
-      setErrorMsg('Credenciales incorrectas para la sección seleccionada.');
+      setErrorMsg('Invalid authentication credentials for the selected portal.');
     }
   };
 
@@ -131,23 +132,23 @@ export default function Auth({ onLoginSuccess }) {
     setSuccessMsg('');
 
     if (!regData.nombre || !regData.apellido || !regData.correo || !regData.password) {
-      setErrorMsg('Por favor diligencia los campos obligatorios (*).');
+      setErrorMsg('Mandatory registration fields cannot be blank.');
       return;
     }
 
     if (regData.password.length < 6) {
-      setErrorMsg('La contraseña debe tener al menos 6 caracteres.');
+      setErrorMsg('Secret key must contain at least 6 characters.');
       return;
     }
 
     if (regData.password !== regData.confirmPassword) {
-      setErrorMsg('Las contraseñas no coinciden.');
+      setErrorMsg('Secret keys do not match.');
       return;
     }
 
     if (selectedRole === 'ADMIN') {
       if (regData.codigoSeguridad !== 'SENA2026' && regData.codigoSeguridad !== 'EDUNOVA') {
-        setErrorMsg('Código de autorización administrativa inválido. (Usa "SENA2026" para la prueba)');
+        setErrorMsg('Invalid administrative authorization code (Try "SENA2026").');
         return;
       }
     }
@@ -155,7 +156,7 @@ export default function Auth({ onLoginSuccess }) {
     const registeredUsers = JSON.parse(localStorage.getItem('edunova_registered_users') || '[]');
     const exists = registeredUsers.some(u => u.correo.toLowerCase() === regData.correo.toLowerCase());
     if (exists) {
-      setErrorMsg('Ya existe un usuario registrado con este correo.');
+      setErrorMsg('An operator with this email address already exists.');
       return;
     }
 
@@ -176,11 +177,11 @@ export default function Auth({ onLoginSuccess }) {
     registeredUsers.push(newUser);
     localStorage.setItem('edunova_registered_users', JSON.stringify(registeredUsers));
 
-    setSuccessMsg('¡Cuenta creada con éxito! Ingresando...');
+    setSuccessMsg('Operator credentials created. Launching session...');
     setTimeout(() => {
       localStorage.setItem('edunova_current_user', JSON.stringify(newUser));
       onLoginSuccess(newUser);
-    }, 900);
+    }, 800);
   };
 
   const loadDemoCredentials = (role) => {
@@ -191,391 +192,377 @@ export default function Auth({ onLoginSuccess }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F7FA] font-sans text-edunova-textPrimary relative flex flex-col justify-between overflow-hidden">
+    <div className="min-h-screen bg-[#101010] text-[#eeeeee] flex flex-col justify-between font-sans antialiased selection:bg-[#eeeeee] selection:text-[#101010]">
       
-      {/* Orbes de luz ambiental Ocean Tech */}
-      <div className="fixed top-0 left-0 w-96 h-96 bg-[#DCEEF5]/70 rounded-full blur-[130px] pointer-events-none -translate-x-1/3 -translate-y-1/3"></div>
-      <div className="fixed bottom-0 right-0 w-[500px] h-[500px] bg-[#19B5A5]/20 rounded-full blur-[150px] pointer-events-none translate-x-1/3 translate-y-1/3"></div>
-      <div className="fixed top-1/2 left-1/2 w-80 h-80 bg-[#48BFE3]/20 rounded-full blur-[120px] pointer-events-none -translate-x-1/2 -translate-y-1/2"></div>
-
-      {/* Header Institucional Flotante */}
-      <header className="p-4 sm:p-6 z-10">
-        <div className="max-w-6xl mx-auto glass-panel h-16 rounded-[24px] px-6 flex items-center justify-between shadow-glass">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-white p-1 border border-slate-200 shadow-sm flex items-center justify-center">
-              <img src="/edunova-logo.png" alt="Escudo EDUNOVA" className="w-full h-full object-contain" />
-            </div>
-            <div>
-              <h1 className="font-extrabold text-base text-[#123B50] tracking-tight leading-none">
-                EDUNOVA
-              </h1>
-              <p className="text-[10px] font-bold text-[#19B5A5] uppercase tracking-wider mt-0.5">
-                Academic Management System
-              </p>
-            </div>
+      {/* Top Header */}
+      <header className="h-16 px-6 border-b border-[#3d3a39] flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-[3px] bg-[#1d1a18] border border-[#3d3a39] flex items-center justify-center">
+            <img src="/edunova-logo.png" alt="EDUNOVA" className="w-5 h-5 object-contain" />
           </div>
-
-          <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-edunova-textSecondary bg-white/80 px-3.5 py-1.5 rounded-full border border-slate-200">
-            <span className="w-2 h-2 rounded-full bg-[#19B5A5] animate-pulse"></span>
-            <span>Centro de Formación Industrial · SENA Regional Huila</span>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-xs uppercase tracking-wider text-[#eeeeee]">EDUNOVA // FACTORY</span>
+              <span className="status-pulse-orange"></span>
+            </div>
+            <p className="font-mono text-[10px] text-[#8a8380] uppercase">
+              Academic Management System · Release 2.1
+            </p>
           </div>
+        </div>
+
+        <div className="hidden sm:flex items-center gap-2 font-mono text-[11px] text-[#8a8380] uppercase px-3 py-1 rounded-[3px] border border-[#3d3a39]">
+          <span className="status-pulse-green"></span>
+          <span>Center for Industrial Training · SENA Huila</span>
         </div>
       </header>
 
-      {/* Contenedor Principal de Autenticación */}
-      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 z-10 my-auto">
+      {/* Main War Room Body: Split figure/ground */}
+      <main className="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-8 flex items-center justify-center my-auto">
         
-        <div className="w-full max-w-4xl glass-panel rounded-[32px] border-2 border-white/95 overflow-hidden grid grid-cols-1 lg:grid-cols-12 shadow-glass-hover">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 rounded-[10px] border border-[#3d3a39] bg-[#1d1a18] overflow-hidden shadow-2xl">
           
-          {/* ========================================================= */}
-          {/* PANEL IZQUIERDO: SELECCIÓN DE ROL OCEAN TECH              */}
-          {/* ========================================================= */}
-          <div className="lg:col-span-5 bg-gradient-to-b from-[#102A43] via-[#123B50] to-[#17365D] p-8 flex flex-col justify-between border-r border-[#17365D] relative text-white">
+          {/* Left Panel: Role Selector & System Terminal */}
+          <div className="lg:col-span-5 p-6 sm:p-8 bg-[#101010] border-b lg:border-b-0 lg:border-r border-[#3d3a39] flex flex-col justify-between space-y-6">
             
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[#48BFE3] text-xs font-extrabold uppercase tracking-wider shadow-sm">
-                <Sparkles size={13} className="text-[#19B5A5]" />
-                <span>Acceso Institucional Obligatorio</span>
+              <div className="inline-flex items-center gap-2 font-mono text-[11px] text-[#8a8380] uppercase tracking-wider">
+                <Terminal size={12} className="text-[#ee6018]" />
+                <span>Select Target Role</span>
               </div>
 
-              <h2 className="text-2xl font-black tracking-tight text-white leading-tight">
-                Selecciona tu Rol de Ingreso
+              <h2 className="text-2xl font-normal tracking-tight text-[#eeeeee]">
+                Access Gate // Control
               </h2>
 
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Ingresa a través del portal autorizado correspondiente a tu rol en la institución formativa.
+              <p className="text-xs text-[#8a8380] leading-relaxed">
+                Choose the operational portal corresponding to your assigned role in the training center.
               </p>
 
-              {/* Selector de los 3 Roles */}
-              <div className="space-y-3 pt-2">
+              {/* Role Selectors */}
+              <div className="space-y-2 pt-2">
                 
-                {/* 1. ROL APRENDIZ */}
+                {/* 1. APRENDIZ */}
                 <button
                   type="button"
                   onClick={() => { setSelectedRole('APRENDIZ'); setErrorMsg(''); }}
-                  className={`w-full flex items-center gap-3.5 p-3.5 rounded-2xl border text-left transition-all ${
+                  className={`w-full flex items-center justify-between p-3 rounded-[3px] border text-left transition-colors duration-150 ${
                     selectedRole === 'APRENDIZ'
-                      ? 'bg-gradient-to-r from-[#17365D] via-[#123B50] to-[#19B5A5] text-white border-[#19B5A5]/60 shadow-ocean-glow font-extrabold'
-                      : 'bg-white/10 border-white/10 text-slate-300 hover:bg-white/15'
+                      ? 'bg-[#1d1a18] border-[#eeeeee] text-[#eeeeee]'
+                      : 'bg-[#101010] border-[#3d3a39] text-[#8a8380] hover:text-[#eeeeee] hover:border-[#8a8380]'
                   }`}
                 >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-                    selectedRole === 'APRENDIZ' ? 'bg-[#19B5A5] text-white shadow-sm' : 'bg-white/15 text-[#19B5A5]'
-                  }`}>
-                    <Users size={20} />
+                  <div className="flex items-center gap-3">
+                    <Users size={16} className={selectedRole === 'APRENDIZ' ? 'text-[#a0ca92]' : 'text-[#8a8380]'} />
+                    <div>
+                      <p className="text-xs font-normal text-[#eeeeee]">Apprentice Portal</p>
+                      <p className="font-mono text-[10px] text-[#8a8380]">Grades, attendance & AI tutor</p>
+                    </div>
                   </div>
-                  <div className="flex-1 truncate">
-                    <p className="text-sm font-bold truncate">Portal Aprendiz</p>
-                    <p className="text-[11px] text-slate-300">Calificaciones, notas y tutor IA</p>
-                  </div>
-                  {selectedRole === 'APRENDIZ' && <CheckCircle2 size={18} className="text-[#19B5A5]" />}
+                  <span className="font-mono text-[10px] text-[#8a8380]">01</span>
                 </button>
 
-                {/* 2. ROL INSTRUCTOR */}
+                {/* 2. INSTRUCTOR */}
                 <button
                   type="button"
                   onClick={() => { setSelectedRole('INSTRUCTOR'); setErrorMsg(''); }}
-                  className={`w-full flex items-center gap-3.5 p-3.5 rounded-2xl border text-left transition-all ${
+                  className={`w-full flex items-center justify-between p-3 rounded-[3px] border text-left transition-colors duration-150 ${
                     selectedRole === 'INSTRUCTOR'
-                      ? 'bg-gradient-to-r from-[#102A43] via-[#17365D] to-[#48BFE3] text-white border-[#48BFE3]/60 shadow-cyan-glow font-extrabold'
-                      : 'bg-white/10 border-white/10 text-slate-300 hover:bg-white/15'
+                      ? 'bg-[#1d1a18] border-[#eeeeee] text-[#eeeeee]'
+                      : 'bg-[#101010] border-[#3d3a39] text-[#8a8380] hover:text-[#eeeeee] hover:border-[#8a8380]'
                   }`}
                 >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-                    selectedRole === 'INSTRUCTOR' ? 'bg-[#48BFE3] text-[#102A43] shadow-sm' : 'bg-white/15 text-[#48BFE3]'
-                  }`}>
-                    <GraduationCap size={20} />
+                  <div className="flex items-center gap-3">
+                    <GraduationCap size={16} className={selectedRole === 'INSTRUCTOR' ? 'text-[#ee6018]' : 'text-[#8a8380]'} />
+                    <div>
+                      <p className="text-xs font-normal text-[#eeeeee]">Instructor Portal</p>
+                      <p className="font-mono text-[10px] text-[#8a8380]">Grading and attendance logs</p>
+                    </div>
                   </div>
-                  <div className="flex-1 truncate">
-                    <p className="text-sm font-bold truncate">Portal Docente</p>
-                    <p className="text-[11px] text-slate-300">Calificar y tomar asistencia</p>
-                  </div>
-                  {selectedRole === 'INSTRUCTOR' && <CheckCircle2 size={18} className="text-[#48BFE3]" />}
+                  <span className="font-mono text-[10px] text-[#8a8380]">02</span>
                 </button>
 
-                {/* 3. ROL ADMIN */}
+                {/* 3. ADMIN */}
                 <button
                   type="button"
                   onClick={() => { setSelectedRole('ADMIN'); setErrorMsg(''); }}
-                  className={`w-full flex items-center gap-3.5 p-3.5 rounded-2xl border text-left transition-all ${
+                  className={`w-full flex items-center justify-between p-3 rounded-[3px] border text-left transition-colors duration-150 ${
                     selectedRole === 'ADMIN'
-                      ? 'bg-gradient-to-r from-[#102A43] via-[#123B50] to-[#E9B949] text-white border-[#E9B949]/60 shadow-md font-extrabold'
-                      : 'bg-white/10 border-white/10 text-slate-300 hover:bg-white/15'
+                      ? 'bg-[#1d1a18] border-[#eeeeee] text-[#eeeeee]'
+                      : 'bg-[#101010] border-[#3d3a39] text-[#8a8380] hover:text-[#eeeeee] hover:border-[#8a8380]'
                   }`}
                 >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-                    selectedRole === 'ADMIN' ? 'bg-[#E9B949] text-[#102A43] shadow-sm' : 'bg-white/15 text-[#E9B949]'
-                  }`}>
-                    <ShieldCheck size={20} />
+                  <div className="flex items-center gap-3">
+                    <ShieldCheck size={16} className={selectedRole === 'ADMIN' ? 'text-[#eeeeee]' : 'text-[#8a8380]'} />
+                    <div>
+                      <p className="text-xs font-normal text-[#eeeeee]">Administration</p>
+                      <p className="font-mono text-[10px] text-[#8a8380]">Cohorts, tracks & user catalog</p>
+                    </div>
                   </div>
-                  <div className="flex-1 truncate">
-                    <p className="text-sm font-bold truncate">Administración</p>
-                    <p className="text-[11px] text-slate-300">Control general y cursos</p>
-                  </div>
-                  {selectedRole === 'ADMIN' && <CheckCircle2 size={18} className="text-[#E9B949]" />}
+                  <span className="font-mono text-[10px] text-[#8a8380]">03</span>
                 </button>
 
               </div>
             </div>
 
-            {/* Accesos Rápidos Demo 1-Click */}
-            <div className="pt-6 mt-6 border-t border-[#17365D]">
-              <p className="text-[10px] font-extrabold text-[#48BFE3] uppercase tracking-wider mb-2">
-                Acceso Rápido para Demostración:
+            {/* 1-Click Demo Dispatch Triggers */}
+            <div className="pt-4 border-t border-[#3d3a39] space-y-2">
+              <p className="font-mono text-[10px] text-[#8a8380] uppercase tracking-wider">
+                1-Click Dispatch Keys:
               </p>
               <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => loadDemoCredentials('APRENDIZ')}
-                  className="px-2 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-bold text-white border border-white/15 truncate shadow-sm"
+                  className="px-2 py-1.5 bg-[#1d1a18] hover:bg-[#24211f] border border-[#3d3a39] rounded-[3px] font-mono text-[10px] text-[#eeeeee] truncate text-center transition-colors"
                 >
-                  ⚡ Anyely (ADSO)
+                  Anyely (ADSO)
                 </button>
                 <button
                   type="button"
                   onClick={() => loadDemoCredentials('INSTRUCTOR')}
-                  className="px-2 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-bold text-white border border-white/15 truncate shadow-sm"
+                  className="px-2 py-1.5 bg-[#1d1a18] hover:bg-[#24211f] border border-[#3d3a39] rounded-[3px] font-mono text-[10px] text-[#eeeeee] truncate text-center transition-colors"
                 >
-                  👨‍🏫 Instructor
+                  Instructor
                 </button>
                 <button
                   type="button"
                   onClick={() => loadDemoCredentials('ADMIN')}
-                  className="px-2 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-bold text-white border border-white/15 truncate shadow-sm"
+                  className="px-2 py-1.5 bg-[#1d1a18] hover:bg-[#24211f] border border-[#3d3a39] rounded-[3px] font-mono text-[10px] text-[#eeeeee] truncate text-center transition-colors"
                 >
-                  🛡️ Admin
+                  Director
                 </button>
               </div>
             </div>
 
           </div>
 
-          {/* ========================================================= */}
-          {/* PANEL DERECHO: FORMULARIO GLASSMORPHISM                  */}
-          {/* ========================================================= */}
-          <div className="lg:col-span-7 p-8 sm:p-10 flex flex-col justify-between bg-white/85">
+          {/* Right Panel: The Signature Bone Card (#eeeeee) or Crisp Carbon Surface */}
+          <div className="lg:col-span-7 p-6 sm:p-8 bg-[#1d1a18] flex flex-col justify-between">
             
             <div>
-              {/* Switcher de Modo: Iniciar Sesión / Registrarse */}
-              <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
+              {/* Mode Switcher */}
+              <div className="flex items-center justify-between border-b border-[#3d3a39] pb-4 mb-6">
                 <div>
-                  <h3 className="text-xl font-extrabold text-[#123B50] tracking-tight flex items-center gap-2">
-                    <CurrentRoleIcon size={20} className="text-[#19B5A5]" />
-                    <span>{currentRoleInfo.title}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] text-[#8a8380] uppercase tracking-wider">{currentRoleInfo.code}</span>
+                    <span className="status-pulse-orange"></span>
+                  </div>
+                  <h3 className="text-lg font-normal text-[#eeeeee] tracking-tight mt-0.5">
+                    {mode === 'login' ? `Authenticate as ${currentRoleInfo.badge}` : `Register New ${currentRoleInfo.badge}`}
                   </h3>
-                  <p className="text-xs text-edunova-textSecondary mt-0.5">
-                    {mode === 'login' ? 'Ingresa con tus credenciales asignadas' : 'Crea tu cuenta obligatoria para el periodo formativo'}
-                  </p>
                 </div>
 
-                <div className="flex bg-[#EDF2F7] p-1 rounded-2xl border border-slate-200">
+                <div className="flex bg-[#101010] p-1 rounded-[3px] border border-[#3d3a39]">
                   <button
                     type="button"
                     onClick={() => { setMode('login'); setErrorMsg(''); setSuccessMsg(''); }}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                      mode === 'login' ? 'bg-white text-[#123B50] shadow-sm' : 'text-edunova-textSecondary hover:text-edunova-textPrimary'
+                    className={`px-3 py-1 rounded-[3px] font-mono text-xs transition-colors ${
+                      mode === 'login' ? 'bg-[#1d1a18] text-[#eeeeee] border border-[#3d3a39]' : 'text-[#8a8380] hover:text-[#eeeeee]'
                     }`}
                   >
-                    Ingresar
+                    Log In
                   </button>
                   <button
                     type="button"
                     onClick={() => { setMode('register'); setErrorMsg(''); setSuccessMsg(''); }}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                      mode === 'register' ? 'bg-gradient-to-r from-[#17365D] to-[#19B5A5] text-white shadow-sm font-extrabold' : 'text-edunova-textSecondary hover:text-edunova-textPrimary'
+                    className={`px-3 py-1 rounded-[3px] font-mono text-xs transition-colors ${
+                      mode === 'register' ? 'bg-[#1d1a18] text-[#eeeeee] border border-[#3d3a39]' : 'text-[#8a8380] hover:text-[#eeeeee]'
                     }`}
                   >
-                    Registrarse
+                    Sign Up
                   </button>
                 </div>
               </div>
 
-              {/* Mensajes de Alerta */}
+              {/* Messages */}
               {errorMsg && (
-                <div className="mb-5 p-3.5 rounded-2xl bg-red-50/90 border border-red-200 text-red-600 text-xs font-bold flex items-center gap-2">
-                  <AlertCircle size={16} className="shrink-0" />
+                <div className="mb-4 p-3 rounded-[3px] bg-[#ee6018]/10 border border-[#ee6018]/40 text-[#ee6018] text-xs font-mono flex items-center gap-2">
+                  <AlertCircle size={15} className="shrink-0" />
                   <span>{errorMsg}</span>
                 </div>
               )}
 
               {successMsg && (
-                <div className="mb-5 p-3.5 rounded-2xl bg-[#E8F8F5] border border-emerald-200 text-[#19B5A5] text-xs font-bold flex items-center gap-2">
-                  <CheckCircle2 size={16} className="shrink-0" />
+                <div className="mb-4 p-3 rounded-[3px] bg-[#a0ca92]/10 border border-[#a0ca92]/40 text-[#a0ca92] text-xs font-mono flex items-center gap-2">
+                  <CheckCircle2 size={15} className="shrink-0" />
                   <span>{successMsg}</span>
                 </div>
               )}
 
-              {/* FORMULARIO LOGIN */}
+              {/* LOGIN FORM */}
               {mode === 'login' ? (
                 <form onSubmit={handleLoginSubmit} className="space-y-4">
                   
                   <div>
-                    <label className="block text-xs font-extrabold text-[#123B50] uppercase tracking-wider mb-1.5">
-                      Correo Institucional ({currentRoleInfo.badge})
+                    <label className="block font-mono text-[11px] text-[#8a8380] uppercase tracking-wider mb-1.5">
+                      Institutional Identifier ({currentRoleInfo.badge})
                     </label>
                     <div className="relative">
-                      <Mail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-edunova-textSecondary" />
+                      <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a8380]" />
                       <input
                         type="email"
                         required
                         value={loginEmail}
                         onChange={(e) => setLoginEmail(e.target.value)}
-                        placeholder="ej. nombre@edunova.edu.co"
-                        className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-xs sm:text-sm text-edunova-textPrimary focus:bg-white focus:border-[#19B5A5] focus:ring-4 focus:ring-[#19B5A5]/15 focus:outline-none transition-all shadow-sm"
+                        placeholder="operator@edunova.edu.co"
+                        className="w-full pl-9 pr-3 py-2 bg-[#101010] border border-[#3d3a39] rounded-[3px] text-xs text-[#eeeeee] font-sans placeholder:text-[#4d4947] focus:outline-none focus:border-[#eeeeee] transition-colors"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-extrabold text-[#123B50] uppercase tracking-wider mb-1.5">
-                      Contraseña
+                    <label className="block font-mono text-[11px] text-[#8a8380] uppercase tracking-wider mb-1.5">
+                      Access Key / Secret
                     </label>
                     <div className="relative">
-                      <Lock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-edunova-textSecondary" />
+                      <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a8380]" />
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
                         placeholder="••••••••••••"
-                        className="w-full pl-10 pr-11 py-3 bg-white border border-slate-200 rounded-2xl text-xs sm:text-sm text-edunova-textPrimary focus:bg-white focus:border-[#19B5A5] focus:ring-4 focus:ring-[#19B5A5]/15 focus:outline-none transition-all shadow-sm"
+                        className="w-full pl-9 pr-10 py-2 bg-[#101010] border border-[#3d3a39] rounded-[3px] text-xs text-[#eeeeee] font-sans placeholder:text-[#4d4947] focus:outline-none focus:border-[#eeeeee] transition-colors"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-edunova-textSecondary hover:text-edunova-textPrimary"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8a8380] hover:text-[#eeeeee]"
                       >
-                        {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                        {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                       </button>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between text-xs pt-1">
-                    <label className="flex items-center gap-2 cursor-pointer text-edunova-textSecondary">
-                      <input type="checkbox" defaultChecked className="rounded border-slate-300 text-[#19B5A5] focus:ring-[#19B5A5]" />
-                      <span>Recordar sesión</span>
+                    <label className="flex items-center gap-2 cursor-pointer text-[#8a8380]">
+                      <input type="checkbox" defaultChecked className="rounded-[3px] bg-[#101010] border-[#3d3a39] text-[#eeeeee]" />
+                      <span className="font-mono text-[11px]">Remember terminal session</span>
                     </label>
-                    <a href="#olvide" onClick={(e) => { e.preventDefault(); alert('Utiliza los botones de demostración 1-Click para acceder de inmediato.'); }} className="text-[#19B5A5] font-bold hover:underline">
-                      ¿Olvidaste tu contraseña?
+                    <a 
+                      href="#recovery" 
+                      onClick={(e) => { e.preventDefault(); alert('Use the 1-Click Dispatch buttons for instant session bypass.'); }} 
+                      className="font-mono text-[11px] text-[#8a8380] hover:text-[#eeeeee]"
+                    >
+                      Lost access key?
                     </a>
                   </div>
 
+                  {/* Primary Light Button (Chalk #fafafa on dark ground) */}
                   <button
                     type="submit"
-                    className="w-full mt-4 py-3.5 px-4 bg-gradient-to-r from-[#123B50] via-[#17365D] to-[#19B5A5] hover:opacity-95 text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-ocean-glow transition-all flex items-center justify-center gap-2"
+                    className="w-full mt-3 py-2.5 px-4 bg-[#fafafa] hover:bg-[#ffffff] text-[#101010] font-normal rounded-[3px] text-xs flex items-center justify-center gap-2 transition-opacity"
                   >
-                    <span>Ingresar como {currentRoleInfo.badge}</span>
-                    <ArrowRight size={17} />
+                    <span>Commit Session as {currentRoleInfo.badge}</span>
+                    <ArrowRight size={14} />
                   </button>
 
                 </form>
               ) : (
                 
-                /* FORMULARIO REGISTRO */
-                <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
+                /* REGISTRATION FORM */
+                <form onSubmit={handleRegisterSubmit} className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-bold text-[#123B50] mb-1">Nombres *</label>
+                      <label className="block font-mono text-[10px] text-[#8a8380] uppercase mb-1">First Name *</label>
                       <input
                         type="text"
                         required
                         value={regData.nombre}
                         onChange={(e) => setRegData({...regData, nombre: e.target.value})}
-                        placeholder="ej. Anyely Valeria"
-                        className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-[#19B5A5]"
+                        placeholder="Anyely Valeria"
+                        className="w-full px-3 py-1.5 bg-[#101010] border border-[#3d3a39] rounded-[3px] text-xs text-[#eeeeee] focus:outline-none focus:border-[#eeeeee]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-[#123B50] mb-1">Apellidos *</label>
+                      <label className="block font-mono text-[10px] text-[#8a8380] uppercase mb-1">Last Name *</label>
                       <input
                         type="text"
                         required
                         value={regData.apellido}
                         onChange={(e) => setRegData({...regData, apellido: e.target.value})}
-                        placeholder="ej. Bautista"
-                        className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-[#19B5A5]"
+                        placeholder="Bautista"
+                        className="w-full px-3 py-1.5 bg-[#101010] border border-[#3d3a39] rounded-[3px] text-xs text-[#eeeeee] focus:outline-none focus:border-[#eeeeee]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#123B50] mb-1">Documento de Identidad *</label>
+                    <label className="block font-mono text-[10px] text-[#8a8380] uppercase mb-1">Government ID (CC) *</label>
                     <input
                       type="text"
                       required
                       value={regData.documento}
                       onChange={(e) => setRegData({...regData, documento: e.target.value})}
-                      placeholder="ej. 1075689123"
-                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-[#19B5A5]"
+                      placeholder="1075689123"
+                      className="w-full px-3 py-1.5 bg-[#101010] border border-[#3d3a39] rounded-[3px] text-xs text-[#eeeeee] focus:outline-none focus:border-[#eeeeee]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#123B50] mb-1">Correo Electrónico *</label>
+                    <label className="block font-mono text-[10px] text-[#8a8380] uppercase mb-1">Institutional Email *</label>
                     <input
                       type="email"
                       required
                       value={regData.correo}
                       onChange={(e) => setRegData({...regData, correo: e.target.value})}
-                      placeholder="ej. anyely@edunova.edu.co"
-                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-[#19B5A5]"
+                      placeholder="anyely@edunova.edu.co"
+                      className="w-full px-3 py-1.5 bg-[#101010] border border-[#3d3a39] rounded-[3px] text-xs text-[#eeeeee] focus:outline-none focus:border-[#eeeeee]"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-bold text-[#123B50] mb-1">Contraseña *</label>
+                      <label className="block font-mono text-[10px] text-[#8a8380] uppercase mb-1">Secret Key *</label>
                       <input
                         type="password"
                         required
                         value={regData.password}
                         onChange={(e) => setRegData({...regData, password: e.target.value})}
-                        placeholder="Mínimo 6 carácteres"
-                        className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-[#19B5A5]"
+                        placeholder="Min. 6 chars"
+                        className="w-full px-3 py-1.5 bg-[#101010] border border-[#3d3a39] rounded-[3px] text-xs text-[#eeeeee] focus:outline-none focus:border-[#eeeeee]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-[#123B50] mb-1">Confirmar *</label>
+                      <label className="block font-mono text-[10px] text-[#8a8380] uppercase mb-1">Confirm Secret *</label>
                       <input
                         type="password"
                         required
                         value={regData.confirmPassword}
                         onChange={(e) => setRegData({...regData, confirmPassword: e.target.value})}
-                        placeholder="Repite la contraseña"
-                        className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-[#19B5A5]"
+                        placeholder="Repeat secret"
+                        className="w-full px-3 py-1.5 bg-[#101010] border border-[#3d3a39] rounded-[3px] text-xs text-[#eeeeee] focus:outline-none focus:border-[#eeeeee]"
                       />
                     </div>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full mt-3 py-3.5 px-4 bg-gradient-to-r from-[#123B50] via-[#17365D] to-[#19B5A5] text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-ocean-glow transition-all flex items-center justify-center gap-2"
+                    className="w-full mt-2 py-2.5 px-4 bg-[#fafafa] hover:bg-[#ffffff] text-[#101010] font-normal rounded-[3px] text-xs flex items-center justify-center gap-2 transition-opacity"
                   >
-                    <span>Completar Registro como {currentRoleInfo.badge}</span>
-                    <ArrowRight size={17} />
+                    <span>Register {currentRoleInfo.badge} Credentials</span>
+                    <ArrowRight size={14} />
                   </button>
                 </form>
               )}
 
             </div>
 
-            {/* Footer */}
-            <div className="pt-6 mt-6 border-t border-slate-200 text-center">
-              <p className="text-xs text-edunova-textSecondary">
-                {mode === 'login' ? '¿Aún no tienes cuenta registrada?' : '¿Ya tienes una cuenta activa?'}
-                {' '}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode(mode === 'login' ? 'register' : 'login');
-                    setErrorMsg('');
-                    setSuccessMsg('');
-                  }}
-                  className="text-[#19B5A5] font-extrabold hover:underline"
-                >
-                  {mode === 'login' ? 'Crear cuenta obligatoria' : 'Iniciar sesión ahora'}
-                </button>
-              </p>
+            {/* Footer switcher */}
+            <div className="pt-4 mt-4 border-t border-[#3d3a39] text-center font-mono text-[11px] text-[#8a8380]">
+              {mode === 'login' ? 'Unregistered operator? ' : 'Already provisioned? '}
+              <button
+                type="button"
+                onClick={() => {
+                  setMode(mode === 'login' ? 'register' : 'login');
+                  setErrorMsg('');
+                  setSuccessMsg('');
+                }}
+                className="text-[#eeeeee] hover:underline uppercase"
+              >
+                {mode === 'login' ? 'Provision Credentials' : 'Login Existing Terminal'}
+              </button>
             </div>
 
           </div>
@@ -584,9 +571,10 @@ export default function Auth({ onLoginSuccess }) {
 
       </main>
 
-      {/* Footer Legal */}
-      <footer className="py-4 text-center text-xs text-edunova-textSecondary z-10">
-        <p>EDUNOVA · Academic Management System · SENA Regional Huila 2026</p>
+      {/* Footer */}
+      <footer className="h-12 border-t border-[#3d3a39] px-6 flex items-center justify-between font-mono text-[11px] text-[#8a8380]">
+        <span>FACTORY // EDUNOVA ACADEMIC WAR ROOM</span>
+        <span>SENA REGIONAL HUILA · ADSO 2026</span>
       </footer>
 
     </div>

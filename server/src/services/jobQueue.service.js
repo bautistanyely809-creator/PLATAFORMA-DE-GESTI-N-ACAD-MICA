@@ -52,3 +52,4 @@ class JobQueueService {
 }
 
 module.exports = new JobQueueService();
+
