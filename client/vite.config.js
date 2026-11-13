@@ -17,5 +17,19 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  build: {
+    // Dividir el JavaScript por chunks para optimizar caché en navegador
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          recharts: ['recharts'],
+          icons: ['lucide-react']
+        }
+      }
+    },
+    // Limitar tamaño de advertencia de chunks a 600kb
+    chunkSizeWarningLimit: 600
   }
 })

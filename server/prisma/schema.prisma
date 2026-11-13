@@ -1,5 +1,5 @@
 // Prisma Schema for EDUNOVA Academic Management System
-// Database: MySQL 8
+// Database: MySQL 8 (High Performance Configuration)
 
 datasource db {
   provider = "mysql"
@@ -60,6 +60,9 @@ model Usuario {
   aprendiz           Aprendiz?
   instructor         Instructor?
 
+  // Índices para optimizar autenticación y filtrado por rol
+  @@index([correo, rol])
+  @@index([estado])
   @@map("USUARIO")
 }
 
@@ -73,6 +76,7 @@ model Aprendiz {
   usuario         Usuario        @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
   inscripciones   Inscripcion[]
 
+  @@index([documento])
   @@map("APRENDIZ")
 }
 
@@ -86,6 +90,7 @@ model Instructor {
   cursos          CursoInstructor[]
   observaciones   Observacion[]
 
+  @@index([especialidad])
   @@map("INSTRUCTOR")
 }
 
@@ -99,6 +104,7 @@ model Programa {
 
   cursos          Curso[]
 
+  @@index([codigo, estado])
   @@map("PROGRAMA")
 }
 
@@ -117,6 +123,7 @@ model Curso {
   inscripciones   Inscripcion[]
   evidencias      Evidencia[]
 
+  @@index([id_programa, estado])
   @@map("CURSO")
 }
 
@@ -130,6 +137,7 @@ model CursoInstructor {
   instructor          Instructor  @relation(fields: [id_instructor], references: [id_instructor], onDelete: Cascade)
 
   @@unique([id_curso, id_instructor], name: "uk_curso_instructor")
+  @@index([id_instructor])
   @@map("CURSO_INSTRUCTOR")
 }
 
@@ -147,6 +155,8 @@ model Inscripcion {
   observaciones       Observacion[]
 
   @@unique([id_aprendiz, id_curso], name: "uk_aprendiz_curso")
+  @@index([id_curso, estado])
+  @@index([id_aprendiz])
   @@map("INSCRIPCION")
 }
 
@@ -162,6 +172,7 @@ model Evidencia {
   curso           Curso           @relation(fields: [id_curso], references: [id_curso], onDelete: Cascade)
   calificaciones  Calificacion[]
 
+  @@index([id_curso])
   @@map("EVIDENCIA")
 }
 
@@ -177,6 +188,8 @@ model Calificacion {
   evidencia         Evidencia     @relation(fields: [id_evidencia], references: [id_evidencia], onDelete: Cascade)
 
   @@unique([id_inscripcion, id_evidencia], name: "uk_inscripcion_evidencia")
+  @@index([id_inscripcion])
+  @@index([id_evidencia])
   @@map("CALIFICACION")
 }
 
@@ -191,6 +204,8 @@ model Asistencia {
   inscripcion       Inscripcion       @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
 
   @@unique([id_inscripcion, fecha], name: "uk_asistencia_dia")
+  @@index([id_inscripcion, fecha])
+  @@index([fecha, estado])
   @@map("ASISTENCIA")
 }
 
@@ -204,6 +219,7 @@ model Observacion {
   inscripcion       Inscripcion   @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
   instructor        Instructor    @relation(fields: [id_instructor], references: [id_instructor], onDelete: Cascade)
 
+  @@index([id_inscripcion])
+  @@index([id_instructor])
   @@map("OBSERVACION")
 }
-
