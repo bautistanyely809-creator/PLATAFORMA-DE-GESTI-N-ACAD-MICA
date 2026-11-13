@@ -8,20 +8,13 @@ import {
   Eye, 
   EyeOff, 
   ArrowRight, 
-  UserCheck, 
-  Phone, 
-  IdCard, 
-  BookOpen, 
-  KeyRound, 
+  Sparkles,
   CheckCircle2, 
-  AlertCircle,
-  Sparkles
+  AlertCircle
 } from 'lucide-react';
 
 export default function Auth({ onLoginSuccess }) {
-  // Modo: 'login' o 'register'
   const [mode, setMode] = useState('login');
-  // Rol seleccionado: 'APRENDIZ', 'INSTRUCTOR', 'ADMIN'
   const [selectedRole, setSelectedRole] = useState('APRENDIZ');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -41,46 +34,44 @@ export default function Auth({ onLoginSuccess }) {
     correo: '',
     password: '',
     confirmPassword: '',
-    // Específico Aprendiz
     ficha: 'ADSO-2874102',
-    // Específico Instructor
     especialidad: 'Desarrollo Web & Software',
-    // Específico Admin
     codigoSeguridad: ''
   });
 
-  // Configuración temática por Rol
   const roleConfig = {
     APRENDIZ: {
       title: 'Portal del Aprendiz',
-      subtitle: 'Consulta de calificaciones, seguimiento de asistencia y recomendaciones con IA',
+      subtitle: 'Consulta de calificaciones, control de asistencia y tutoría con IA',
       icon: Users,
       badge: 'Aprendiz ADSO',
       demoEmail: 'anyely.valeria@edunova.edu.co',
-      demoPass: 'Aprendiz123*'
+      demoPass: 'Aprendiz123*',
+      activeTheme: 'from-[#F7B8DC] via-[#C8B5F5] to-[#8064D8]'
     },
     INSTRUCTOR: {
       title: 'Portal del Instructor',
-      subtitle: 'Registro de calificaciones, planilla de asistencia y seguimiento formativo',
+      subtitle: 'Calificación de evidencias, planilla de asistencia y seguimiento pedagógico',
       icon: GraduationCap,
-      badge: 'Docente / Instructor',
+      badge: 'Docente Titular',
       demoEmail: 'carlos.mendoza@edunova.edu.co',
-      demoPass: 'Instructor123*'
+      demoPass: 'Instructor123*',
+      activeTheme: 'from-[#DCEBFA] via-[#C8B5F5] to-[#8064D8]'
     },
     ADMIN: {
       title: 'Gestión Administrativa',
-      subtitle: 'Administración de usuarios, programas, cursos e indicadores generales',
+      subtitle: 'Administración de usuarios, fichas formativas y reportes institucionales',
       icon: ShieldCheck,
       badge: 'Administrador General',
       demoEmail: 'admin@edunova.edu.co',
-      demoPass: 'Admin123*'
+      demoPass: 'Admin123*',
+      activeTheme: 'from-[#FFE49B] via-[#C8B5F5] to-[#8064D8]'
     }
   };
 
   const currentRoleInfo = roleConfig[selectedRole];
   const CurrentRoleIcon = currentRoleInfo.icon;
 
-  // Manejar Login
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -90,13 +81,11 @@ export default function Auth({ onLoginSuccess }) {
       return;
     }
 
-    // Comprobar credenciales de prueba o usuarios guardados localmente
     const registeredUsers = JSON.parse(localStorage.getItem('edunova_registered_users') || '[]');
     const localUser = registeredUsers.find(
       u => u.correo.toLowerCase() === loginEmail.toLowerCase() && u.password === loginPassword && u.rol === selectedRole
     );
 
-    // Cuentas predefinidas del sistema
     const isMockMatch = 
       (selectedRole === 'APRENDIZ' && loginEmail === 'anyely.valeria@edunova.edu.co') ||
       (selectedRole === 'INSTRUCTOR' && loginEmail === 'carlos.mendoza@edunova.edu.co') ||
@@ -115,7 +104,6 @@ export default function Auth({ onLoginSuccess }) {
       localStorage.setItem('edunova_current_user', JSON.stringify(userObj));
       onLoginSuccess(userObj);
     } else if (isMockMatch || loginPassword === '123456' || loginPassword.length >= 6) {
-      // Permitir acceso con datos oficiales
       const names = {
         APRENDIZ: { nombre: 'Anyely Valeria', apellido: 'Bautista', doc: '1075689123' },
         INSTRUCTOR: { nombre: 'Carlos', apellido: 'Mendoza', doc: '19876543' },
@@ -137,7 +125,6 @@ export default function Auth({ onLoginSuccess }) {
     }
   };
 
-  // Manejar Registro
   const handleRegisterSubmit = (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -158,7 +145,6 @@ export default function Auth({ onLoginSuccess }) {
       return;
     }
 
-    // Validación de seguridad para Administrador
     if (selectedRole === 'ADMIN') {
       if (regData.codigoSeguridad !== 'SENA2026' && regData.codigoSeguridad !== 'EDUNOVA') {
         setErrorMsg('Código de autorización administrativa inválido. (Usa "SENA2026" para la prueba)');
@@ -166,7 +152,6 @@ export default function Auth({ onLoginSuccess }) {
       }
     }
 
-    // Guardar usuario en localStorage
     const registeredUsers = JSON.parse(localStorage.getItem('edunova_registered_users') || '[]');
     const exists = registeredUsers.some(u => u.correo.toLowerCase() === regData.correo.toLowerCase());
     if (exists) {
@@ -191,14 +176,13 @@ export default function Auth({ onLoginSuccess }) {
     registeredUsers.push(newUser);
     localStorage.setItem('edunova_registered_users', JSON.stringify(registeredUsers));
 
-    setSuccessMsg('¡Cuenta creada exitosamente! Iniciando sesión...');
+    setSuccessMsg('¡Cuenta creada con éxito! Ingresando...');
     setTimeout(() => {
       localStorage.setItem('edunova_current_user', JSON.stringify(newUser));
       onLoginSuccess(newUser);
     }, 900);
   };
 
-  // Cargar credenciales de demostración
   const loadDemoCredentials = (role) => {
     setSelectedRole(role);
     setLoginEmail(roleConfig[role].demoEmail);
@@ -207,166 +191,159 @@ export default function Auth({ onLoginSuccess }) {
   };
 
   return (
-    <div className="min-h-screen bg-edunova-canvas flex flex-col justify-between font-sans text-edunova-text">
+    <div className="min-h-screen bg-edunova-cloud font-sans text-edunova-textPrimary relative flex flex-col justify-between overflow-hidden">
       
-      {/* Top Banner Institucional */}
-      <header className="bg-white border-b border-slate-200 px-6 py-3.5 shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          
+      {/* Orbes de luz ambiental de fondo */}
+      <div className="fixed top-0 left-0 w-96 h-96 bg-[#F7B8DC]/40 rounded-full blur-[130px] pointer-events-none -translate-x-1/3 -translate-y-1/3"></div>
+      <div className="fixed bottom-0 right-0 w-[500px] h-[500px] bg-[#C8B5F5]/35 rounded-full blur-[150px] pointer-events-none translate-x-1/3 translate-y-1/3"></div>
+      <div className="fixed top-1/2 left-1/2 w-80 h-80 bg-[#A5D8FA]/30 rounded-full blur-[120px] pointer-events-none -translate-x-1/2 -translate-y-1/2"></div>
+
+      {/* Header Institucional Flotante */}
+      <header className="p-4 sm:p-6 z-10">
+        <div className="max-w-6xl mx-auto glass-panel h-16 rounded-[24px] px-6 flex items-center justify-between shadow-glass">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-white p-1 border-2 border-edunova-gold shadow-sm flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-white p-1 border border-white shadow-sm flex items-center justify-center">
               <img src="/edunova-logo.png" alt="Escudo EDUNOVA" className="w-full h-full object-contain" />
             </div>
             <div>
-              <h1 className="font-extrabold text-lg text-edunova-navy tracking-tight leading-none">
+              <h1 className="font-extrabold text-base text-edunova-textPrimary tracking-tight leading-none">
                 EDUNOVA
               </h1>
-              <p className="text-[11px] font-bold text-edunova-gold uppercase tracking-wider mt-0.5">
+              <p className="text-[10px] font-bold text-edunova-violet uppercase tracking-wider mt-0.5">
                 Academic Management System
               </p>
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-slate-600 bg-edunova-gold/10 px-3.5 py-1.5 rounded-full border border-edunova-gold/30">
-            <span className="w-2 h-2 rounded-full bg-edunova-emerald animate-pulse"></span>
+          <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-edunova-textSecondary bg-white/70 px-3.5 py-1.5 rounded-full border border-purple-100">
+            <span className="w-2 h-2 rounded-full bg-edunova-mint animate-pulse"></span>
             <span>Centro de Formación Industrial · SENA Regional Huila</span>
           </div>
-
         </div>
       </header>
 
-      {/* Contenido Central */}
-      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 my-auto">
+      {/* Contenedor Principal de Autenticación */}
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 z-10 my-auto">
         
-        <div className="w-full max-w-4xl bg-white rounded-3xl shadow-navy border-2 border-slate-200/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        <div className="w-full max-w-4xl glass-panel rounded-[32px] border-2 border-white/90 overflow-hidden grid grid-cols-1 lg:grid-cols-12 shadow-glass-hover">
           
           {/* ========================================================= */}
-          {/* PANEL IZQUIERDO: SELECCIÓN DE LAS 3 SECCIONES (ROLES)    */}
+          {/* PANEL IZQUIERDO: SELECCIÓN DE ROL CON DEGRADADO PASTEL    */}
           {/* ========================================================= */}
-          <div className="lg:col-span-5 bg-gradient-to-b from-edunova-navy via-edunova-navy-dark to-[#030c17] text-white p-8 flex flex-col justify-between border-r border-edunova-gold/30 relative overflow-hidden">
+          <div className="lg:col-span-5 bg-gradient-to-b from-[#FCE4F2] via-white to-[#EDE7FA] p-8 flex flex-col justify-between border-r border-purple-100/70 relative">
             
-            {/* Marca de agua decorativa del escudo */}
-            <div className="absolute -bottom-10 -left-10 w-48 h-48 opacity-10 pointer-events-none">
-              <img src="/edunova-logo.png" alt="" className="w-full h-full object-contain filter invert" />
-            </div>
-
-            <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-edunova-gold/20 border border-edunova-gold/40 text-edunova-gold text-xs font-bold uppercase tracking-wider mb-4">
-                <Sparkles size={13} />
-                <span>Acceso por Rol Obligatorio</span>
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 border border-purple-200 text-edunova-violet text-xs font-extrabold uppercase tracking-wider shadow-sm">
+                <Sparkles size={13} className="text-[#8064D8]" />
+                <span>Acceso Institucional Obligatorio</span>
               </div>
 
-              <h2 className="text-2xl font-black tracking-tight text-white mb-2">
-                Selecciona tu Sección
+              <h2 className="text-2xl font-black tracking-tight text-edunova-textPrimary leading-tight">
+                Selecciona tu Rol de Ingreso
               </h2>
-              <p className="text-xs text-slate-300 leading-relaxed mb-6">
-                Para garantizar la seguridad y privacidad académica, ingresa únicamente a través de la sección correspondiente a tu rol.
+
+              <p className="text-xs text-edunova-textSecondary leading-relaxed">
+                Ingresa a través del portal autorizado correspondiente a tu rol en la institución formativa.
               </p>
 
-              {/* Botones de las 3 Secciones */}
-              <div className="space-y-3">
+              {/* Selector de los 3 Roles */}
+              <div className="space-y-3 pt-2">
                 
-                {/* 1. SECCIÓN APRENDIZ */}
+                {/* 1. ROL APRENDIZ */}
                 <button
                   type="button"
                   onClick={() => { setSelectedRole('APRENDIZ'); setErrorMsg(''); }}
                   className={`w-full flex items-center gap-3.5 p-3.5 rounded-2xl border text-left transition-all ${
                     selectedRole === 'APRENDIZ'
-                      ? 'bg-edunova-gold text-slate-950 border-edunova-gold shadow-gold font-bold'
-                      : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10'
+                      ? 'bg-gradient-to-r from-[#F7B8DC] to-[#C8B5F5] text-edunova-textPrimary border-white shadow-pastel-pink font-extrabold'
+                      : 'bg-white/80 border-purple-100 text-edunova-textSecondary hover:bg-white'
                   }`}
                 >
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-                    selectedRole === 'APRENDIZ' ? 'bg-slate-950 text-edunova-gold' : 'bg-white/10 text-edunova-gold'
+                    selectedRole === 'APRENDIZ' ? 'bg-white text-edunova-violet shadow-sm' : 'bg-[#FCE4F2] text-[#D6409B]'
                   }`}>
                     <Users size={20} />
                   </div>
                   <div className="flex-1 truncate">
-                    <p className="text-sm font-extrabold truncate">Sección Aprendiz</p>
-                    <p className={`text-[11px] ${selectedRole === 'APRENDIZ' ? 'text-slate-800' : 'text-slate-400'}`}>
-                      Notas, asistencia e IA
-                    </p>
+                    <p className="text-sm font-bold truncate">Portal Aprendiz</p>
+                    <p className="text-[11px] text-[#7A6F8E]">Calificaciones, notas y tutor IA</p>
                   </div>
-                  {selectedRole === 'APRENDIZ' && <CheckCircle2 size={18} className="text-slate-950" />}
+                  {selectedRole === 'APRENDIZ' && <CheckCircle2 size={18} className="text-edunova-textPrimary" />}
                 </button>
 
-                {/* 2. SECCIÓN INSTRUCTOR */}
+                {/* 2. ROL INSTRUCTOR */}
                 <button
                   type="button"
                   onClick={() => { setSelectedRole('INSTRUCTOR'); setErrorMsg(''); }}
                   className={`w-full flex items-center gap-3.5 p-3.5 rounded-2xl border text-left transition-all ${
                     selectedRole === 'INSTRUCTOR'
-                      ? 'bg-edunova-gold text-slate-950 border-edunova-gold shadow-gold font-bold'
-                      : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10'
+                      ? 'bg-gradient-to-r from-[#DCEBFA] to-[#C8B5F5] text-edunova-textPrimary border-white shadow-pastel-violet font-extrabold'
+                      : 'bg-white/80 border-purple-100 text-edunova-textSecondary hover:bg-white'
                   }`}
                 >
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-                    selectedRole === 'INSTRUCTOR' ? 'bg-slate-950 text-edunova-gold' : 'bg-white/10 text-edunova-gold'
+                    selectedRole === 'INSTRUCTOR' ? 'bg-white text-edunova-violet shadow-sm' : 'bg-[#DCEBFA] text-[#3978F6]'
                   }`}>
                     <GraduationCap size={20} />
                   </div>
                   <div className="flex-1 truncate">
-                    <p className="text-sm font-extrabold truncate">Sección Instructor</p>
-                    <p className={`text-[11px] ${selectedRole === 'INSTRUCTOR' ? 'text-slate-800' : 'text-slate-400'}`}>
-                      Calificar y pasar asistencia
-                    </p>
+                    <p className="text-sm font-bold truncate">Portal Docente</p>
+                    <p className="text-[11px] text-[#7A6F8E]">Calificar y tomar asistencia</p>
                   </div>
-                  {selectedRole === 'INSTRUCTOR' && <CheckCircle2 size={18} className="text-slate-950" />}
+                  {selectedRole === 'INSTRUCTOR' && <CheckCircle2 size={18} className="text-edunova-textPrimary" />}
                 </button>
 
-                {/* 3. SECCIÓN ADMINISTRADOR */}
+                {/* 3. ROL ADMIN */}
                 <button
                   type="button"
                   onClick={() => { setSelectedRole('ADMIN'); setErrorMsg(''); }}
                   className={`w-full flex items-center gap-3.5 p-3.5 rounded-2xl border text-left transition-all ${
                     selectedRole === 'ADMIN'
-                      ? 'bg-edunova-gold text-slate-950 border-edunova-gold shadow-gold font-bold'
-                      : 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10'
+                      ? 'bg-gradient-to-r from-[#FFF6DC] to-[#C8B5F5] text-edunova-textPrimary border-white shadow-sm font-extrabold'
+                      : 'bg-white/80 border-purple-100 text-edunova-textSecondary hover:bg-white'
                   }`}
                 >
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-                    selectedRole === 'ADMIN' ? 'bg-slate-950 text-edunova-gold' : 'bg-white/10 text-edunova-gold'
+                    selectedRole === 'ADMIN' ? 'bg-white text-edunova-violet shadow-sm' : 'bg-[#FFF6DC] text-[#DCA91F]'
                   }`}>
                     <ShieldCheck size={20} />
                   </div>
                   <div className="flex-1 truncate">
-                    <p className="text-sm font-extrabold truncate">Sección Administrador</p>
-                    <p className={`text-[11px] ${selectedRole === 'ADMIN' ? 'text-slate-800' : 'text-slate-400'}`}>
-                      Control general y matrículas
-                    </p>
+                    <p className="text-sm font-bold truncate">Administración</p>
+                    <p className="text-[11px] text-[#7A6F8E]">Control general y cursos</p>
                   </div>
-                  {selectedRole === 'ADMIN' && <CheckCircle2 size={18} className="text-slate-950" />}
+                  {selectedRole === 'ADMIN' && <CheckCircle2 size={18} className="text-edunova-textPrimary" />}
                 </button>
 
               </div>
             </div>
 
-            {/* Accesos Rápidos de Demostración (1-Click Demo) */}
-            <div className="relative z-10 pt-6 mt-6 border-t border-white/10">
-              <p className="text-[11px] font-bold text-edunova-gold uppercase tracking-wider mb-2">
-                Acceso Rápido para Pruebas (Demo 1-Click):
+            {/* Accesos Rápidos Demo 1-Click */}
+            <div className="pt-6 mt-6 border-t border-purple-100/70">
+              <p className="text-[10px] font-extrabold text-edunova-violet uppercase tracking-wider mb-2">
+                Acceso Rápido para Demostración:
               </p>
               <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => loadDemoCredentials('APRENDIZ')}
-                  className="px-2 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-[10px] font-bold text-slate-200 truncate border border-white/10 text-center"
+                  className="px-2 py-1.5 bg-white/90 hover:bg-white rounded-xl text-[10px] font-bold text-edunova-textPrimary border border-purple-100 truncate shadow-sm"
                 >
-                  Demo Aprendiz
+                  🌸 Anyely (ADSO)
                 </button>
                 <button
                   type="button"
                   onClick={() => loadDemoCredentials('INSTRUCTOR')}
-                  className="px-2 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-[10px] font-bold text-slate-200 truncate border border-white/10 text-center"
+                  className="px-2 py-1.5 bg-white/90 hover:bg-white rounded-xl text-[10px] font-bold text-edunova-textPrimary border border-purple-100 truncate shadow-sm"
                 >
-                  Demo Docente
+                  👨‍🏫 Instructor
                 </button>
                 <button
                   type="button"
                   onClick={() => loadDemoCredentials('ADMIN')}
-                  className="px-2 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-[10px] font-bold text-slate-200 truncate border border-white/10 text-center"
+                  className="px-2 py-1.5 bg-white/90 hover:bg-white rounded-xl text-[10px] font-bold text-edunova-textPrimary border border-purple-100 truncate shadow-sm"
                 >
-                  Demo Admin
+                  🛡️ Admin
                 </button>
               </div>
             </div>
@@ -374,34 +351,29 @@ export default function Auth({ onLoginSuccess }) {
           </div>
 
           {/* ========================================================= */}
-          {/* PANEL DERECHO: FORMULARIOS (LOGIN / REGISTRO)            */}
+          {/* PANEL DERECHO: FORMULARIO GLASSMORPHISM                  */}
           {/* ========================================================= */}
-          <div className="lg:col-span-7 p-8 sm:p-10 flex flex-col justify-between bg-white">
+          <div className="lg:col-span-7 p-8 sm:p-10 flex flex-col justify-between bg-white/70">
             
             <div>
-              {/* Selector de Modo: Iniciar Sesión / Registrarse */}
-              <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
+              {/* Switcher de Modo: Iniciar Sesión / Registrarse */}
+              <div className="flex items-center justify-between border-b border-purple-100 pb-4 mb-6">
                 <div>
-                  <h3 className="text-xl font-extrabold text-edunova-navy tracking-tight flex items-center gap-2">
-                    <CurrentRoleIcon size={22} className="text-edunova-gold" />
+                  <h3 className="text-xl font-extrabold text-edunova-textPrimary tracking-tight flex items-center gap-2">
+                    <CurrentRoleIcon size={20} className="text-edunova-violet" />
                     <span>{currentRoleInfo.title}</span>
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    {mode === 'login' 
-                      ? 'Ingresa tus credenciales autorizadas' 
-                      : 'Crea tu cuenta institucional obligatoria'}
+                  <p className="text-xs text-edunova-textSecondary mt-0.5">
+                    {mode === 'login' ? 'Ingresa con tus credenciales asignadas' : 'Crea tu cuenta obligatoria para el periodo formativo'}
                   </p>
                 </div>
 
-                {/* Tabs Switcher */}
-                <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <div className="flex bg-[#F3EEFA] p-1 rounded-2xl border border-purple-100">
                   <button
                     type="button"
                     onClick={() => { setMode('login'); setErrorMsg(''); setSuccessMsg(''); }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      mode === 'login' 
-                        ? 'bg-white text-edunova-navy shadow-sm' 
-                        : 'text-slate-500 hover:text-slate-800'
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                      mode === 'login' ? 'bg-white text-edunova-textPrimary shadow-sm' : 'text-edunova-textSecondary hover:text-edunova-textPrimary'
                     }`}
                   >
                     Ingresar
@@ -409,10 +381,8 @@ export default function Auth({ onLoginSuccess }) {
                   <button
                     type="button"
                     onClick={() => { setMode('register'); setErrorMsg(''); setSuccessMsg(''); }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      mode === 'register' 
-                        ? 'bg-edunova-gold text-slate-950 shadow-sm' 
-                        : 'text-slate-500 hover:text-slate-800'
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                      mode === 'register' ? 'bg-gradient-to-r from-edunova-pinkPastel to-edunova-lavender text-edunova-textPrimary shadow-sm font-extrabold' : 'text-edunova-textSecondary hover:text-edunova-textPrimary'
                     }`}
                   >
                     Registrarse
@@ -422,60 +392,58 @@ export default function Auth({ onLoginSuccess }) {
 
               {/* Mensajes de Alerta */}
               {errorMsg && (
-                <div className="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2 animate-shake">
+                <div className="mb-5 p-3.5 rounded-2xl bg-red-50/90 border border-red-200 text-red-600 text-xs font-bold flex items-center gap-2">
                   <AlertCircle size={16} className="shrink-0" />
                   <span>{errorMsg}</span>
                 </div>
               )}
 
               {successMsg && (
-                <div className="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
-                  <CheckCircle2 size={16} className="shrink-0 text-edunova-emerald" />
+                <div className="mb-5 p-3.5 rounded-2xl bg-[#E6F9F2] border border-emerald-200 text-[#16A36A] text-xs font-bold flex items-center gap-2">
+                  <CheckCircle2 size={16} className="shrink-0" />
                   <span>{successMsg}</span>
                 </div>
               )}
 
-              {/* ---------------------------------------------------- */}
-              {/* FORMULARIO DE INICIO DE SESIÓN                        */}
-              {/* ---------------------------------------------------- */}
+              {/* FORMULARIO LOGIN */}
               {mode === 'login' ? (
                 <form onSubmit={handleLoginSubmit} className="space-y-4">
                   
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-extrabold text-edunova-textPrimary uppercase tracking-wider mb-1.5">
                       Correo Institucional ({currentRoleInfo.badge})
                     </label>
                     <div className="relative">
-                      <Mail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <Mail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-edunova-textSecondary" />
                       <input
                         type="email"
                         required
                         value={loginEmail}
                         onChange={(e) => setLoginEmail(e.target.value)}
-                        placeholder={`ej. nombre@edunova.edu.co`}
-                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-edunova-navy focus:ring-2 focus:ring-edunova-gold/30 focus:outline-none transition-all"
+                        placeholder="ej. nombre@edunova.edu.co"
+                        className="w-full pl-10 pr-4 py-3 bg-white/90 border border-purple-100 rounded-2xl text-xs sm:text-sm text-edunova-textPrimary focus:bg-white focus:border-edunova-lavender focus:ring-4 focus:ring-purple-200/40 focus:outline-none transition-all shadow-sm"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-extrabold text-edunova-textPrimary uppercase tracking-wider mb-1.5">
                       Contraseña
                     </label>
                     <div className="relative">
-                      <Lock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <Lock size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-edunova-textSecondary" />
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
                         placeholder="••••••••••••"
-                        className="w-full pl-10 pr-11 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-edunova-navy focus:ring-2 focus:ring-edunova-gold/30 focus:outline-none transition-all"
+                        className="w-full pl-10 pr-11 py-3 bg-white/90 border border-purple-100 rounded-2xl text-xs sm:text-sm text-edunova-textPrimary focus:bg-white focus:border-edunova-lavender focus:ring-4 focus:ring-purple-200/40 focus:outline-none transition-all shadow-sm"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-edunova-textSecondary hover:text-edunova-textPrimary"
                       >
                         {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                       </button>
@@ -483,18 +451,18 @@ export default function Auth({ onLoginSuccess }) {
                   </div>
 
                   <div className="flex items-center justify-between text-xs pt-1">
-                    <label className="flex items-center gap-2 cursor-pointer text-slate-600">
-                      <input type="checkbox" defaultChecked className="rounded border-slate-300 text-edunova-gold focus:ring-edunova-gold" />
-                      <span>Recordar en este equipo</span>
+                    <label className="flex items-center gap-2 cursor-pointer text-edunova-textSecondary">
+                      <input type="checkbox" defaultChecked className="rounded border-purple-200 text-edunova-violet focus:ring-edunova-violet" />
+                      <span>Recordar sesión</span>
                     </label>
-                    <a href="#olvide" onClick={(e) => { e.preventDefault(); alert('Para restablecer tu contraseña, contacta a la coordinación académica o utiliza los accesos de prueba.'); }} className="text-edunova-navy font-bold hover:underline">
+                    <a href="#olvide" onClick={(e) => { e.preventDefault(); alert('Utiliza los botones de demostración 1-Click para acceder de inmediato.'); }} className="text-edunova-violet font-bold hover:underline">
                       ¿Olvidaste tu contraseña?
                     </a>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full mt-4 py-3.5 px-4 bg-edunova-gold hover:bg-edunova-gold-hover text-slate-950 font-extrabold rounded-xl text-sm shadow-gold transition-all flex items-center justify-center gap-2"
+                    className="w-full mt-4 py-3.5 px-4 bg-gradient-to-r from-[#F7B8DC] via-[#C8B5F5] to-[#8064D8] hover:opacity-95 text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-pastel-violet transition-all flex items-center justify-center gap-2"
                   >
                     <span>Ingresar como {currentRoleInfo.badge}</span>
                     <ArrowRight size={17} />
@@ -503,170 +471,97 @@ export default function Auth({ onLoginSuccess }) {
                 </form>
               ) : (
                 
-                /* ---------------------------------------------------- */
-                /* FORMULARIO DE REGISTRO OBLIGATORIO                    */
-                /* ---------------------------------------------------- */
+                /* FORMULARIO REGISTRO */
                 <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Nombres *</label>
+                      <label className="block text-xs font-bold text-edunova-textPrimary mb-1">Nombres *</label>
                       <input
                         type="text"
                         required
                         value={regData.nombre}
                         onChange={(e) => setRegData({...regData, nombre: e.target.value})}
                         placeholder="ej. Anyely Valeria"
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-edunova-navy focus:outline-none"
+                        className="w-full px-3.5 py-2.5 bg-white/90 border border-purple-100 rounded-xl text-xs focus:outline-none focus:border-edunova-lavender"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Apellidos *</label>
+                      <label className="block text-xs font-bold text-edunova-textPrimary mb-1">Apellidos *</label>
                       <input
                         type="text"
                         required
                         value={regData.apellido}
                         onChange={(e) => setRegData({...regData, apellido: e.target.value})}
-                        placeholder="ej. Castellanos"
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-edunova-navy focus:outline-none"
+                        placeholder="ej. Bautista"
+                        className="w-full px-3.5 py-2.5 bg-white/90 border border-purple-100 rounded-xl text-xs focus:outline-none focus:border-edunova-lavender"
                       />
                     </div>
                   </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Documento *</label>
-                      <div className="flex gap-2">
-                        <select
-                          value={regData.tipoDocumento}
-                          onChange={(e) => setRegData({...regData, tipoDocumento: e.target.value})}
-                          className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-xs font-bold text-slate-700"
-                        >
-                          <option value="CC">C.C.</option>
-                          <option value="TI">T.I.</option>
-                          <option value="CE">C.E.</option>
-                        </select>
-                        <input
-                          type="text"
-                          required
-                          value={regData.documento}
-                          onChange={(e) => setRegData({...regData, documento: e.target.value})}
-                          placeholder="Número"
-                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-edunova-navy focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Teléfono</label>
-                      <input
-                        type="tel"
-                        value={regData.telefono}
-                        onChange={(e) => setRegData({...regData, telefono: e.target.value})}
-                        placeholder="ej. 3201234567"
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-edunova-navy focus:outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Campos específicos por rol */}
-                  {selectedRole === 'APRENDIZ' && (
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Ficha / Programa *</label>
-                      <select
-                        value={regData.ficha}
-                        onChange={(e) => setRegData({...regData, ficha: e.target.value})}
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700"
-                      >
-                        <option value="ADSO-2874102">ADSO (Ficha #2874102) - Desarrollo de Software</option>
-                        <option value="REDES-2874103">Gestión de Redes (Ficha #2874103)</option>
-                      </select>
-                    </div>
-                  )}
-
-                  {selectedRole === 'INSTRUCTOR' && (
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Especialidad Técnica *</label>
-                      <input
-                        type="text"
-                        required
-                        value={regData.especialidad}
-                        onChange={(e) => setRegData({...regData, especialidad: e.target.value})}
-                        placeholder="ej. Frontend React, Backend Node.js, Bases de Datos"
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-edunova-navy focus:outline-none"
-                      />
-                    </div>
-                  )}
-
-                  {selectedRole === 'ADMIN' && (
-                    <div>
-                      <label className="block text-xs font-bold text-amber-700 mb-1">
-                        Código de Autorización Institucional *
-                      </label>
-                      <input
-                        type="password"
-                        required
-                        value={regData.codigoSeguridad}
-                        onChange={(e) => setRegData({...regData, codigoSeguridad: e.target.value})}
-                        placeholder="Código de seguridad (Usa: SENA2026)"
-                        className="w-full px-3.5 py-2.5 bg-amber-50/50 border border-amber-200 rounded-xl text-xs focus:bg-white focus:border-edunova-navy focus:outline-none"
-                      />
-                    </div>
-                  )}
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Correo Electrónico *</label>
+                    <label className="block text-xs font-bold text-edunova-textPrimary mb-1">Documento de Identidad *</label>
+                    <input
+                      type="text"
+                      required
+                      value={regData.documento}
+                      onChange={(e) => setRegData({...regData, documento: e.target.value})}
+                      placeholder="ej. 1075689123"
+                      className="w-full px-3.5 py-2.5 bg-white/90 border border-purple-100 rounded-xl text-xs focus:outline-none focus:border-edunova-lavender"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-edunova-textPrimary mb-1">Correo Electrónico *</label>
                     <input
                       type="email"
                       required
                       value={regData.correo}
                       onChange={(e) => setRegData({...regData, correo: e.target.value})}
-                      placeholder="ej. tu.nombre@edunova.edu.co"
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-edunova-navy focus:outline-none"
+                      placeholder="ej. anyely@edunova.edu.co"
+                      className="w-full px-3.5 py-2.5 bg-white/90 border border-purple-100 rounded-xl text-xs focus:outline-none focus:border-edunova-lavender"
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Contraseña *</label>
+                      <label className="block text-xs font-bold text-edunova-textPrimary mb-1">Contraseña *</label>
                       <input
                         type="password"
                         required
                         value={regData.password}
                         onChange={(e) => setRegData({...regData, password: e.target.value})}
-                        placeholder="Mínimo 6 caracteres"
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-edunova-navy focus:outline-none"
+                        placeholder="Mínimo 6 carácteres"
+                        className="w-full px-3.5 py-2.5 bg-white/90 border border-purple-100 rounded-xl text-xs focus:outline-none focus:border-edunova-lavender"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1">Confirmar *</label>
+                      <label className="block text-xs font-bold text-edunova-textPrimary mb-1">Confirmar *</label>
                       <input
                         type="password"
                         required
                         value={regData.confirmPassword}
                         onChange={(e) => setRegData({...regData, confirmPassword: e.target.value})}
                         placeholder="Repite la contraseña"
-                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-edunova-navy focus:outline-none"
+                        className="w-full px-3.5 py-2.5 bg-white/90 border border-purple-100 rounded-xl text-xs focus:outline-none focus:border-edunova-lavender"
                       />
                     </div>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full mt-3 py-3.5 px-4 bg-edunova-navy hover:bg-edunova-navy-light text-white font-extrabold rounded-xl text-sm shadow-navy transition-all flex items-center justify-center gap-2 border border-edunova-gold/40"
+                    className="w-full mt-3 py-3.5 px-4 bg-gradient-to-r from-edunova-pinkPastel via-edunova-lavender to-edunova-violet text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-pastel-pink transition-all flex items-center justify-center gap-2"
                   >
                     <span>Completar Registro como {currentRoleInfo.badge}</span>
-                    <ArrowRight size={17} className="text-edunova-gold" />
+                    <ArrowRight size={17} />
                   </button>
-
                 </form>
               )}
 
             </div>
 
-            {/* Footer de Ayuda */}
-            <div className="pt-6 mt-6 border-t border-slate-100 text-center">
-              <p className="text-xs text-slate-500">
+            {/* Footer */}
+            <div className="pt-6 mt-6 border-t border-purple-100 text-center">
+              <p className="text-xs text-edunova-textSecondary">
                 {mode === 'login' ? '¿Aún no tienes cuenta registrada?' : '¿Ya tienes una cuenta activa?'}
                 {' '}
                 <button
@@ -676,7 +571,7 @@ export default function Auth({ onLoginSuccess }) {
                     setErrorMsg('');
                     setSuccessMsg('');
                   }}
-                  className="text-edunova-navy font-bold hover:underline"
+                  className="text-edunova-violet font-extrabold hover:underline"
                 >
                   {mode === 'login' ? 'Crear cuenta obligatoria' : 'Iniciar sesión ahora'}
                 </button>
@@ -690,7 +585,7 @@ export default function Auth({ onLoginSuccess }) {
       </main>
 
       {/* Footer Legal */}
-      <footer className="py-4 text-center text-xs text-slate-500 border-t border-slate-200 bg-white">
+      <footer className="py-4 text-center text-xs text-edunova-textSecondary z-10">
         <p>EDUNOVA · Academic Management System · SENA Regional Huila 2026</p>
       </footer>
 
