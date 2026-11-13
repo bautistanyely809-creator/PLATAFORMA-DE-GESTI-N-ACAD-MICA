@@ -32,6 +32,7 @@ import {
 } from 'recharts';
 import { useDebounce } from '../hooks/useDebounce';
 import { BannerSkeleton, StatCardSkeleton, ChartSkeleton, TableSkeleton } from './Skeletons';
+import Hero3DCanvas from './Hero3DCanvas';
 
 export default function ApprenticeDashboard({ user, onNavigate }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -207,9 +208,9 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
     <div className="space-y-6 max-w-6xl mx-auto pb-12 font-sans">
       
       {/* ============================================================ */}
-      {/* 1. FACTORY SIGNATURE MOVE: BONE CARD ON OBSIDIAN CANVAS      */}
+      {/* 1. FACTORY SIGNATURE MOVE: BONE CARD HERO CON NÚCLEO 3D THREE.JS */}
       {/* ============================================================ */}
-      <div className="bone-card p-6 sm:p-8 relative overflow-hidden">
+      <div className="bone-card p-6 sm:p-7 relative overflow-hidden">
         
         {/* Eyebrow in Factory Mono */}
         <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-[#101010] mb-3">
@@ -217,17 +218,17 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
           <span>OPERATOR TERMINAL // COHORT 2874102</span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
           
-          <div className="lg:col-span-8 space-y-3">
+          <div className="lg:col-span-7 space-y-3.5">
             <h1 className="text-3xl sm:text-4xl font-normal tracking-tight text-[#101010] leading-none">
               Control Surface // Anyely Valeria
             </h1>
-            <p className="text-sm text-[#4d4947] leading-relaxed max-w-2xl">
+            <p className="text-sm text-[#4d4947] leading-relaxed max-w-xl font-sans">
               Software engineering training telemetry in real time. Cumulative curriculum completion stands at <strong className="text-[#101010] font-medium">92% verified</strong> across the <strong className="text-[#101010] font-medium">{fichaInfo.programa}</strong>.
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-1 font-mono text-xs text-[#101010]">
+            <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-[#101010]">
               <span className="px-2.5 py-1 rounded-[3px] bg-[#101010]/5 border border-[#101010]/15">
                 COHORT #{fichaInfo.codigo}
               </span>
@@ -235,23 +236,28 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                 CENTER FOR INDUSTRIAL TRAINING · NEIVA
               </span>
             </div>
+
+            <div className="flex flex-wrap items-center gap-2.5 pt-1">
+              <button
+                onClick={() => onNavigate && onNavigate('calificaciones')}
+                className="px-4 h-9 bg-[#101010] hover:bg-[#1d1a18] text-[#eeeeee] font-normal text-xs rounded-[3px] flex items-center justify-center gap-2 transition-colors border border-[#3d3a39]"
+              >
+                <span>View Gradebook</span>
+                <ArrowRight size={13} />
+              </button>
+              <button
+                onClick={() => onNavigate && onNavigate('reportes')}
+                className="px-4 h-9 bg-transparent hover:bg-[#101010]/10 text-[#101010] border border-[#101010]/20 font-normal text-xs rounded-[3px] flex items-center justify-center gap-2 transition-colors"
+              >
+                <FileText size={13} />
+                <span>Telemetry Dossier</span>
+              </button>
+            </div>
           </div>
 
-          <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-2.5 justify-end">
-            <button
-              onClick={() => onNavigate && onNavigate('calificaciones')}
-              className="px-4 h-9 bg-[#101010] hover:bg-[#1d1a18] text-[#eeeeee] font-normal text-xs rounded-[3px] flex items-center justify-center gap-2 transition-colors"
-            >
-              <span>View Gradebook</span>
-              <ArrowRight size={13} />
-            </button>
-            <button
-              onClick={() => onNavigate && onNavigate('reportes')}
-              className="px-4 h-9 bg-transparent hover:bg-[#101010]/10 text-[#101010] border border-[#101010]/20 font-normal text-xs rounded-[3px] flex items-center justify-center gap-2 transition-colors"
-            >
-              <FileText size={13} />
-              <span>Telemetry Dossier</span>
-            </button>
+          {/* Módulo 3D Animable Three.js integrado en el HERO */}
+          <div className="lg:col-span-5 bg-[#ffffff]/60 border border-[#3d3a39]/20 rounded-[8px] p-2.5 shadow-sm">
+            <Hero3DCanvas variant="bone" />
           </div>
 
         </div>

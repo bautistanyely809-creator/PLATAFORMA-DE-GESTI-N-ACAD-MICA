@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import ApprenticeDashboard from './ApprenticeDashboard';
+import Hero3DCanvas from './Hero3DCanvas';
 import { 
   Users, 
   GraduationCap, 
@@ -95,40 +96,48 @@ export default function Dashboard({ currentUser, onLogout }) {
               // Vista Administrativa / Instructor en Factory Style
               <div className="space-y-6 max-w-7xl mx-auto animate-fadeIn">
                 
-                {/* Signature Bone Card: Banner de Bienvenida Admin/Docente */}
-                <div className="bg-[#eeeeee] text-[#101010] p-6 sm:p-7 rounded-[10px] border border-[#3d3a39] relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  <div className="relative z-10 max-w-2xl">
-                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-[3px] bg-[#101010] text-[#fafafa] font-mono text-[10px] uppercase tracking-wider mb-3">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#ee6018] animate-pulse"></span>
-                      <span>{user.rol === 'ADMIN' ? 'CENTRO DE CONTROL // DIRECCIÓN ACADÉMICA' : 'DESPACHO // DOCENTE TITULAR'}</span>
-                    </div>
-                    <h2 className="text-2xl sm:text-3xl font-normal tracking-tight text-[#101010]">
-                      Panel de Control, {user.nombre} {user.apellido}
-                    </h2>
-                    <p className="text-xs sm:text-sm text-[#4d4947] mt-1.5 leading-relaxed font-sans">
-                      {user.rol === 'ADMIN' 
-                        ? 'Consola centralizada para gestión de fichas, instructores y métricas formativas en tiempo real bajo arquitectura Factory.'
-                        : 'Consolidación de fichas asignadas en Centro de Formación, control de evidencias y registro de asistencia.'}
-                    </p>
-                  </div>
+                {/* Signature Bone Card: Banner de Bienvenida Admin/Docente con Núcleo 3D Three.js */}
+                <div className="bg-[#eeeeee] text-[#101010] p-6 sm:p-7 rounded-[10px] border border-[#3d3a39] relative overflow-hidden">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    
+                    <div className="lg:col-span-7 space-y-3.5">
+                      <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-[3px] bg-[#101010] text-[#fafafa] font-mono text-[10px] uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#ee6018] animate-pulse"></span>
+                        <span>{user.rol === 'ADMIN' ? 'CENTRO DE CONTROL // DIRECCIÓN ACADÉMICA' : 'DESPACHO // DOCENTE TITULAR'}</span>
+                      </div>
+                      <h2 className="text-2xl sm:text-3xl font-normal tracking-tight text-[#101010]">
+                        Panel de Control, {user.nombre} {user.apellido}
+                      </h2>
+                      <p className="text-xs sm:text-sm text-[#4d4947] leading-relaxed font-sans max-w-xl">
+                        {user.rol === 'ADMIN' 
+                          ? 'Consola centralizada para gestión de fichas, instructores y métricas formativas en tiempo real bajo arquitectura Factory con telemetría 3D interactiva.'
+                          : 'Consolidación de fichas asignadas en Centro de Formación, control de evidencias y registro de asistencia.'}
+                      </p>
 
-                  <div className="relative z-10 flex items-center gap-3 shrink-0">
-                    <button 
-                      onClick={() => setActiveTab('reportes')}
-                      className="px-4 py-2 border border-[#3d3a39] hover:bg-[#e0dedd] text-[#101010] rounded-[3px] text-xs font-mono font-medium transition-colors flex items-center gap-2"
-                    >
-                      <BarChart3 size={14} />
-                      <span>Ver Reportes</span>
-                    </button>
-                    {user.rol === 'ADMIN' && (
-                      <button 
-                        onClick={() => alert('Formulario de nueva matrícula activado')}
-                        className="px-4 py-2 bg-[#101010] text-[#fafafa] hover:bg-[#1d1a18] rounded-[3px] text-xs font-mono font-medium transition-colors flex items-center gap-2 border border-[#3d3a39]"
-                      >
-                        <Plus size={14} className="text-[#ee6018]" />
-                        <span>Nueva Matrícula</span>
-                      </button>
-                    )}
+                      <div className="flex items-center gap-3 pt-1">
+                        <button 
+                          onClick={() => setActiveTab('reportes')}
+                          className="px-4 py-2 border border-[#3d3a39] hover:bg-[#e0dedd] text-[#101010] rounded-[3px] text-xs font-mono font-medium transition-colors flex items-center gap-2"
+                        >
+                          <BarChart3 size={14} />
+                          <span>Ver Reportes</span>
+                        </button>
+                        {user.rol === 'ADMIN' && (
+                          <button 
+                            onClick={() => alert('Formulario de nueva matrícula activado')}
+                            className="px-4 py-2 bg-[#101010] text-[#fafafa] hover:bg-[#1d1a18] rounded-[3px] text-xs font-mono font-medium transition-colors flex items-center gap-2 border border-[#3d3a39]"
+                          >
+                            <Plus size={14} className="text-[#ee6018]" />
+                            <span>Nueva Matrícula</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="lg:col-span-5 bg-[#ffffff]/60 border border-[#3d3a39]/20 rounded-[8px] p-2.5 shadow-sm">
+                      <Hero3DCanvas variant="bone" />
+                    </div>
+
                   </div>
                 </div>
 
