@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Users, 
   BookOpen, 
@@ -19,7 +19,10 @@ import {
   Star,
   Check,
   FolderOpen,
-  Zap
+  Zap,
+  ChevronLeft,
+  RefreshCw,
+  Send
 } from 'lucide-react';
 import { 
   PieChart, 
@@ -28,12 +31,28 @@ import {
   ResponsiveContainer, 
   Tooltip as RechartsTooltip 
 } from 'recharts';
+import { useDebounce } from '../hooks/useDebounce';
+import { BannerSkeleton, StatCardSkeleton, ChartSkeleton, TableSkeleton } from './Skeletons';
 
 export default function ApprenticeDashboard({ user, onNavigate }) {
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [activePrompt, setActivePrompt] = useState(null);
-  const [aiResponse, setAiResponse] = useState('');
-  const [isProcessingAi, setIsProcessingAi] = useState(false);
+  const [aiStreamedText, setAiStreamedText] = useState('');
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 2; // Paginación optimizada
+
+  // Simulación de carga paralela con Skeletons (300ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Búsqueda reactiva con Debounce (300ms) para evitar re-renders y llamadas duplicadas
+  const debouncedSearch = useDebounce(searchTerm, 300);
 
   // Información real de la ficha y programa de formación
   const fichaInfo = {
@@ -49,7 +68,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
   };
 
   // Cursos matriculados reales
-  const misCursos = [
+  const [cursosList, setCursosList] = useState([
     {
       id: 1,
       nombre: 'Desarrollo Web Frontend Moderno (React & Tailwind)',
@@ -83,8 +102,38 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
         { nombre: 'Servidor Express con Rutas y JWT', nota: 4.4, estado: 'APROBADO', fecha: '02 Abr 2026' },
         { nombre: 'Pruebas de Integración con Postman', nota: null, estado: 'PENDIENTE', fecha: '20 Abr 2026' }
       ]
+    },
+    {
+      id: 3,
+      nombre: 'Metodologías Ágiles y Scrum para Desarrollo de Software',
+      codigo: 'ADSO-2026-C',
+      instructor: 'Andrés Morales',
+      especialidad: 'Gestión Ágil de Proyectos',
+      fechaFin: '20 May 2026',
+      progreso: 90,
+      notaActual: 4.9,
+      colorTag: 'bg-[#FEF8EC] text-[#E9B949]',
+      progressBar: 'from-[#102A43] via-[#19B5A5] to-[#70D6B3]',
+      evidencias: [
+        { nombre: 'Product Backlog y Sprint Planning', nota: 4.9, estado: 'APROBADO', fecha: '15 Mar 2026' },
+        { nombre: 'Matriz de Trazabilidad de Requisitos', nota: 5.0, estado: 'APROBADO', fecha: '28 Mar 2026' }
+      ]
     }
-  ];
+  ]);
+
+  // Actualización Optimista de la interfaz (sin esperar al servidor)
+  const handleOptimisticSubmit = (cursoId) => {
+    setCursosList(prev => prev.map(c => {
+      if (c.id === cursoId) {
+        return {
+          ...c,
+          progreso: Math.min(100, c.progreso + 5),
+          notaActual: 4.9
+        };
+      }
+      return c;
+    }));
+  };
 
   // Datos para el Donut Chart Ocean Tech
   const pieData = [
@@ -92,41 +141,86 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
     { name: 'Evidencias Pendientes', value: 2, color: '#E9B949' }, // Ámbar
   ];
 
-  // Disparador interactivo de EDUNOVA AI
+  // Streaming Token a Token de EDUNOVA AI
+  const streamIntervalRef = useRef(null);
+
   const handleAiPromptClick = (promptKey) => {
     setActivePrompt(promptKey);
-    setIsProcessingAi(true);
-    setAiResponse('');
+    setIsStreaming(true);
+    setAiStreamedText('');
 
-    setTimeout(() => {
-      setIsProcessingAi(false);
-      if (promptKey === 'analisis') {
-        setAiResponse(
-          '⚡ Diagnóstico de Rendimiento: Tu promedio ponderado es de 4.65 / 5.0. Destacas en estructuración de arquitectura Frontend y buenas prácticas en bases de datos. Tu índice de asistencia supera el 92% en el Centro de Formación Industrial.'
-        );
-      } else if (promptKey === 'pendientes') {
-        setAiResponse(
-          '⏳ Tareas Clave: Tu próxima entrega prioritaria es "Consumo REST con Axios & JWT" (fecha estimada: 10 de Abril). Asegúrate de validar los tokens JWT en los interceptores y centralizar las variables de entorno.'
-        );
-      } else if (promptKey === 'ruta') {
-        setAiResponse(
-          '🎯 Plan de Optimización: Practica la creación de hooks personalizados (useAuth, useFetch) y modularización de llamadas al backend con Express y Prisma para tu sustentación técnica de ADSO.'
-        );
+    if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
+
+    let fullText = '';
+    if (promptKey === 'analisis') {
+      fullText = '⚡ [EDUNOVA AI] Diagnóstico de Rendimiento: Tu promedio ponderado actual es 4.65 / 5.0. Sobresales en estructuración de arquitectura Frontend y buenas prácticas en bases de datos relacionales MySQL. Tu índice de asistencia supera el 92% en el Centro de Formación Industrial.';
+    } else if (promptKey === 'pendientes') {
+      fullText = '⏳ [EDUNOVA AI] Tareas Prioritarias: Tu próxima entrega es "Consumo REST con Axios & JWT" (10 de Abril). Recuerda verificar los interceptores de tokens y el manejo de variables de entorno.';
+    } else if (promptKey === 'ruta') {
+      fullText = '🎯 [EDUNOVA AI] Plan Guía Recomendado: Practica el desacoplamiento de Custom Hooks (useDebounce, useAuth) y consultas SQL indexadas en Prisma ORM para tu sustentación técnica de ADSO.';
+    }
+
+    let index = 0;
+    streamIntervalRef.current = setInterval(() => {
+      if (index < fullText.length) {
+        setAiStreamedText(prev => prev + fullText.charAt(index));
+        index++;
+      } else {
+        clearInterval(streamIntervalRef.current);
+        setIsStreaming(false);
       }
-    }, 600);
+    }, 18); // Emite token a token cada 18ms
   };
 
-  const filteredCursos = misCursos.filter(c => 
-    c.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.instructor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.codigo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    return () => {
+      if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
+    };
+  }, []);
+
+  // Filtrado de cursos con useMemo y búsqueda debounced
+  const filteredCursos = useMemo(() => {
+    const q = debouncedSearch.toLowerCase().trim();
+    if (!q) return cursosList;
+    return cursosList.filter(c => 
+      c.nombre.toLowerCase().includes(q) ||
+      c.instructor.toLowerCase().includes(q) ||
+      c.codigo.toLowerCase().includes(q)
+    );
+  }, [cursosList, debouncedSearch]);
+
+  // Paginación de resultados de la tabla
+  const totalPages = Math.ceil(filteredCursos.length / pageSize) || 1;
+  const paginatedCursos = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredCursos.slice(start, start + pageSize);
+  }, [filteredCursos, currentPage, pageSize]);
+
+  // Si está en carga inicial, renderizar diseño Skeleton completo
+  if (isLoading) {
+    return (
+      <div className="space-y-8 max-w-7xl mx-auto pb-12">
+        <BannerSkeleton />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-7"><ChartSkeleton /></div>
+          <div className="lg:col-span-5"><ChartSkeleton /></div>
+        </div>
+        <TableSkeleton rows={3} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto animate-fadeIn pb-12">
       
       {/* ============================================================ */}
-      {/* 1. HERO BANNER: OCEAN TECH GRADIENT                         */}
+      {/* 1. HERO BANNER: OCEAN TECH GRADIENT CON IMAGEN WEBP          */}
       {/* ============================================================ */}
       <div className="relative rounded-[32px] overflow-hidden bg-gradient-to-r from-[#123B50] via-[#17365D] to-[#19B5A5] p-7 sm:p-10 text-white shadow-glass border border-white/30">
         
@@ -134,15 +228,17 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
         <div className="absolute top-0 right-0 w-80 h-80 bg-[#48BFE3]/25 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
         <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-[#19B5A5]/25 rounded-full blur-2xl pointer-events-none"></div>
 
-        {/* Tarjeta flotante decorativa tecnológica */}
-        <div className="hidden xl:block absolute right-10 top-1/2 -translate-y-1/2 p-5 rounded-2xl bg-[#102A43]/50 backdrop-blur-xl border border-white/20 shadow-xl text-white max-w-xs">
-          <div className="flex items-center gap-2 text-xs font-bold mb-1 text-[#48BFE3]">
-            <Zap size={16} className="text-[#E9B949]" />
-            <span>Rendimiento Sobresaliente</span>
+        {/* Ilustración Educativa WebP Lazy-Loaded */}
+        <div className="hidden lg:flex absolute right-8 top-1/2 -translate-y-1/2 items-center gap-4">
+          <div className="p-5 rounded-2xl bg-[#102A43]/60 backdrop-blur-xl border border-white/20 shadow-xl text-white max-w-xs">
+            <div className="flex items-center gap-2 text-xs font-bold mb-1 text-[#48BFE3]">
+              <Zap size={16} className="text-[#E9B949]" />
+              <span>Rendimiento Sobresaliente</span>
+            </div>
+            <p className="text-[11px] text-slate-200 leading-relaxed">
+              Has superado el 80% de evidencias formativas con calificación superior a 4.5 en el programa ADSO.
+            </p>
           </div>
-          <p className="text-[11px] text-slate-200 leading-relaxed">
-            Has superado el 80% de evidencias formativas con calificación superior a 4.5 en el programa ADSO.
-          </p>
         </div>
 
         <div className="relative z-10 max-w-2xl space-y-4">
@@ -198,7 +294,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
       {/* ============================================================ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         
-        {/* Tarjeta 1: Compañeros de Ficha (Azul Profundo: #17365D) */}
+        {/* Tarjeta 1: Compañeros de Ficha */}
         <div className="glass-card glass-card-hover rounded-[26px] p-6 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold text-edunova-textSecondary uppercase tracking-wider">
@@ -222,7 +318,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* Tarjeta 2: Mis Cursos (Cian: #48BFE3) */}
+        {/* Tarjeta 2: Mis Cursos */}
         <div className="glass-card glass-card-hover rounded-[26px] p-6 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold text-edunova-textSecondary uppercase tracking-wider">
@@ -235,7 +331,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
           <div className="mt-4">
             <div className="flex items-baseline gap-2">
               <h3 className="text-3xl font-extrabold text-[#123B50] tracking-tight">
-                {misCursos.length}
+                {cursosList.length}
               </h3>
               <span className="text-xs font-semibold text-edunova-textSecondary">activos</span>
             </div>
@@ -246,7 +342,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* Tarjeta 3: Evidencias Aprobadas (Verde Turquesa: #19B5A5) */}
+        {/* Tarjeta 3: Evidencias Aprobadas */}
         <div className="glass-card glass-card-hover rounded-[26px] p-6 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold text-edunova-textSecondary uppercase tracking-wider">
@@ -274,7 +370,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* Tarjeta 4: Mi Asistencia (Ámbar: #E9B949) */}
+        {/* Tarjeta 4: Mi Asistencia */}
         <div className="glass-card glass-card-hover rounded-[26px] p-6 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold text-edunova-textSecondary uppercase tracking-wider">
@@ -307,7 +403,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
       </div>
 
       {/* ============================================================ */}
-      {/* 3. SECCIÓN: RENDIMIENTO FORMATIVO + EDUNOVA AI               */}
+      {/* 3. SECCIÓN: RENDIMIENTO FORMATIVO + EDUNOVA AI STREAMING     */}
       {/* ============================================================ */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
@@ -419,7 +515,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
             </p>
 
             <div className="space-y-3">
-              {misCursos.map((c) => (
+              {cursosList.map((c) => (
                 <div key={c.id} className="space-y-1.5 p-3 rounded-2xl bg-[#F4F7FA]/70 border border-slate-100">
                   <div className="flex justify-between items-center text-xs">
                     <span className="font-bold text-[#123B50] truncate">{c.nombre}</span>
@@ -438,7 +534,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
 
         </div>
 
-        {/* Módulo EDUNOVA AI: Noche Tecnológica Ocean Tech (5 Columnas) */}
+        {/* Módulo EDUNOVA AI: Noche Tecnológica con Streaming Token a Token */}
         <div className="lg:col-span-5 rounded-[30px] p-6 sm:p-8 flex flex-col justify-between border border-[#17365D] relative overflow-hidden bg-gradient-to-br from-[#102A43] via-[#123B50] to-[#17365D] text-white shadow-2xl">
           
           {/* Luz ambiental cian */}
@@ -457,18 +553,18 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                     EDUNOVA AI
                   </h4>
                   <p className="text-[11px] text-[#48BFE3] font-semibold">
-                    Tutor Pedagógico Inteligente
+                    Tutor Pedagógico Streaming
                   </p>
                 </div>
               </div>
 
               <span className="px-3 py-1 rounded-full bg-[#19B5A5]/20 border border-[#19B5A5]/40 text-[#48BFE3] text-[10px] font-mono font-bold uppercase tracking-wider">
-                IA ACTIVA
+                {isStreaming ? 'STREAMING...' : 'IA ACTIVA'}
               </span>
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              Analizo tus calificaciones, asistencia y evidencias formativas en tiempo real para recomendarte estrategias de estudio personalizadas.
+              Analizo tus calificaciones, asistencia y evidencias formativas en tiempo real mediante respuestas transmitidas token a token.
             </p>
 
             {/* Burbuja de Sugerencia del Asistente */}
@@ -485,42 +581,41 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
             {/* Botones de Consulta Rápida */}
             <div className="space-y-2 pt-1">
               <p className="text-[10px] font-extrabold text-[#718096] uppercase tracking-wider">
-                Consultas Rápidas de IA:
+                Consultas Rápidas de IA (Streaming Token a Token):
               </p>
               
               <div className="grid grid-cols-3 gap-2">
                 <button
                   onClick={() => handleAiPromptClick('analisis')}
-                  className="px-2.5 py-2 bg-white/10 hover:bg-[#19B5A5]/25 rounded-xl text-[11px] font-bold text-white transition-all border border-white/10 hover:border-[#19B5A5]/40 text-center truncate shadow-sm"
+                  disabled={isStreaming}
+                  className="px-2.5 py-2 bg-white/10 hover:bg-[#19B5A5]/25 rounded-xl text-[11px] font-bold text-white transition-all border border-white/10 hover:border-[#19B5A5]/40 text-center truncate shadow-sm disabled:opacity-50"
                 >
                   ⚡ Mi Estado
                 </button>
                 <button
                   onClick={() => handleAiPromptClick('pendientes')}
-                  className="px-2.5 py-2 bg-white/10 hover:bg-[#E9B949]/25 rounded-xl text-[11px] font-bold text-white transition-all border border-white/10 hover:border-[#E9B949]/40 text-center truncate shadow-sm"
+                  disabled={isStreaming}
+                  className="px-2.5 py-2 bg-white/10 hover:bg-[#E9B949]/25 rounded-xl text-[11px] font-bold text-white transition-all border border-white/10 hover:border-[#E9B949]/40 text-center truncate shadow-sm disabled:opacity-50"
                 >
                   ⏳ Pendientes
                 </button>
                 <button
                   onClick={() => handleAiPromptClick('ruta')}
-                  className="px-2.5 py-2 bg-white/10 hover:bg-[#48BFE3]/25 rounded-xl text-[11px] font-bold text-white transition-all border border-white/10 hover:border-[#48BFE3]/40 text-center truncate shadow-sm"
+                  disabled={isStreaming}
+                  className="px-2.5 py-2 bg-white/10 hover:bg-[#48BFE3]/25 rounded-xl text-[11px] font-bold text-white transition-all border border-white/10 hover:border-[#48BFE3]/40 text-center truncate shadow-sm disabled:opacity-50"
                 >
                   🎯 Plan Guía
                 </button>
               </div>
             </div>
 
-            {/* Respuesta Procesada en Vivo */}
-            {(isProcessingAi || aiResponse) && (
+            {/* Respuesta Streaming Token a Token con cursor parpadeante */}
+            {(isStreaming || aiStreamedText) && (
               <div className="p-4 rounded-2xl bg-[#102A43] border border-[#19B5A5]/40 text-xs text-slate-200 animate-slideUp shadow-xl">
-                {isProcessingAi ? (
-                  <div className="flex items-center gap-2 text-[#48BFE3] font-bold">
-                    <span className="w-2 h-2 rounded-full bg-[#19B5A5] animate-ping"></span>
-                    <span>Procesando análisis formativo con EDUNOVA AI...</span>
-                  </div>
-                ) : (
-                  <p className="leading-relaxed">{aiResponse}</p>
-                )}
+                <p className="leading-relaxed font-mono">
+                  {aiStreamedText}
+                  {isStreaming && <span className="inline-block w-2 h-4 bg-[#19B5A5] animate-pulse ml-1">▍</span>}
+                </p>
               </div>
             )}
 
@@ -530,10 +625,11 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
           <div className="pt-5 mt-4 border-t border-[#17365D]/80 relative z-10">
             <button 
               onClick={() => handleAiPromptClick('analisis')}
-              className="w-full py-3 px-4 bg-gradient-to-r from-[#17365D] via-[#19B5A5] to-[#48BFE3] hover:opacity-95 text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-ocean-glow transition-all flex items-center justify-center gap-2"
+              disabled={isStreaming}
+              className="w-full py-3 px-4 bg-gradient-to-r from-[#17365D] via-[#19B5A5] to-[#48BFE3] hover:opacity-95 text-white font-extrabold rounded-2xl text-xs sm:text-sm shadow-ocean-glow transition-all flex items-center justify-center gap-2 disabled:opacity-60"
             >
               <Brain size={16} />
-              <span>Generar Informe de Aprendizaje con IA</span>
+              <span>{isStreaming ? 'Transmitiendo respuesta...' : 'Generar Informe de Aprendizaje con IA'}</span>
             </button>
           </div>
 
@@ -542,11 +638,11 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
       </div>
 
       {/* ============================================================ */}
-      {/* 4. TABLA GLASSMORPHISM: MIS CURSOS MATRICULADOS             */}
+      {/* 4. TABLA GLASSMORPHISM PAGINADA CON BÚSQUEDA DEBOUNCED       */}
       {/* ============================================================ */}
       <div className="glass-panel rounded-[30px] border border-white/90 overflow-hidden shadow-glass">
         
-        {/* Cabecera con Buscador Dinámico */}
+        {/* Cabecera con Buscador Dinámico con Debounce */}
         <div className="p-6 sm:p-7 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-white/95 to-[#DCEEF5]/30">
           <div>
             <h3 className="text-lg font-bold text-[#123B50] flex items-center gap-2">
@@ -554,7 +650,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
               <span>Mis Cursos Matriculados</span>
             </h3>
             <p className="text-xs text-edunova-textSecondary mt-0.5">
-              Cursos técnicos en ejecución · ADSO Ficha #{fichaInfo.codigo}
+              Cursos técnicos · ADSO Ficha #{fichaInfo.codigo} · Búsqueda con Debounce (300ms)
             </p>
           </div>
 
@@ -564,8 +660,11 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
               <input
                 type="text"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Buscar por curso o docente..."
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1); // Regresa a la primera página al buscar
+                }}
+                placeholder="Buscar (Debounce 300ms)..."
                 className="w-full pl-9 pr-3.5 py-2 bg-white border border-slate-200 rounded-full text-xs text-edunova-textPrimary focus:bg-white focus:border-[#19B5A5] focus:outline-none transition-all"
               />
             </div>
@@ -576,7 +675,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
           </div>
         </div>
 
-        {/* Tabla Glassmorphism */}
+        {/* Tabla Glassmorphism Paginada */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-edunova-textSecondary">
             <thead className="bg-[#F4F7FA] text-[11px] font-extrabold text-[#718096] uppercase tracking-wider border-b border-slate-100">
@@ -586,13 +685,13 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                 <th className="px-6 py-4">Finalización</th>
                 <th className="px-6 py-4">Avance</th>
                 <th className="px-6 py-4">Calificación</th>
-                <th className="px-6 py-4 text-right">Acciones</th>
+                <th className="px-6 py-4 text-right">Actualización Optimista</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               
-              {filteredCursos.length > 0 ? (
-                filteredCursos.map((c) => (
+              {paginatedCursos.length > 0 ? (
+                paginatedCursos.map((c) => (
                   <tr key={c.id} className="hover:bg-white/80 transition-colors">
                     
                     {/* Curso */}
@@ -645,14 +744,15 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                       </span>
                     </td>
 
-                    {/* Acciones */}
+                    {/* Acción Optimista (Actualiza UI de inmediato) */}
                     <td className="px-6 py-4 text-right">
                       <button 
-                        onClick={() => onNavigate && onNavigate('calificaciones')}
-                        className="text-xs font-extrabold text-[#17365D] hover:text-[#19B5A5] transition-colors inline-flex items-center gap-1 bg-white hover:bg-[#F4F7FA] px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm"
+                        onClick={() => handleOptimisticSubmit(c.id)}
+                        title="Simulación de Actualización Optimista sin esperar al servidor"
+                        className="text-xs font-extrabold text-[#19B5A5] hover:text-[#123B50] inline-flex items-center gap-1.5 bg-[#E8F8F5] hover:bg-[#DCEEF5] px-3 py-1.5 rounded-xl border border-[#19B5A5]/30 transition-all shadow-sm"
                       >
-                        <span>Evidencias</span>
-                        <ChevronRight size={14} />
+                        <RefreshCw size={13} className="animate-spin-slow" />
+                        <span>Entrega Rápida</span>
                       </button>
                     </td>
 
@@ -661,13 +761,39 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
               ) : (
                 <tr>
                   <td colSpan="6" className="px-6 py-10 text-center text-edunova-textSecondary text-xs">
-                    No se encontraron cursos coincidentes con la búsqueda.
+                    No se encontraron cursos coincidentes con "{debouncedSearch}".
                   </td>
                 </tr>
               )}
 
             </tbody>
           </table>
+        </div>
+
+        {/* Barra de Paginación */}
+        <div className="p-4 border-t border-slate-100 flex items-center justify-between bg-[#F4F7FA]/50 text-xs">
+          <span className="text-slate-500">
+            Mostrando página <strong className="text-[#123B50]">{currentPage}</strong> de <strong className="text-[#123B50]">{totalPages}</strong> ({filteredCursos.length} resultados)
+          </span>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 font-bold text-[#123B50] disabled:opacity-40 hover:bg-slate-50 transition-colors flex items-center gap-1"
+            >
+              <ChevronLeft size={14} />
+              <span>Anterior</span>
+            </button>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 font-bold text-[#123B50] disabled:opacity-40 hover:bg-slate-50 transition-colors flex items-center gap-1"
+            >
+              <span>Siguiente</span>
+              <ChevronRight size={14} />
+            </button>
+          </div>
         </div>
 
       </div>

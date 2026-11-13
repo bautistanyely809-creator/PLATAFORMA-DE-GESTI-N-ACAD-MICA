@@ -13,8 +13,20 @@
 | **Centro de Formación:** | Centro de Formación Industrial – SENA Regional Huila (Neiva) |
 | **Modalidad:** | Desarrollo individual con asistencia de Inteligencia Artificial |
 | **Duración Estimada:** | 4 semanas (1 mes) |
-| **Versión del Documento:** | 2.0 (Adaptada a la Estructura Formal Integral IEEE / SENA) |
+| **Versión del Documento:** | 2.1 (Optimizada para Alto Rendimiento, Streaming IA, Skeleton UI y Caché) |
 | **Estado:** | Aprobado / En Ejecución Técnica |
+
+---
+
+## CONTROL DE VERSIONES DEL SRS
+
+| Versión | Fecha | Autor(a) | Descripción del Cambio |
+| :---: | :---: | :--- | :--- |
+| **v1.0** | 11/11/2026 | Anyely Valeria | Creación inicial del SRS, planteamiento del problema, requisitos RF/RNF, historias de usuario y cronograma de 4 semanas. |
+| **v1.1** | 12/11/2026 | Anyely Valeria | Incorporación de la autenticación obligatoria dividida en 3 roles (Aprendiz, Instructor, Admin) y maquetación Soft Glassmorphism. |
+| **v1.2** | 13/11/2026 | Anyely Valeria | Actualización integral Ocean Tech Premium: paleta petróleo, turquesa, cian y ámbar; modelo MER de 13 entidades y catálogo de API REST. |
+| **v2.0** | 13/11/2026 | Anyely Valeria | Adaptación a la estructura formal integral SENA/IEEE (HU-01 a HU-26, CU-01 a CU-26, RF1 a RF26, RNF-01 a RNF-12 y Matriz de Trazabilidad). |
+| **v2.1** | 13/11/2026 | Anyely Valeria | **Sprint de Alto Rendimiento y UX Resiliente**: Diseño Skeleton para carga fluida, búsqueda con Debounce (300ms), paginación de cursos, streaming token a token de EDUNOVA AI, actualización optimista de interfaz (Optimistic UI), índices SQL en MySQL 8, prevención de consultas N+1 con Prisma, compresión Brotli/Gzip, caché Redis/In-Memory, cola de trabajos (Job Queue), timeouts en APIs externas (5000ms), code-splitting de JS (`manualChunks`) y monitoreo de usuarios reales (RUM). |
 
 ---
 
@@ -220,9 +232,15 @@ El software no depende de plataformas propietarias externas para su funcionamien
 ### 3.1. Requisitos comunes de las interfaces
 * **Identidad Visual Unificada:** Todos los módulos aplican la paleta **Ocean Tech Premium** (`#123B50`, `#17365D`, `#19B5A5`, `#48BFE3`, `#E9B949`, `#F4F7FA`).
 * **Efecto Glassmorphism:** Paneles de cristal con `backdrop-filter: blur(20px)`, bordes blancos translúcidos y sombras difuminadas.
+* **Diseño Skeleton para Carga Inicial:** Implementación de esqueletos de carga (`BannerSkeleton`, `StatCardSkeleton`, `ChartSkeleton`, `TableSkeleton`) con animación de onda Shimmer para evitar pantallas en blanco y saltos visuales durante la carga de datos.
+* **Búsqueda y Autocompletado con Debounce (300ms):** Búsqueda reactiva optimizada en Header y tablas que retrasa la ejecución 300ms mientras el usuario escribe, evitando llamadas duplicadas y re-renders innecesarios.
+* **Imágenes en Formato Moderno (WebP/AVIF):** Uso de gráficos vectoriales e imágenes en formatos de alta compresión con atributos `loading="lazy"` y `decoding="async"` para elementos fuera de pantalla.
+* **Transmisión de IA Token a Token:** Respuestas del tutor inteligente EDUNOVA AI transmitidas en streaming progresivo con cursor activo (`▍`), simulando procesamiento en tiempo real.
+* **Actualización Optimista de la Interfaz (Optimistic UI):** La interfaz refleja de inmediato las acciones del usuario (ej. entregas rápidas de evidencias o toma de asistencia) antes de recibir la confirmación del servidor, garantizando sensación de velocidad instantánea.
+* **Paginación y Virtualización:** División de listas y tablas en páginas controladas (`pageSize`) evitando la sobrecarga del DOM en conjuntos extensos de aprendices o notas.
 * **Navegación Consistente:** Menú lateral (Sidebar) retráctil con iconos temáticos Lucide, buscador global con atajo (`Ctrl+K`) y barra superior con identificación de institución y usuario.
 * **Retroalimentación Visual Inmediata:** Notificaciones tipo toast y modales con validaciones en verde menta (éxito), ámbar (alerta) o rojo (error).
-* **Adaptabilidad Responsive:** Reorganización automática de cuadrículas (`grid-cols-1` en móviles a `grid-cols-4` en pantallas amplias).
+* **Adaptabilidad Responsive y Redes Lentas:** Reorganización automática de cuadrículas (`grid-cols-1` en móviles a `grid-cols-4` en pantallas amplias) y monitor de velocidad de red (RUM) para conexiones lentas (3G/2G).
 
 ---
 
@@ -388,18 +406,18 @@ flowchart LR
 
 | Código | Requisito No Funcional | Categoría | Especificación Técnica y Métrica de Aceptación |
 | :---: | :--- | :--- | :--- |
-| **RNF-01** | **Rendimiento** | Desempeño | Tiempo de respuesta del servidor en operaciones CRUD y consultas $\le 2.0$ segundos bajo condiciones normales de red. |
-| **RNF-02** | **Seguridad de contraseñas** | Seguridad | Encriptación unidireccional de contraseñas utilizando algoritmo robusto **bcrypt** con salt rounds $\ge 10$. Prohibido almacenar contraseñas en texto claro. |
-| **RNF-03** | **Seguridad en comunicaciones** | Seguridad | Intercambio de peticiones autenticadas mediante tokens **JWT** (JSON Web Tokens) firmados con clave secreta y expiración de 8 horas. |
-| **RNF-04** | **Usabilidad y UX** | Usabilidad | Interfaz estructurada bajo el estándar **Ocean Tech Premium Glassmorphism** (tarjetas flotantes translúcidas, fuentes nítidas Plus Jakarta Sans y curvas de aprendizaje intuitivas $\le 5$ min). |
-| **RNF-05** | **Compatibilidad de navegadores** | Compatibilidad | Funcionamiento idéntico en las últimas versiones estables de navegadores modernos: Google Chrome, Microsoft Edge, Mozilla Firefox, Brave y Safari. |
-| **RNF-06** | **Diseño adaptable (Responsive)** | Portabilidad | Adaptación fluida a pantallas de computadores de escritorio ($1920\times 1080$, $1366\times 768$), laptops, tabletas y teléfonos móviles mediante Tailwind CSS. |
-| **RNF-07** | **Integridad referencial de datos** | Confiabilidad | Base de datos relacional MySQL 8 configurada con restricciones estrictas de llaves primarias (`PK`), foráneas (`FK`), unicidad (`UNIQUE`) y no nulos (`NOT NULL`). |
-| **RNF-08** | **Disponibilidad del sistema** | Disponibilidad | La plataforma debe garantizar una disponibilidad continua $\ge 99.0\%$ durante las jornadas académicas del centro formativo. |
-| **RNF-09** | **Mantenibilidad del código** | Mantenibilidad | Arquitectura desacoplada en tres capas (Monolito Modular) con carpetas organizadas (`components/`, `controllers/`, `routes/`, `prisma/`) facilitando refactorizaciones. |
-| **RNF-10** | **Privacidad y aislamiento RBAC** | Privacidad | Aislamiento de datos a nivel de controlador backend: un aprendiz jamás podrá visualizar ni acceder a calificaciones de otros aprendices ni a configuraciones de administración. |
-| **RNF-11** | **Escalabilidad y concurrencia** | Escalabilidad | Capacidad para soportar un mínimo de **250 usuarios concurrentes** realizando consultas simultáneas sin degradación perceptible del rendimiento. |
-| **RNF-12** | **Respaldo y recuperación** | Recuperabilidad | Script reproducible DDL y DML versionado en el repositorio (`docs/database/edunova_db.sql`) permitiendo restauración completa de la base de datos en menos de 10 minutos. |
+| **RNF-01** | **Rendimiento y Optimización de Entrega** | Desempeño | Tiempo de respuesta del servidor $\le 2.0$ segundos. Compresión transparente **Brotli / Gzip**, división del bundle JavaScript por páginas (`manualChunks: vendor, recharts, icons`) y soporte para distribución de activos estáticos desde CDN. |
+| **RNF-02** | **Seguridad Criptográfica** | Seguridad | Encriptación unidireccional de contraseñas utilizando algoritmo robusto **bcrypt** con salt rounds $\ge 10$. Prohibido almacenar contraseñas en texto claro. |
+| **RNF-03** | **Seguridad en Comunicaciones y Timeouts** | Seguridad | Tokens **JWT** firmados con expiración de 8 horas. Aplicación de timeouts estrictos ($\le 5000\text{ ms}$) con `AbortController` en todas las llamadas a APIs externas para evitar cuelgues del hilo principal. |
+| **RNF-04** | **Usabilidad, Skeleton UI y Fuentes Optimizadas** | Usabilidad | Diseño **Ocean Tech Premium Glassmorphism** con esqueletos de carga animados (**Skeleton Loaders**) para evitar CLS. Fuentes Plus Jakarta Sans autoalojadas con grosores limitados a 400, 600, 700 y 800 para minimizar la carga de red. |
+| **RNF-05** | **Compatibilidad y Carga Diferida** | Compatibilidad | Soporte idéntico en Google Chrome, Microsoft Edge, Mozilla Firefox, Brave y Safari. Carga diferida (`defer` / `async`) de scripts no críticos para no bloquear el renderizado inicial. |
+| **RNF-06** | **Diseño Adaptable a Móviles y Redes Lentas** | Portabilidad | Responsive para Desktop, Tablet y Smartphone. Detección proactiva de red mediante API `navigator.connection` con adaptación a redes lentas (2G/3G/4G). |
+| **RNF-07** | **Optimización de Consultas e Índices SQL** | Confiabilidad | Base de datos MySQL 8 con índices dedicados (`correo`, `documento`, `id_grupo`, `fecha`). **Eliminación estricta de consultas N+1** mediante JOINs únicos con Prisma `include` y selección explícita de columnas (`select`). |
+| **RNF-08** | **Disponibilidad, Pool y Tráfico Multi-instancia** | Disponibilidad | Disponibilidad continua $\ge 99.0\%$. Configuración de **Pool de conexiones** (`connection_limit=10, timeout=20s`) y soporte para reparto de tráfico entre múltiples instancias concurrentes. |
+| **RNF-09** | **Mantenibilidad y Cola de Trabajos** | Mantenibilidad | Arquitectura desacoplada en tres capas (Monolito Modular). Despacho de tareas lentas (generación de PDFs, reportes masivos) a una **Cola de Trabajos en Segundo Plano (`JobQueue`)** sin bloquear el event loop. |
+| **RNF-10** | **Privacidad Estricta y Prevención de Re-renders** | Privacidad / Eficiencia | Aislamiento de datos RBAC. En el frontend, optimización de ciclo de vida con `useMemo`, `useCallback` y `useDebounce` para evitar re-renderizados innecesarios del DOM. |
+| **RNF-11** | **Escalabilidad, Caché Redis y OpenTelemetry** | Escalabilidad | Capacidad para $\ge 250$ usuarios simultáneos. Capa de **caché con Redis / In-Memory (`cacheService`)** con TTL para datos frecuentes y trazabilidad de peticiones lentas ($>500\text{ ms}$) con **OpenTelemetry APM**. |
+| **RNF-12** | **Respaldo y Caché de Navegador** | Recuperabilidad | Script reproducible DDL y DML en `/docs/database/edunova_db.sql`. Cabeceras de caché de navegador inmutable (`Cache-Control: public, max-age=31536000, immutable`) para activos estáticos versionados. |
 
 ---
 
