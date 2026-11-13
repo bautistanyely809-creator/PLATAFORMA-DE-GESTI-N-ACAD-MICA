@@ -64,12 +64,26 @@ app.get('/api/health', cacheService.middleware(60000), (req, res) => {
   });
 });
 
-// Importar rutas
+// Importar rutas de los 7 Módulos Avanzados
 const authRoutes = require('./routes/auth.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
+const competenciasRoutes = require('./routes/competencias.routes');
+const evidenciasRoutes = require('./routes/evidencias.routes');
+const recuperacionesRoutes = require('./routes/recuperaciones.routes');
+const asistenciaRoutes = require('./routes/asistencia.routes');
+const reportesRoutes = require('./routes/reportes.routes');
+const notificacionesRoutes = require('./routes/notificaciones.routes');
+const aiRoutes = require('./routes/ai.routes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', cacheService.middleware(30000), dashboardRoutes);
+app.use('/api/competencias', competenciasRoutes);
+app.use('/api/evidencias', evidenciasRoutes);
+app.use('/api/recuperaciones', recuperacionesRoutes);
+app.use('/api/asistencia', asistenciaRoutes);
+app.use('/api/reportes', reportesRoutes);
+app.use('/api/notificaciones', notificacionesRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Endpoint para probar la cola de tareas pesadas en segundo plano
 app.post('/api/jobs/reporte-academico', (req, res) => {

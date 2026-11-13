@@ -46,21 +46,74 @@ enum EstadoAsistencia {
   EXCUSA
 }
 
+enum EstadoCompetencia {
+  PENDIENTE
+  EN_DESARROLLO
+  EN_EVALUACION
+  APROBADA
+  REQUIERE_REFUERZO
+}
+
+enum EstadoEvidencia {
+  BORRADOR
+  PUBLICADA
+  PENDIENTE_ENTREGA
+  ENTREGADA
+  EN_REVISION
+  APROBADA
+  REQUIERE_CORRECCION
+  NO_APROBADA
+  VENCIDA
+}
+
+enum EstadoRecuperacion {
+  IDENTIFICADA
+  ASIGNADA
+  EN_PROCESO
+  ENTREGADA
+  EN_EVALUACION
+  SUPERADA
+  PENDIENTE_NUEVA_ACTIVIDAD
+}
+
+enum EstadoAsistenciaDetallada {
+  ASISTIO
+  AUSENTE
+  RETARDO
+  EXCUSA_PENDIENTE
+  JUSTIFICADA
+}
+
+enum CategoriaNotificacion {
+  EVIDENCIA
+  CALIFICACION
+  ASISTENCIA
+  RECUPERACION
+  COMPETENCIA
+  ALERTA
+  ANUNCIO
+}
+
+// =========================================================================
+// 1. MODELO DE USUARIOS Y ROLES (RBAC)
+// =========================================================================
+
 model Usuario {
-  id_usuario         Int            @id @default(autoincrement())
-  nombre             String         @db.VarChar(100)
-  apellido           String         @db.VarChar(100)
-  correo             String         @unique @db.VarChar(150)
-  password_hash      String         @db.VarChar(255)
-  rol                Rol            @default(APRENDIZ)
-  estado             EstadoUsuario  @default(ACTIVO)
-  fecha_creacion     DateTime       @default(now())
-  fecha_actualizacion DateTime      @updatedAt
+  id_usuario          Int            @id @default(autoincrement())
+  nombre              String         @db.VarChar(100)
+  apellido            String         @db.VarChar(100)
+  correo              String         @unique @db.VarChar(150)
+  password_hash       String         @db.VarChar(255)
+  rol                 Rol            @default(APRENDIZ)
+  estado              EstadoUsuario  @default(ACTIVO)
+  fecha_creacion      DateTime       @default(now())
+  fecha_actualizacion DateTime       @updatedAt
 
-  aprendiz           Aprendiz?
-  instructor         Instructor?
+  aprendiz            Aprendiz?
+  instructor          Instructor?
+  notificaciones      Notificacion[]
+  auditorias          HistorialAuditoria[]
 
-  // Índices para optimizar autenticación y filtrado por rol
   @@index([correo, rol])
   @@index([estado])
   @@map("USUARIO")
@@ -81,18 +134,25 @@ model Aprendiz {
 }
 
 model Instructor {
-  id_instructor   Int                @id @default(autoincrement())
-  id_usuario      Int                @unique
-  especialidad    String             @db.VarChar(100)
-  telefono        String?            @db.VarChar(20)
+  id_instructor   Int                     @id @default(autoincrement())
+  id_usuario      Int                     @unique
+  especialidad    String                  @db.VarChar(100)
+  telefono        String?                 @db.VarChar(20)
 
-  usuario         Usuario            @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+  usuario         Usuario                 @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
   cursos          CursoInstructor[]
   observaciones   Observacion[]
+  seguimientos    SeguimientoCompetencia[]
+  sesiones        SesionClase[]
+  recuperaciones  Recuperacion[]
 
   @@index([especialidad])
   @@map("INSTRUCTOR")
 }
+
+// =========================================================================
+// 2. MODELO ACADÉMICO: PROGRAMAS, CURSOS Y FICHAS
+// =========================================================================
 
 model Programa {
   id_programa     Int             @id @default(autoincrement())
@@ -103,6 +163,7 @@ model Programa {
   fecha_creacion  DateTime        @default(now())
 
   cursos          Curso[]
+  competencias    Competencia[]
 
   @@index([codigo, estado])
   @@map("PROGRAMA")
@@ -122,6 +183,7 @@ model Curso {
   instructores    CursoInstructor[]
   inscripciones   Inscripcion[]
   evidencias      Evidencia[]
+  sesiones        SesionClase[]
 
   @@index([id_programa, estado])
   @@map("CURSO")
@@ -142,17 +204,21 @@ model CursoInstructor {
 }
 
 model Inscripcion {
-  id_inscripcion      Int                @id @default(autoincrement())
+  id_inscripcion      Int                       @id @default(autoincrement())
   id_aprendiz         Int
   id_curso            Int
-  fecha_inscripcion   DateTime           @default(now())
-  estado              EstadoInscripcion  @default(ACTIVO)
+  fecha_inscripcion   DateTime                  @default(now())
+  estado              EstadoInscripcion         @default(ACTIVO)
 
-  aprendiz            Aprendiz           @relation(fields: [id_aprendiz], references: [id_aprendiz], onDelete: Cascade)
-  curso               Curso              @relation(fields: [id_curso], references: [id_curso], onDelete: Cascade)
+  aprendiz            Aprendiz                  @relation(fields: [id_aprendiz], references: [id_aprendiz], onDelete: Cascade)
+  curso               Curso                     @relation(fields: [id_curso], references: [id_curso], onDelete: Cascade)
   calificaciones      Calificacion[]
   asistencias         Asistencia[]
   observaciones       Observacion[]
+  seguimientos        SeguimientoCompetencia[]
+  entregas            EntregaEvidencia[]
+  recuperaciones      Recuperacion[]
+  registrosAsistencia RegistroAsistencia[]
 
   @@unique([id_aprendiz, id_curso], name: "uk_aprendiz_curso")
   @@index([id_curso, estado])
@@ -160,32 +226,140 @@ model Inscripcion {
   @@map("INSCRIPCION")
 }
 
+// =========================================================================
+// 3. MÓDULO 1: COMPETENCIAS Y RESULTADOS DE APRENDIZAJE (RAP)
+// =========================================================================
+
+model Competencia {
+  id_competencia      Int                     @id @default(autoincrement())
+  id_programa         Int
+  codigo              String                  @unique @db.VarChar(50)
+  nombre              String                  @db.VarChar(255)
+  descripcion         String?                 @db.Text
+  horas_duracion      Int                     @default(120)
+  fecha_creacion      DateTime                @default(now())
+
+  programa            Programa                @relation(fields: [id_programa], references: [id_programa], onDelete: Cascade)
+  resultados          ResultadoAprendizaje[]
+  seguimientos        SeguimientoCompetencia[]
+
+  @@index([id_programa])
+  @@index([codigo])
+  @@map("COMPETENCIA")
+}
+
+model ResultadoAprendizaje {
+  id_rap              Int                     @id @default(autoincrement())
+  id_competencia      Int
+  codigo              String                  @db.VarChar(50)
+  descripcion         String                  @db.Text
+  fecha_creacion      DateTime                @default(now())
+
+  competencia         Competencia             @relation(fields: [id_competencia], references: [id_competencia], onDelete: Cascade)
+  evidencias          Evidencia[]
+  recuperaciones      Recuperacion[]
+
+  @@unique([id_competencia, codigo], name: "uk_competencia_rap")
+  @@index([id_competencia])
+  @@map("RESULTADO_APRENDIZAJE")
+}
+
+model SeguimientoCompetencia {
+  id_seguimiento      Int                     @id @default(autoincrement())
+  id_inscripcion      Int
+  id_competencia      Int
+  id_instructor       Int?
+  estado              EstadoCompetencia       @default(PENDIENTE)
+  porcentaje_avance   Decimal                 @default(0.00) @db.Decimal(5, 2)
+  fecha_evaluacion    DateTime?
+  observaciones       String?                 @db.Text
+  fecha_actualizacion DateTime                @updatedAt
+
+  inscripcion         Inscripcion             @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
+  competencia         Competencia             @relation(fields: [id_competencia], references: [id_competencia], onDelete: Cascade)
+  instructor          Instructor?             @relation(fields: [id_instructor], references: [id_instructor], onDelete: SetNull)
+  historial           HistorialSeguimiento[]
+
+  @@unique([id_inscripcion, id_competencia], name: "uk_inscripcion_competencia")
+  @@index([id_inscripcion, estado])
+  @@index([id_competencia])
+  @@map("SEGUIMIENTO_COMPETENCIA")
+}
+
+model HistorialSeguimiento {
+  id_historial        Int                     @id @default(autoincrement())
+  id_seguimiento      Int
+  estado_anterior     String                  @db.VarChar(50)
+  estado_nuevo        String                  @db.VarChar(50)
+  motivo              String?                 @db.Text
+  usuario_responsable String                  @db.VarChar(100)
+  fecha               DateTime                @default(now())
+
+  seguimiento         SeguimientoCompetencia  @relation(fields: [id_seguimiento], references: [id_seguimiento], onDelete: Cascade)
+
+  @@index([id_seguimiento])
+  @@map("HISTORIAL_SEGUIMIENTO")
+}
+
+// =========================================================================
+// 4. MÓDULO 2: GESTIÓN COMPLETA DE EVIDENCIAS Y ENTREGAS VERSIONADAS
+// =========================================================================
+
 model Evidencia {
-  id_evidencia    Int             @id @default(autoincrement())
-  id_curso        Int
-  nombre          String          @db.VarChar(150)
-  descripcion     String?         @db.Text
-  porcentaje      Decimal         @default(100.00) @db.Decimal(5, 2)
-  fecha_limite    DateTime?       @db.Date
-  fecha_creacion  DateTime        @default(now())
+  id_evidencia        Int                     @id @default(autoincrement())
+  id_curso            Int
+  id_rap              Int?
+  nombre              String                  @db.VarChar(150)
+  descripcion         String?                 @db.Text
+  instrucciones       String?                 @db.Text
+  porcentaje          Decimal                 @default(100.00) @db.Decimal(5, 2)
+  fecha_limite        DateTime?               @db.Date
+  estado              EstadoEvidencia         @default(PUBLICADA)
+  fecha_creacion      DateTime                @default(now())
 
-  curso           Curso           @relation(fields: [id_curso], references: [id_curso], onDelete: Cascade)
-  calificaciones  Calificacion[]
+  curso               Curso                   @relation(fields: [id_curso], references: [id_curso], onDelete: Cascade)
+  rap                 ResultadoAprendizaje?   @relation(fields: [id_rap], references: [id_rap], onDelete: SetNull)
+  calificaciones      Calificacion[]
+  entregas            EntregaEvidencia[]
 
-  @@index([id_curso])
+  @@index([id_curso, estado])
+  @@index([id_rap])
   @@map("EVIDENCIA")
 }
 
-model Calificacion {
-  id_calificacion   Int           @id @default(autoincrement())
-  id_inscripcion    Int
-  id_evidencia      Int
-  nota              Decimal       @db.Decimal(4, 2)
-  observacion       String?       @db.Text
-  fecha_registro    DateTime      @default(now())
+model EntregaEvidencia {
+  id_entrega          Int                     @id @default(autoincrement())
+  id_evidencia        Int
+  id_inscripcion      Int
+  version             Int                     @default(1)
+  archivo_nombre      String?                 @db.VarChar(255)
+  archivo_url         String?                 @db.VarChar(500)
+  comentario_aprendiz String?                 @db.Text
+  estado              EstadoEvidencia         @default(ENTREGADA)
+  calificacion        Decimal?                @db.Decimal(4, 2)
+  retroalimentacion   String?                 @db.Text
+  fecha_entrega       DateTime                @default(now())
+  fecha_evaluacion    DateTime?
+  evaluador_nombre    String?                 @db.VarChar(100)
 
-  inscripcion       Inscripcion   @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
-  evidencia         Evidencia     @relation(fields: [id_evidencia], references: [id_evidencia], onDelete: Cascade)
+  evidencia           Evidencia               @relation(fields: [id_evidencia], references: [id_evidencia], onDelete: Cascade)
+  inscripcion         Inscripcion             @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
+
+  @@index([id_evidencia, id_inscripcion])
+  @@index([id_inscripcion, estado])
+  @@map("ENTREGA_EVIDENCIA")
+}
+
+model Calificacion {
+  id_calificacion     Int                     @id @default(autoincrement())
+  id_inscripcion      Int
+  id_evidencia        Int
+  nota                Decimal                 @db.Decimal(4, 2)
+  observacion         String?                 @db.Text
+  fecha_registro      DateTime                @default(now())
+
+  inscripcion         Inscripcion             @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
+  evidencia           Evidencia               @relation(fields: [id_evidencia], references: [id_evidencia], onDelete: Cascade)
 
   @@unique([id_inscripcion, id_evidencia], name: "uk_inscripcion_evidencia")
   @@index([id_inscripcion])
@@ -193,15 +367,102 @@ model Calificacion {
   @@map("CALIFICACION")
 }
 
-model Asistencia {
-  id_asistencia     Int               @id @default(autoincrement())
-  id_inscripcion    Int
-  fecha             DateTime          @db.Date
-  estado            EstadoAsistencia  @default(PRESENTE)
-  observacion       String?           @db.Text
-  fecha_registro    DateTime          @default(now())
+// =========================================================================
+// 5. MÓDULO 3: SISTEMA DE RECUPERACIÓN DE COMPETENCIAS
+// =========================================================================
 
-  inscripcion       Inscripcion       @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
+model Recuperacion {
+  id_recuperacion     Int                     @id @default(autoincrement())
+  id_inscripcion      Int
+  id_rap              Int
+  id_instructor       Int
+  actividad_refuerzo  String                  @db.Text
+  fecha_inicio        DateTime                @db.Date
+  fecha_limite        DateTime                @db.Date
+  fecha_entrega       DateTime?
+  archivo_entrega     String?                 @db.VarChar(500)
+  comentario_entrega  String?                 @db.Text
+  calificacion        Decimal?                @db.Decimal(4, 2)
+  observacion         String?                 @db.Text
+  estado              EstadoRecuperacion      @default(IDENTIFICADA)
+  fecha_creacion      DateTime                @default(now())
+  fecha_evaluacion    DateTime?
+
+  inscripcion         Inscripcion             @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
+  rap                 ResultadoAprendizaje    @relation(fields: [id_rap], references: [id_rap], onDelete: Cascade)
+  instructor          Instructor              @relation(fields: [id_instructor], references: [id_instructor], onDelete: Cascade)
+
+  @@index([id_inscripcion, estado])
+  @@index([id_rap])
+  @@index([id_instructor])
+  @@map("RECUPERACION")
+}
+
+// =========================================================================
+// 6. MÓDULO 4: CONTROL DE ASISTENCIA AUTOMATIZADO Y NOVEDADES
+// =========================================================================
+
+model SesionClase {
+  id_sesion           Int                     @id @default(autoincrement())
+  id_curso            Int
+  id_instructor       Int
+  fecha               DateTime                @db.Date
+  hora_inicio         String                  @db.VarChar(10)
+  hora_fin            String                  @db.VarChar(10)
+  tema                String                  @db.VarChar(200)
+  fecha_registro      DateTime                @default(now())
+
+  curso               Curso                   @relation(fields: [id_curso], references: [id_curso], onDelete: Cascade)
+  instructor          Instructor              @relation(fields: [id_instructor], references: [id_instructor], onDelete: Cascade)
+  registros           RegistroAsistencia[]
+
+  @@index([id_curso, fecha])
+  @@index([id_instructor])
+  @@map("SESION_CLASE")
+}
+
+model RegistroAsistencia {
+  id_registro         Int                       @id @default(autoincrement())
+  id_sesion           Int
+  id_inscripcion      Int
+  estado              EstadoAsistenciaDetallada @default(ASISTIO)
+  observacion         String?                   @db.Text
+  fecha_registro      DateTime                  @default(now())
+
+  sesion              SesionClase               @relation(fields: [id_sesion], references: [id_sesion], onDelete: Cascade)
+  inscripcion         Inscripcion               @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
+  justificaciones     JustificacionAsistencia[]
+
+  @@unique([id_sesion, id_inscripcion], name: "uk_sesion_inscripcion")
+  @@index([id_sesion, estado])
+  @@index([id_inscripcion, estado])
+  @@map("REGISTRO_ASISTENCIA")
+}
+
+model JustificacionAsistencia {
+  id_justificacion    Int                       @id @default(autoincrement())
+  id_registro         Int
+  motivo              String                    @db.Text
+  soporte_url         String?                   @db.VarChar(500)
+  estado              String                    @default("PENDIENTE") @db.VarChar(20)
+  fecha_radicacion    DateTime                  @default(now())
+  fecha_resolucion    DateTime?
+
+  registro            RegistroAsistencia        @relation(fields: [id_registro], references: [id_registro], onDelete: Cascade)
+
+  @@index([id_registro])
+  @@map("JUSTIFICACION_ASISTENCIA")
+}
+
+model Asistencia {
+  id_asistencia       Int               @id @default(autoincrement())
+  id_inscripcion      Int
+  fecha               DateTime          @db.Date
+  estado              EstadoAsistencia  @default(PRESENTE)
+  observacion         String?           @db.Text
+  fecha_registro      DateTime          @default(now())
+
+  inscripcion         Inscripcion       @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
 
   @@unique([id_inscripcion, fecha], name: "uk_asistencia_dia")
   @@index([id_inscripcion, fecha])
@@ -210,16 +471,57 @@ model Asistencia {
 }
 
 model Observacion {
-  id_observacion    Int           @id @default(autoincrement())
-  id_inscripcion    Int
-  id_instructor     Int
-  descripcion       String        @db.Text
-  fecha             DateTime      @default(now())
+  id_observacion      Int           @id @default(autoincrement())
+  id_inscripcion      Int
+  id_instructor       Int
+  descripcion         String        @db.Text
+  fecha               DateTime      @default(now())
 
-  inscripcion       Inscripcion   @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
-  instructor        Instructor    @relation(fields: [id_instructor], references: [id_instructor], onDelete: Cascade)
+  inscripcion         Inscripcion   @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
+  instructor          Instructor    @relation(fields: [id_instructor], references: [id_instructor], onDelete: Cascade)
 
   @@index([id_inscripcion])
   @@index([id_instructor])
   @@map("OBSERVACION")
+}
+
+// =========================================================================
+// 7. MÓDULO 6: CENTRO DE NOTIFICACIONES Y EVENTOS
+// =========================================================================
+
+model Notificacion {
+  id_notificacion     Int                   @id @default(autoincrement())
+  id_usuario          Int
+  titulo              String                @db.VarChar(150)
+  mensaje             String                @db.Text
+  categoria           CategoriaNotificacion @default(ALERTA)
+  leida               Boolean               @default(false)
+  enlace              String?               @db.VarChar(200)
+  fecha_creacion      DateTime              @default(now())
+
+  usuario             Usuario               @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+
+  @@index([id_usuario, leida])
+  @@index([fecha_creacion])
+  @@map("NOTIFICACION")
+}
+
+// =========================================================================
+// 8. AUDITORÍA GENERAL DEL SISTEMA
+// =========================================================================
+
+model HistorialAuditoria {
+  id_auditoria        Int                   @id @default(autoincrement())
+  id_usuario          Int?
+  accion              String                @db.VarChar(100)
+  modulo              String                @db.VarChar(50)
+  detalle             String                @db.Text
+  ip_address          String?               @db.VarChar(50)
+  fecha               DateTime              @default(now())
+
+  usuario             Usuario?              @relation(fields: [id_usuario], references: [id_usuario], onDelete: SetNull)
+
+  @@index([modulo, fecha])
+  @@index([id_usuario])
+  @@map("HISTORIAL_AUDITORIA")
 }

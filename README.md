@@ -29,9 +29,21 @@ Toda la especificación técnica formal y viva de este proyecto se encuentra doc
 - **Programa de Formación:** Tecnólogo en Análisis y Desarrollo de Software (ADSO) – Ficha 2874102
 - **Centro de Formación:** Centro de Formación Industrial – SENA Regional Huila
 - **Ubicación:** Neiva, Huila, Colombia
-- **Versión del Sistema:** v2.2 (Factory Design System & High Performance Architecture)
+- **Versión del Sistema:** v3.0 (7 Módulos Avanzados, MySQL 8 Real, Three.js 3D & Telemetría IA)
 - **Duración Estimada:** 4 Semanas (1 Mes · Metodología Ágil Scrum)
 - **Modalidad:** Desarrollo individual asistido por Inteligencia Artificial
+
+---
+
+## 🚀 7 Módulos Académicos Avanzados Conectados a MySQL 8
+
+1. **Módulo 1: Seguimiento Académico por Competencias y RAPs:** Gestión de competencias laborales, resultados de aprendizaje, cálculo de avance porcentual y registro de evaluaciones con histórico auditado.
+2. **Módulo 2: Gestión Completa de Evidencias:** Flujo de publicación por instructor, entrega con versionamiento automático (`v1`, `v2`...) por aprendices, calificación cuantitativa y cualitativa.
+3. **Módulo 3: Sistema de Recuperación de Competencias:** Planes de mejoramiento para competencias en refuerzo, asignación de actividades, radicación de entregas y acreditación automática al ser superadas.
+4. **Módulo 4: Control de Asistencia Automatizado:** Planilla por sesión, cálculo acumulado en tiempo real, alertas de ausencias consecutivas ($\ge 3$) y umbral $< 85\%$, radicación de justificaciones médicas.
+5. **Módulo 5: Centro de Reportes PDF y Excel:** Expedientes individuales y dossiers consolidados de ficha listos para imprimir con membrete oficial del SENA y exportación nativa a Excel (.csv UTF-8).
+6. **Módulo 6: Sistema de Notificaciones Automáticas:** Alertas en tiempo real generadas por eventos del sistema (calificaciones, entregas, faltas, recuperaciones) con marcado de lectura y navegación directa.
+7. **Módulo 7: EDUNOVA AI con Datos Académicos Reales:** Asistente pedagógico contextual conectado a MySQL 8 con validación de roles RBAC, consultas de rendimiento personalizadas y streaming de telemetría.
 
 ---
 
