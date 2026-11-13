@@ -4,6 +4,7 @@
 [![Proyecto ADSO](https://img.shields.io/badge/SENA-ADSO_2026-39A900?style=for-the-badge&logo=sena&logoColor=white)](#)
 [![Estándar IEEE 830](https://img.shields.io/badge/Documentación-SRS_IEEE_830-19B5A5?style=for-the-badge)](#)
 [![React](https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](#)
+[![Three.js](https://img.shields.io/badge/Three.js_WebGL-000000?style=for-the-badge&logo=three.js&logoColor=white)](#)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](#)
 [![Node.js](https://img.shields.io/badge/Node.js_24-43853D?style=for-the-badge&logo=node.js&logoColor=white)](#)
 [![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](#)
