@@ -13,86 +13,155 @@
 | **Centro de Formación:** | Centro de Formación Industrial – SENA Regional Huila (Neiva) |
 | **Modalidad:** | Desarrollo individual con asistencia de Inteligencia Artificial |
 | **Duración Estimada:** | 4 semanas (1 mes) |
-| **Versión del Documento:** | 1.2 (Actualizada con Identidad Ocean Tech Premium y Modelo Relacional) |
+| **Versión del Documento:** | 2.0 (Adaptada a la Estructura Formal Integral IEEE / SENA) |
 | **Estado:** | Aprobado / En Ejecución Técnica |
-
----
-
-## CONTROL DE VERSIONES DEL SRS
-
-| Versión | Fecha | Autor(a) | Descripción del Cambio |
-| :---: | :---: | :--- | :--- |
-| **v1.0** | 11/11/2026 | Anyely Valeria | Creación inicial del SRS, planteamiento del problema, requisitos RF/RNF, historias de usuario y cronograma de 4 semanas. |
-| **v1.1** | 12/11/2026 | Anyely Valeria | Incorporación de la autenticación obligatoria dividida en 3 roles (Aprendiz, Instructor, Admin) y maquetación Soft Glassmorphism. |
-| **v1.2** | 13/11/2026 | Anyely Valeria | **Actualización integral Ocean Tech Premium**: sustitución de tonos pastel por Azul Petróleo, Azul Profundo, Turquesa, Cian y Ámbar; formalización del MER de 13 entidades, catálogo de API REST y protocolo de trazabilidad continua en GitHub. |
 
 ---
 
 ## 1. INTRODUCCIÓN
 
-### 1.1 Propósito
-El propósito de este documento de Especificación de Requisitos de Software (SRS) es describir de manera exhaustiva, formal y estructurada los requisitos funcionales, no funcionales, reglas de negocio, arquitectura técnica, modelo de datos y diseño de interfaces para la plataforma web **EDUNOVA – Academic Management System**. Este documento sirve como contrato técnico de desarrollo, guía de validación de pruebas y fuente viva de consulta para aprendices, instructores, coordinadores y evaluadores del SENA.
+### 1.1. Planteamiento del problema
+En la actualidad, diversas instituciones educativas y centros de formación tecnológica continúan gestionando sus procesos académicos mediante herramientas fragmentadas, hojas de cálculo independientes (`.xlsx`), archivos físicos y libretas de asistencia manuales. 
 
-### 1.2 Alcance del Sistema
-EDUNOVA es un sistema web integral diseñado para centralizar, automatizar y auditar los procesos académicos y formativos del **Centro de Formación Industrial del SENA Regional Huila**. El sistema gestiona desde una única plataforma el ciclo de vida formativo:
-1. Autenticación y control de acceso jerárquico basado en roles (RBAC: Administrador, Instructor, Aprendiz).
-2. Administración de usuarios, fichas, cursos, materias y programas de formación técnica/tecnológica.
-3. Matrícula y asociación de aprendices a grupos académicos.
-4. Planilla digital de calificaciones ponderadas con escala institucional (0.0 a 5.0 / Aprobado - Deficiente).
-5. Control y registro de asistencia por sesión formativa con cálculo automático de porcentajes.
-6. Consultas analíticas, generación de reportes y tutoría pedagógica asistida por **EDUNOVA AI**.
+Esta dispersión operativa ocasiona problemas críticos:
+1. **Inconsistencia y pérdida de información:** Dificultad para conciliar calificaciones y asistencias al transferir notas entre formatos manuales.
+2. **Duplicidad de registros:** Falta de restricciones de unicidad al matricular aprendices o registrar asistencia en diferentes sesiones.
+3. **Falta de visibilidad oportuna para el aprendiz:** Los aprendices no cuentan con un medio digital centralizado en tiempo real para consultar su historial de notas, asistencias acumuladas y advertencias preventivas.
+4. **Sobrecarga de trabajo en instructores:** Inversión excesiva de tiempo calculando ponderaciones de evidencias y consolidando asistencias manualmente, restando tiempo a la labor pedagógica.
+5. **Dificultad en auditoría y control directivo:** Los coordinadores y administradores carecen de paneles estadísticos e indicadores inmediatos sobre la deserción, avance de competencias y rendimiento global de las fichas.
 
-### 1.3 Personal Involucrado
-* **Autora y Desarrolladora Full Stack:** Anyely Valeria Bautista (Aprendiz ADSO).
-* **Entidad Educativa:** Servicio Nacional de Aprendizaje (SENA) – Regional Huila.
-* **Usuarios Finales:** Administradores Académicos, Docentes/Instructores Técnicos, Aprendices Matriculados.
-* **Herramientas de Asistencia:** Inteligencia Artificial (ChatGPT, GitHub Copilot, Gemini) para soporte en arquitectura, optimización de código, pruebas y documentación técnica.
-
-### 1.4 Definiciones, Siglas y Abreviaturas
-* **ADSO:** Análisis y Desarrollo de Software.
-* **API REST:** Interfaz de Programación de Aplicaciones basada en transferencia de estado representacional.
-* **CRUD:** Crear, Leer, Actualizar y Eliminar (Create, Read, Update, Delete).
-* **FK / PK:** Llave Foránea (Foreign Key) / Llave Primaria (Primary Key).
-* **JWT:** JSON Web Token para autenticación segura sin estado.
-* **MER:** Modelo Entidad-Relación de base de datos.
-* **MVP:** Producto Mínimo Viable (Minimum Viable Product).
-* **ORM:** Mapeador Objeto-Relacional (Object-Relational Mapping / Prisma ORM).
-* **RBAC:** Control de Acceso Basado en Roles (Role-Based Access Control).
-* **SENA:** Servicio Nacional de Aprendizaje.
-* **Soft UI / Glassmorphism:** Estilo visual moderno basado en tarjetas flotantes translúcidas, desenfoque de fondo (`backdrop-filter: blur`), bordes redondeados y microinteracciones fluidas.
+**Pregunta Orientadora:**  
+*¿Cómo desarrollar una plataforma web moderna, modular y centralizada que permita administrar y consultar de manera organizada la información académica de aprendices, instructores, programas de formación, calificaciones y asistencias, reduciendo los procesos manuales y optimizando el seguimiento pedagógico en el Centro de Formación Industrial del SENA Regional Huila?*
 
 ---
 
-## 2. DESCRIPCIÓN GENERAL DEL SISTEMA
+### 1.2. Propósito
+El propósito de este documento es definir formal, completa y sistemáticamente la **Especificación de Requisitos de Software (SRS)** para la plataforma web **EDUNOVA – Academic Management System**, conforme a los lineamientos del estándar **IEEE 830 / ISO/IEC/IEEE 29148**. 
 
-### 2.1 Planteamiento del Problema
-Actualmente, diversas instituciones y centros de formación gestionan sus registros académicos mediante herramientas desacopladas, planillas físicas de papel y hojas de cálculo independientes. Esta fragmentación genera:
-* Pérdida o inconsistencia de información al transferir notas entre formatos.
-* Duplicidad de matrículas y dificultad para auditar cambios.
-* Demoras significativas para que los aprendices conozcan sus resultados formativos oportunamente.
-* Sobrecarga operativa para los instructores al calcular ponderaciones de evidencias y consolidar asistencias manualmente.
+Este documento actúa como:
+* Contrato formal de desarrollo entre la aprendiz desarrolladora y los evaluadores académicos del SENA.
+* Guía de arquitectura de software para la implementación del frontend, backend y base de datos relacional.
+* Matriz de verificación y diseño del plan de pruebas funcionales y de calidad.
 
-**Pregunta Problema:**  
-*¿Cómo desarrollar una plataforma web moderna que permita administrar y consultar de manera centralizada la información académica de aprendices, instructores, programas de formación, calificaciones y asistencias, reduciendo los procesos manuales y optimizando el seguimiento pedagógico?*
+---
 
-### 2.2 Objetivos
+### 1.3. Justificación
+El desarrollo de EDUNOVA soluciona las problemáticas de dispersión y manualidad, proporcionando una solución tecnológica escalable, segura y adaptable a cualquier dispositivo (computadores, tabletas y celulares). Al centralizar la información en una base de datos relacional (MySQL 8) administrada con Prisma ORM, se garantiza la integridad referencial, la no duplicidad y el acceso inmediato a la información.
 
-#### Objetivo General
-Desarrollar una plataforma web de gestión académica (EDUNOVA) que centralice la administración de aprendices, instructores, programas formativos, cursos, calificaciones y asistencias, facilitando el seguimiento pedagógico en tiempo real y optimizando los procesos administrativos del centro de formación.
+Desde el punto de vista pedagógico y formativo, el proyecto permite a la aprendiz aplicar de forma integral competencias técnicas en:
+* Levantamiento de requisitos formales e historias de usuario.
+* Diseño de bases de datos relacionales normalizadas en 3FN.
+* Arquitectura de software en 3 capas (Monolito Modular con React 18, Node.js, Express y MySQL).
+* Implementación de seguridad perimetral mediante JWT y hashing de contraseñas.
+* Diseño de experiencias de usuario con estándares visuales SaaS modernos (**Ocean Tech Premium Glassmorphism**).
+* Buenas prácticas de control de versiones con Git/GitHub y metodologías ágiles (Scrum).
 
-#### Objetivos Específicos
-1. Identificar y formalizar los requisitos funcionales, no funcionales y reglas de negocio del sistema educativo.
-2. Diseñar e implementar una base de datos relacional normalizada (MySQL 8) administrada con Prisma ORM.
-3. Construir una API REST segura en Node.js + Express con validación de tokens y roles.
-4. Desarrollar una interfaz de usuario moderna en React 18 + Tailwind CSS bajo la identidad **Ocean Tech Premium**.
-5. Implementar módulos de visualización de datos (Recharts) y sugerencias pedagógicas con **EDUNOVA AI**.
-6. Ejecutar pruebas funcionales y documentar el ciclo de vida del software con trazabilidad continua en GitHub.
+#### 1.3.1. Vigilancia tecnológica y referentes de mercado
+Para el diseño y concepción de EDUNOVA se realizó un estudio de vigilancia tecnológica y benchmarking analizando referentes educativos globales y plataformas de gestión escolar líderes:
 
-### 2.3 Justificación
-El proyecto soluciona de raíz la dispersión de datos académicos, proporcionando una solución tecnológica escalable, segura y adaptable a cualquier dispositivo (computador, tableta o smartphone). Desde el aspecto pedagógico y profesional, permite a la aprendiz aplicar competencias avanzadas en ingeniería de software, arquitectura en capas, metodologías ágiles (Scrum) y diseño UI/UX de nivel SaaS comercial.
+| Referente de Mercado | Enfoque Principal | Aporte Tomado para EDUNOVA |
+| :--- | :--- | :--- |
+| **Henon Edtech** ([henonedu.com](https://henonedu.com)) | Plataforma moderna de analítica educativa y seguimiento estudiantil. | Estructura modular de métricas de progreso y dashboards limpios de rendimiento. |
+| **AttendX** ([attendx.co.in](https://attendx.co.in)) | Software especializado en control digital de asistencias y novedades. | Registro rápido de asistencia por sesión (Presente, Retardo, Inasistencia) con porcentaje consolidado. |
+| **EduMatrix / Virtual Classroom** | Gestión escolar para colegios técnicos y seguimiento de asignaturas. | Planilla interactiva de calificaciones homologadas a escala numérica institucional. |
+| **Innova Scholar** ([innovascholar.com](https://innovascholar.com)) | Sistema integral de control escolar con jerarquía de roles. | Modelo de control de acceso estricto RBAC (Administrador, Instructor, Aprendiz). |
+| **A-Star Solutions** | Portales estudiantiles interactivos de autoservicio. | Portal del aprendiz con acceso instantáneo a evidencias, retroalimentación y tutoría con IA. |
+| **EDUMASR** ([edumasr.com](https://edumasr.com)) | Sistemas de gestión académica basados en arquitecturas web modernas. | Concepto de panel centralizado de administración y reportes imprimibles oficiales. |
 
-### 2.4 Perspectiva del Producto y Arquitectura de 3 Capas
-El sistema opera bajo un **Monolito Modular** de 3 capas claramente desacopladas:
+---
+
+### 1.4. Objetivo general
+Desarrollar una plataforma web de gestión académica integral (EDUNOVA) que permita administrar y centralizar la información de aprendices, instructores, programas de formación, cursos, calificaciones y asistencias, optimizando los procesos administrativos y facilitando el seguimiento pedagógico en el Centro de Formación Industrial del SENA Regional Huila.
+
+#### 1.4.1. Objetivos específicos
+1. **Analizar y especificar:** Identificar las necesidades de información académica y formalizar los requisitos funcionales (RF1 a RF26), no funcionales (RNF-01 a RNF-12) e historias de usuario (HU-01 a HU-26).
+2. **Diseñar el modelo de datos:** Diseñar e implementar una base de datos relacional normalizada en MySQL 8 compuesta por 13 entidades interconectadas.
+3. **Desarrollar la API REST:** Construir los servicios del backend en Node.js y Express con autenticación robusta JWT, control RBAC y operaciones CRUD.
+4. **Construir el Frontend Interactivo:** Diseñar e implementar la interfaz en React 18 + Tailwind CSS bajo la identidad **Ocean Tech Premium**, incorporando componentes Glassmorphism y gráficos Recharts.
+5. **Incorporar Tutoría Inteligente:** Implementar el módulo **EDUNOVA AI** para emitir diagnósticos y sugerencias pedagógicas adaptadas al rendimiento del aprendiz.
+6. **Verificar y Documentar:** Diseñar el plan de pruebas funcionales, construir la matriz de trazabilidad y mantener la sincronización continua en GitHub.
+
+---
+
+### 1.5. Alcances
+
+#### 1.5.1. Funcionalidades Incluidas (Versión 1.0 - MVP)
+* Inicio de sesión obligatorio dividido en 3 portales: **Administrador**, **Instructor** y **Aprendiz**.
+* Registro de nuevos usuarios con validación de roles, documentos y correos únicos.
+* Gestión completa de perfiles (aprendices, instructores y directivos).
+* Gestión de programas de formación (ej. ADSO), asignaturas y creación de fichas formativas.
+* Matrícula formal de aprendices a fichas evitando inscripciones duplicadas.
+* Planilla digital de registro de calificaciones con escala institucional (0.0 a 5.0) y homologación a Aprobado (A) / Deficiente (D).
+* Control de asistencia por sesión formativa con cálculo porcentual acumulativo.
+* Dashboard del Aprendiz con Recharts Donut Chart (80% Aprobado vs 20% Pendiente).
+* Módulo interactivo **EDUNOVA AI** con 3 modos de consulta rápida (`⚡ Mi Estado`, `⏳ Pendientes`, `🎯 Plan Guía`).
+* Generación de reportes académicos consolidados en pantalla y listos para exportación.
+
+#### 1.5.2. Funcionalidades Excluidas (Versiones Futuras)
+* Pasarela de pagos o cobro de aranceles educativos (el SENA es educación pública gratuita).
+* Clases virtuales sincrónicas o servidor de videoconferencias integrado.
+* Aplicación móvil nativa en tiendas App Store / Play Store.
+* Reconocimiento facial o biométrico para toma de asistencia.
+* Toma de decisiones autónoma por parte de la IA para aprobar o reprobar aprendices.
+
+---
+
+### 1.6. Personal Involucrado
+
+#### 1.6.1. Roles y responsabilidades del equipo
+* **Anyely Valeria Bautista (Desarrolladora Full Stack & Líder de Proyecto):**
+  * Responsable del levantamiento de requisitos, diseño de interfaces UI/UX, maquetación React, desarrollo de la API Node.js/Express, diseño relacional MySQL, pruebas funcionales y versionado en GitHub.
+* **Equipo de Instructores Evaluadores ADSO (SENA Regional Huila):**
+  * Responsables de la retroalimentación técnica, validación de historias de usuario, evaluación de la arquitectura de software y verificación de cumplimiento de competencias.
+* **Inteligencia Artificial Asistente (ChatGPT / Gemini / GitHub Copilot):**
+  * Soporte técnico en optimización de consultas SQL, generación de estructuras base, sugerencias de casos de prueba y redacción técnica del SRS.
+
+---
+
+### 1.7. Definiciones, acrónimos y abreviaturas
+* **ADSO:** Análisis y Desarrollo de Software (Programa tecnológico SENA).
+* **API REST:** Representational State Transfer Application Programming Interface.
+* **Bcrypt:** Función de derivación de claves para hashing seguro de contraseñas.
+* **CU:** Caso de Uso (Use Case).
+* **Ficha:** Código numérico único asignado a un grupo académico en el SENA.
+* **Glassmorphism:** Técnica de diseño de interfaz de usuario caracterizada por translucidez, desenfoque de fondo y sombras suaves.
+* **HMR:** Hot Module Replacement (reemplazo en caliente de módulos en Vite).
+* **HU:** Historia de Usuario (User Story).
+* **JWT:** JSON Web Token (estándar abierto RFC 7519 para intercambio de tokens de sesión).
+* **MER:** Modelo Entidad-Relación de base de datos.
+* **MVP:** Minimum Viable Product (Producto Mínimo Viable).
+* **Ocean Tech:** Identidad visual premium basada en tonos petróleo, azul profundo, turquesa, cian y ámbar.
+* **ORM:** Object-Relational Mapping (Mapeo Objeto-Relacional implementado con Prisma).
+* **RBAC:** Role-Based Access Control (Control de Acceso Basado en Roles).
+* **RF:** Requisito Funcional.
+* **RNF:** Requisito No Funcional.
+* **SENA:** Servicio Nacional de Aprendizaje.
+* **SPA:** Single Page Application (Aplicación web de página única construida con React).
+
+---
+
+### 1.8. Referencias
+1. IEEE Std 830-1998: *IEEE Recommended Practice for Software Requirements Specifications*.
+2. ISO/IEC/IEEE 29148:2018: *Systems and software engineering — Life cycle processes — Requirements engineering*.
+3. Documentación Oficial de React.js: [https://react.dev](https://react.dev).
+4. Documentación Oficial de Node.js: [https://nodejs.org](https://nodejs.org).
+5. Documentación Oficial de Express.js: [https://expressjs.com](https://expressjs.com).
+6. Documentación Oficial de Prisma ORM: [https://www.prisma.io/docs](https://www.prisma.io/docs).
+7. Documentación Oficial de MySQL 8: [https://dev.mysql.com/doc](https://dev.mysql.com/doc).
+8. Documentación Oficial de Tailwind CSS: [https://tailwindcss.com/docs](https://tailwindcss.com/docs).
+9. Guía Metodológica de Proyectos de Desarrollo de Software SENA ADSO (2026).
+
+---
+
+### 1.9. Resumen
+El proyecto **EDUNOVA** es una solución tecnológica Full Stack creada para resolver la fragmentación del registro académico en el SENA. El sistema cuenta con una arquitectura de 3 capas, una base de datos relacional de 13 entidades, un diseño de interfaz **Ocean Tech Premium Glassmorphism**, 26 requisitos funcionales rigurosos, 12 requisitos no funcionales, 26 historias de usuario con sus casos de uso y un protocolo de sincronización continua documentado en GitHub.
+
+---
+
+## 2. DESCRIPCIÓN GENERAL
+
+### 2.1. Perspectiva del producto
+EDUNOVA es un sistema web independiente y autónomo que opera como un **Monolito Modular** de alta cohesión y bajo acoplamiento:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -114,400 +183,269 @@ El sistema opera bajo un **Monolito Modular** de 3 capas claramente desacopladas
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### 2.5 Clases y Características de Usuarios
+El software no depende de plataformas propietarias externas para su funcionamiento esencial. Se conecta directamente al servidor local o en la nube para procesar peticiones en milisegundos.
 
-| Rol | Descripción y Permisos | Portal Asignado |
+---
+
+### 2.2. Características de los usuarios
+
+| Rol de Usuario | Nivel Formativo / Técnico | Responsabilidad Principal en el Sistema |
 | :--- | :--- | :--- |
-| **Administrador** | Acceso global: gestiona usuarios, programas, cursos, grupos, asignación docente y reportes consolidados. | Portal de Gestión Administrativa |
-| **Instructor** | Acceso a sus grupos asignados: consulta aprendices matriculados, califica evidencias y registra asistencia por sesión. | Portal del Instructor Titular |
-| **Aprendiz** | Acceso a su información personal: consulta de cursos inscritos, historial de calificaciones, asistencia y tutoría con IA. | Portal del Aprendiz ADSO |
-
-### 2.6 Alcance del Proyecto (MVP vs. Futuras Fases)
-
-```
-✅ INCLUIDO EN LA VERSIÓN 1.0 (MVP):
-├── Inicio de sesión obligatorio dividido en 3 roles (Admin, Instructor, Aprendiz)
-├── Registro de nuevos usuarios con validación de roles y contraseña segura
-├── Dashboard interactivo del Aprendiz con métricas en tiempo real
-├── Donut Chart de rendimiento (80% aprobado vs 20% pendiente)
-├── Tabla dinámica de cursos con buscador reactivo
-├── Módulo EDUNOVA AI Tutor con diagnósticos pedagógicos simulados
-├── Planilla de calificaciones con notas 0.0 a 5.0 y estado Aprobado / Deficiente
-├── Registro de asistencia con estados (Presente, Retardo, Inasistencia)
-├── Catálogo completo de endpoints REST documentados
-└── Base de datos MySQL con 13 tablas relacionales y migraciones Prisma
-
-❌ EXCLUIDO INICIALMENTE (FUTURAS VERSIONES):
-├── Pasarela de pagos o cobros de matrículas
-├── Aulas de videoconferencia sincrónica integradas
-├── Reconocimiento facial por cámara para asistencia
-├── Aplicación móvil nativa en Play Store / App Store
-└── Decisiones autónomas de IA para aprobar o reprobar aprendices
-```
+| **Administrador** | Personal administrativo o de coordinación académica con conocimientos en gestión educativa. | Parametriza programas, asigna instructores a fichas, matricula aprendices, supervisa el sistema y emite reportes. |
+| **Instructor** | Docentes y expertos técnicos con manejo de herramientas web. | Consulta aprendices a su cargo, programa actividades evaluativas, califica notas y toma asistencia por sesión. |
+| **Aprendiz** | Estudiantes de programas técnicos y tecnológicos del SENA. | Consulta de notas personales, seguimiento de asistencias, visualización de fichas y orientación con EDUNOVA AI. |
 
 ---
 
-## 3. REQUISITOS ESPECÍFICOS DEL SISTEMA
-
-### 3.1 Requisitos Funcionales (RF)
-
-| Código | Nombre del Requisito | Descripción | Entradas | Salidas | Prioridad |
-| :---: | :--- | :--- | :--- | :--- | :---: |
-| **RF01** | Inicio de sesión | Validar credenciales (correo y contraseña) según el rol seleccionado. | Correo institucional, contraseña, rol. | Token de sesión, redirección al portal. | **Alta** |
-| **RF02** | Registro de usuarios | Permitir la creación de cuentas para aprendices, instructores o administradores con código. | Nombre, apellido, doc, correo, contraseña, rol. | Registro persistido, mensaje de éxito. | **Alta** |
-| **RF03** | Gestión de aprendices | Administrar datos personales, documento, teléfono y ficha de formación. | Datos biográficos del aprendiz. | Ficha del aprendiz actualizada. | **Alta** |
-| **RF04** | Gestión de instructores | Registrar instructores con especialidad técnica y credenciales de acceso. | Datos personales, especialidad técnica. | Perfil docente disponible para asignación. | **Alta** |
-| **RF05** | Gestión de programas | Crear y activar programas de formación (ej. ADSO, Multimedia, Redes). | Nombre del programa, código, descripción. | Programa activo en catálogo. | **Alta** |
-| **RF06** | Gestión de cursos | Crear asignaturas o unidades técnicas pertenecientes a un programa. | Nombre, código de asignatura, horas. | Asignatura creada. | **Alta** |
-| **RF07** | Creación de grupos/fichas | Crear grupos académicos, asociar programa, jornada y asignar instructores. | Número de ficha, programa, instructor asignado. | Grupo/ficha constituida. | **Alta** |
-| **RF08** | Matrícula de aprendices | Asociar aprendices a un grupo académico validando no duplicidad. | ID Aprendiz, ID Grupo, fecha. | Matrícula activa registrada. | **Alta** |
-| **RF09** | Registro de notas | Permitir a los instructores registrar calificaciones de 0.0 a 5.0 por evidencia. | ID Matrícula, ID Actividad, nota, observación. | Nota calculada y guardada. | **Alta** |
-| **RF10** | Consulta de notas | Permitir al aprendiz visualizar sus propias notas, promedio y estado (A/D). | Petición autenticada del aprendiz. | Listado de evidencias y calificaciones. | **Alta** |
-| **RF11** | Registro de asistencia | Registrar el estado de asistencia (Presente, Retardo, Inasistente) por sesión. | ID Matrícula, ID Sesión, estado. | Asistencia confirmada. | **Alta** |
-| **RF12** | Consulta de asistencia | Mostrar al aprendiz e instructor el porcentaje de asistencia e inasistencias. | ID Aprendiz / ID Grupo. | Porcentaje de cumplimiento y detalle. | **Alta** |
-| **RF13** | Reportes académicos | Generar consolidados de notas y asistencia para exportación o impresión. | ID Ficha o ID Aprendiz. | Reporte consolidado en pantalla / PDF. | **Media** |
-| **RF14** | Tutoría EDUNOVA AI | Proporcionar retroalimentación adaptativa y consejos pedagógicos según el desempeño. | Historial de calificaciones y asistencia. | Diagnóstico formativo y ruta de refuerzo. | **Media** |
-| **RF15** | Cierre de sesión seguro | Destruir la sesión activa y limpiar el estado de autenticación local. | Clic en "Cerrar Sesión". | Redirección a la pantalla de Auth. | **Alta** |
+### 2.3. Restricciones
+1. **Plazo de Desarrollo:** 4 semanas calendario (1 mes) implementado en sprints semanales.
+2. **Entorno de Ejecución:** Servidores compatibles con Node.js v18+ y motor MySQL v8.0+.
+3. **Escala de Calificación:** Rango numérico estricto de 0.0 a 5.0 (nota aprobatoria $\ge 3.5$).
+4. **Seguridad Obligatoria:** Cifrado unidireccional de contraseñas con bcrypt (no contraseñas en texto plano).
+5. **Idioma:** Interfaz de usuario y mensajes del sistema en idioma español.
+6. **Presupuesto:** Desarrollo individual sin costo de licenciamiento de software comercial (stack Open Source).
 
 ---
 
-### 3.2 Requisitos No Funcionales (RNF)
+### 2.4. Suposiciones y dependencias
+* Los usuarios disponen de un dispositivo con conexión a red local o Internet y un navegador moderno (Chrome, Edge, Firefox).
+* Las credenciales de acceso a la base de datos MySQL local se encuentran configuradas en el archivo `.env`.
+* Los aprendices matriculados poseen una cuenta de correo electrónico institucional válida.
+* La institución provee la información inicial de programas de formación y fichas académicas.
 
-| Código | Categoría | Descripción Técnica | Métrica / Criterio |
+---
+
+## 3. REQUISITOS ESPECÍFICOS
+
+### 3.1. Requisitos comunes de las interfaces
+* **Identidad Visual Unificada:** Todos los módulos aplican la paleta **Ocean Tech Premium** (`#123B50`, `#17365D`, `#19B5A5`, `#48BFE3`, `#E9B949`, `#F4F7FA`).
+* **Efecto Glassmorphism:** Paneles de cristal con `backdrop-filter: blur(20px)`, bordes blancos translúcidos y sombras difuminadas.
+* **Navegación Consistente:** Menú lateral (Sidebar) retráctil con iconos temáticos Lucide, buscador global con atajo (`Ctrl+K`) y barra superior con identificación de institución y usuario.
+* **Retroalimentación Visual Inmediata:** Notificaciones tipo toast y modales con validaciones en verde menta (éxito), ámbar (alerta) o rojo (error).
+* **Adaptabilidad Responsive:** Reorganización automática de cuadrículas (`grid-cols-1` en móviles a `grid-cols-4` en pantallas amplias).
+
+---
+
+### 3.2. Historias de Usuario (HU-01 a HU-26)
+
+| Código | Rol | Historia de Usuario | Criterio de Aceptación |
 | :---: | :--- | :--- | :--- |
-| **RNF01** | **Rendimiento** | Respuestas del servidor en menos de 2 segundos en condiciones de red estándar. | Latencia $\le 2.0\text{ s}$ en consultas CRUD. |
-| **RNF02** | **Seguridad** | Encriptación unidireccional de contraseñas con algoritmo seguro (bcrypt / Argon2). | Salt rounds $\ge 10$, hash de 60 caracteres. |
-| **RNF03** | **Usabilidad** | Diseño intuitivo, interfaces limpias bajo estándar **Ocean Tech Glassmorphism**. | Curva de aprendizaje $\le 5$ minutos. |
-| **RNF04** | **Compatibilidad** | Soporte total en navegadores web modernos basados en Chromium, Gecko y WebKit. | Chrome, Edge, Firefox, Brave, Safari. |
-| **RNF05** | **Adaptabilidad** | Diseño 100% responsive optimizado para Desktop (1920x1080), Tablet y Móvil. | Breakpoints Tailwind: `sm`, `md`, `lg`, `xl`. |
-| **RNF06** | **Integridad** | Restricciones de integridad referencial a nivel de base de datos relacional. | Constraints PK, FK, Unique y Checks en MySQL. |
-| **RNF07** | **Disponibilidad** | Arquitectura orientada a alta disponibilidad y tolerancia a fallos en servidor local/cloud. | Uptime estimado $\ge 99.0\%$. |
-| **RNF08** | **Mantenibilidad** | Código desacoplado en componentes modulares limpios y reutilizables. | Estructura `/components`, `/services`, `/hooks`. |
-| **RNF09** | **Privacidad** | Aislamiento estricto de datos: un aprendiz jamás podrá consultar datos de otro. | Middleware RBAC y filtros por `usuario_id`. |
-| **RNF10** | **Respaldo** | Script DDL/DML reproducible y copias de seguridad de la base de datos MySQL. | Script SQL versionado en `/docs/database/`. |
+| **HU-01** | Todos | Como usuario, quiero iniciar sesión seleccionando mi rol para ingresar a mi portal autorizado. | Valida credenciales contra la BD y carga el panel correspondiente al rol. |
+| **HU-02** | Todos | Como usuario, quiero registrar una nueva cuenta para acceder a los servicios formativos. | Exige campos obligatorios, valida contraseña $\ge 6$ caracteres y correo único. |
+| **HU-03** | Todos | Como usuario, quiero solicitar el restablecimiento de mi contraseña si la olvido. | Envía token o permite recuperación controlada por credenciales de seguridad. |
+| **HU-04** | Todos | Como usuario, quiero actualizar mis datos de perfil para mantener mi información vigente. | Permite editar teléfono y especialidad, actualizando la BD de inmediato. |
+| **HU-05** | Todos | Como usuario, quiero cerrar sesión de manera segura para proteger mi privacidad. | Destruye el token JWT y redirecciona a la pantalla de Auth. |
+| **HU-06** | Admin | Como administrador, quiero gestionar usuarios (CRUD) para mantener el directorio actualizado. | Lista, filtra, edita y desactiva lógicamente cuentas de usuario. |
+| **HU-07** | Admin | Como administrador, quiero registrar y administrar aprendices para gestionar sus expedientes. | Registra datos biográficos, documento único y asocia perfil de aprendiz. |
+| **HU-08** | Admin | Como administrador, quiero registrar instructores con su especialidad técnica. | Crea el perfil docente para habilitar su asignación a fichas académicas. |
+| **HU-09** | Admin | Como administrador, quiero crear y modificar programas de formación (ej. ADSO). | Programa queda activo en el catálogo institucional para abrir fichas. |
+| **HU-10** | Admin | Como administrador, quiero crear cursos o asignaturas formativas asociadas a programas. | Asignatura creada con código y competencias técnicas específicas. |
+| **HU-11** | Admin | Como administrador, quiero crear grupos/fichas académicas definiendo jornada y fechas. | Genera el código de ficha (ej. ADSO-2874102) con calendario académico. |
+| **HU-12** | Admin | Como administrador, quiero asignar instructores a fichas académicas. | Vincula al docente titular a la ficha mediante la tabla pivote `GRUPO_INSTRUCTOR`. |
+| **HU-13** | Admin | Como administrador, quiero matricular aprendices en fichas formativas. | Asocia aprendiz a ficha evitando dobles matrículas activas. |
+| **HU-14** | Admin | Como administrador, quiero cambiar el estado de matrícula de un aprendiz (Activo/Retirado). | Actualiza el estado sin borrar datos históricos de calificaciones previas. |
+| **HU-15** | Instructor | Como instructor, quiero crear actividades y evidencias formativas con porcentaje. | Define nombre de evidencia, ponderación y fecha máxima de entrega. |
+| **HU-16** | Instructor | Como instructor, quiero calificar evidencias numéricamente de 0.0 a 5.0 con observaciones. | Guarda la nota, valida el rango y calcula el estado Aprobado / Deficiente. |
+| **HU-17** | Instructor | Como instructor, quiero visualizar el consolidado de notas de mi grupo en una planilla. | Muestra tabla interactiva de aprendices con promedio ponderado general. |
+| **HU-18** | Aprendiz | Como aprendiz, quiero consultar mis calificaciones y comentarios de retroalimentación. | Muestra únicamente las calificaciones personales de las materias inscritas. |
+| **HU-19** | Instructor | Como instructor, quiero programar sesiones de clase indicando fecha y tema. | Sesión queda registrada en el calendario del grupo. |
+| **HU-20** | Instructor | Como instructor, quiero tomar lista marcando Presente, Retardo o Inasistencia. | Registra la asistencia de cada aprendiz por sesión de forma ágil. |
+| **HU-21** | Aprendiz | Como aprendiz, quiero consultar mi porcentaje de asistencia acumulada por curso. | Despliega gráfico e indicador de sesiones asistidas vs. inasistencias. |
+| **HU-22** | Admin | Como administrador, quiero ver estadísticas generales en un panel de mando. | Tarjetas con total de aprendices, fichas activas, instructores y asistencia. |
+| **HU-23** | Aprendiz | Como aprendiz, quiero ver un Hero Banner y un Donut Chart con mi rendimiento formativo. | Gráfico Recharts Donut (80% Aprobado vs 20% Pendiente) con datos en vivo. |
+| **HU-24** | Admin/Inst | Como usuario administrativo, quiero generar reportes académicos imprimibles. | Genera vista oficial consolidada de notas y asistencia lista para PDF. |
+| **HU-25** | Aprendiz | Como aprendiz, quiero interactuar con el tutor EDUNOVA AI para recibir consejos de estudio. | Despliega diagnósticos automáticos según las calificaciones obtenidas. |
+| **HU-26** | Admin | Como administrador, quiero auditoría de cambios para rastrear modificaciones críticas. | Bitácora de creación y actualización de notas y matrículas con timestamp. |
 
 ---
 
-### 3.3 Historias de Usuario (HU)
+### 3.2.1. Diagramas de Casos de Uso (CU-01 a CU-26)
 
-#### 3.3.1 Historias del Administrador
-* **HU01:** Como administrador, quiero iniciar sesión en mi portal para gestionar la oferta educativa de forma centralizada.
-  * *Criterio de aceptación:* Se validan las credenciales y el rol `ADMIN`. Si es correcto, carga el panel directivo.
-* **HU02:** Como administrador, quiero registrar y consultar aprendices para mantener organizada la matrícula institucional.
-  * *Criterio de aceptación:* Formulario valida documento y correo único. El nuevo aprendiz aparece en el listado.
-* **HU03:** Como administrador, quiero registrar instructores y su especialidad para asignarlos a cursos.
-  * *Criterio de aceptación:* Se almacena el docente y queda disponible en las listas de selección de fichas.
-* **HU04:** Como administrador, quiero crear programas de formación (ej. ADSO) para categorizar las fichas técnicas.
-  * *Criterio de aceptación:* El programa aparece activo en el catálogo institucional.
-* **HU05:** Como administrador, quiero crear fichas/grupos y asignar instructores para estructurar los periodos académicos.
-  * *Criterio de aceptación:* La ficha queda asociada al programa y al docente líder.
-* **HU06:** Como administrador, quiero matricular aprendices en grupos para habilitarles sus materias formativas.
-  * *Criterio de aceptación:* La matrícula vincula aprendiz y grupo, impidiendo dobles matrículas activas.
-* **HU07:** Como administrador, quiero visualizar métricas y reportes globales para evaluar el rendimiento institucional.
-  * *Criterio de aceptación:* Panel muestra estadísticas de aprendices totales, cursos activos y asistencia promedio.
-
-#### 3.3.2 Historias del Instructor
-* **HU08:** Como instructor, quiero consultar mis fichas asignadas para preparar mis actividades formativas.
-  * *Criterio de aceptación:* Solo se muestran las fichas donde el instructor figura como titular.
-* **HU09:** Como instructor, quiero visualizar la lista de aprendices de mi grupo para conocer sus perfiles.
-  * *Criterio de aceptación:* Se lista la totalidad de aprendices matriculados en esa ficha.
-* **HU10:** Como instructor, quiero registrar notas numéricas (0.0 a 5.0) y observaciones por evidencia de aprendizaje.
-  * *Criterio de aceptación:* El sistema valida el rango, asigna estado (Aprobado $\ge 3.5$) y persiste la nota.
-* **HU11:** Como instructor, quiero tomar lista en cada sesión formativa para registrar la puntualidad.
-  * *Criterio de aceptación:* Permite marcar Presente, Retardo o Inasistencia y guarda fecha y sesión.
-* **HU12:** Como instructor, quiero revisar el historial de asistencias de mi grupo para detectar aprendices en deserción.
-  * *Criterio de aceptación:* Muestra tabla consolidada de asistencias e inasistencias acumuladas.
-
-#### 3.3.3 Historias del Aprendiz
-* **HU13:** Como aprendiz, quiero iniciar sesión con mi correo institucional para acceder a mi espacio formativo.
-  * *Criterio de aceptación:* Validación rápida y acceso directo al Hero Banner y métricas personales.
-* **HU14:** Como aprendiz, quiero consultar mis calificaciones y retroalimentaciones para monitorear mi rendimiento.
-  * *Criterio de aceptación:* Solo se visualizan las calificaciones asociadas a la sesión del aprendiz autenticado.
-* **HU15:** Como aprendiz, quiero verificar mi porcentaje de asistencia para evitar planes de mejoramiento.
-  * *Criterio de aceptación:* Muestra el indicador porcentual (ej. 92%) y desglose de sesiones asistidas.
-* **HU16:** Como aprendiz, quiero interactuar con el tutor inteligente EDUNOVA AI para recibir consejos de estudio personalizados.
-  * *Criterio de aceptación:* Respuestas adaptadas sobre estado académico, próximas entregas y planes de refuerzo.
-
----
-
-### 3.4 Reglas de Negocio (RN)
-* **RN01 (Unicidad de Rol Principal):** Cada cuenta de usuario se autentica bajo un único rol activo por sesión (`ADMIN`, `INSTRUCTOR` o `APRENDIZ`).
-* **RN02 (Unicidad de Correo y Documento):** No pueden existir dos usuarios con el mismo correo electrónico ni con el mismo número de documento de identidad en el sistema.
-* **RN03 (Matrícula Única por Grupo):** Un aprendiz no puede estar matriculado más de una vez en el mismo grupo o ficha académica en el mismo periodo.
-* **RN04 (Restricción Docente):** Un instructor únicamente tiene permisos para registrar o modificar notas y asistencias en los grupos que tenga formalmente asignados.
-* **RN05 (Privacidad Estricta del Aprendiz):** Los aprendices únicamente pueden consultar su propia información académica, notas y asistencias.
-* **RN06 (Ponderación de Calificaciones):** Toda calificación debe estar asociada a una evidencia o actividad válida y a una matrícula activa. La suma de ponderaciones de evidencias de un curso debe totalizar el 100%.
-* **RN07 (Unicidad de Asistencia por Sesión):** No se puede registrar más de un registro de asistencia para el mismo aprendiz en la misma sesión de clase.
-* **RN08 (Escala de Evaluación Institucional):** Las calificaciones deben encontrarse estrictamente en la escala cuantitativa de 0.0 a 5.0. Una nota igual o superior a 3.5 se homologa a **Aprobado (A)**; inferior a 3.5 se cataloga como **Deficiente (D)** o Pendiente.
-* **RN09 (Borrado Lógico y Conservación Histórica):** Los registros con dependencias históricas (aprendices con notas, cursos con matrículas) no se eliminarán físicamente (`DELETE`), sino que se inactivarán mediante el campo `activo = false` para garantizar la trazabilidad legal del centro formativo.
-
----
-
-## 4. MODELO DE DATOS Y DISEÑO RELACIONAL (MER)
-
-### 4.1 Entidades del Sistema
-El modelo relacional está compuesto por **13 entidades normalizadas en 3FN**:
-
-1. **`ROL`**: Catálogo de perfiles del sistema (`ADMIN`, `INSTRUCTOR`, `APRENDIZ`).
-2. **`USUARIO`**: Credenciales de acceso, correo único, contraseña hasheada y estado de activación.
-3. **`APRENDIZ`**: Perfil complementario con documento de identidad y teléfono.
-4. **`INSTRUCTOR`**: Perfil complementario docente con especialidad técnica.
-5. **`PROGRAMA`**: Oferta de formación técnica o tecnológica del centro.
-6. **`CURSO`**: Asignatura o módulo de competencia vinculado a un programa.
-7. **`GRUPO`**: Ficha académica o cohorte en ejecución con fechas de inicio y fin.
-8. **`GRUPO_INSTRUCTOR`**: Tabla pivote para relación N:M entre grupos e instructores.
-9. **`MATRICULA`**: Inscripción oficial de un aprendiz en una ficha/grupo.
-10. **`ACTIVIDAD`**: Evidencias evaluativas con porcentaje de ponderación y fecha de vencimiento.
-11. **`CALIFICACION`**: Calificación numérica obtenida (0.0 - 5.0) y retroalimentación pedagógica.
-12. **`SESION`**: Jornada de formación presencial/virtual programada por fecha y tema.
-13. **`ASISTENCIA`**: Estado de presencia del aprendiz por sesión (`PRESENTE`, `RETARDO`, `INASISTENCIA`).
-
-### 4.2 Diagrama Entidad-Relación (Mermaid)
+A continuación se presenta el diagrama general de casos de uso que modela las interacciones entre los tres actores del sistema y los 26 casos de uso especificados:
 
 ```mermaid
-erDiagram
-    ROL ||--o{ USUARIO : asigna
-    USUARIO ||--o| APRENDIZ : perfil_aprendiz
-    USUARIO ||--o| INSTRUCTOR : perfil_instructor
-    PROGRAMA ||--o{ GRUPO : contiene
-    PROGRAMA ||--o{ CURSO : ofrece
-    GRUPO ||--o{ GRUPO_INSTRUCTOR : asigna_docente
-    INSTRUCTOR ||--o{ GRUPO_INSTRUCTOR : imparte
-    APRENDIZ ||--o{ MATRICULA : cursa
-    GRUPO ||--o{ MATRICULA : inscribe
-    GRUPO ||--o{ ACTIVIDAD : programa
-    GRUPO ||--o{ SESION : agenda
-    MATRICULA ||--o{ CALIFICACION : obtiene
-    ACTIVIDAD ||--o{ CALIFICACION : califica
-    MATRICULA ||--o{ ASISTENCIA : registra
-    SESION ||--o{ ASISTENCIA : verifica
+flowchart LR
+    subgraph Actores
+        Admin(["👤 Administrador"])
+        Inst(["👨‍🏫 Instructor"])
+        Apren(["👩‍🎓 Aprendiz"])
+    end
 
-    ROL {
-        int id_rol PK
-        string nombre
-        string descripcion
-    }
+    subgraph Modulo_Seguridad_Usuarios ["Módulo 1: Seguridad y Usuarios"]
+        CU01["CU-01: Iniciar Sesión Multi-Rol"]
+        CU02["CU-02: Registrarse"]
+        CU03["CU-03: Recuperar Contraseña"]
+        CU04["CU-04: Gestionar Perfil"]
+        CU05["CU-05: Cerrar Sesión"]
+        CU06["CU-06: Administrar Usuarios"]
+        CU07["CU-07: Administrar Aprendices"]
+        CU08["CU-08: Administrar Instructores"]
+    end
 
-    USUARIO {
-        int id_usuario PK
-        int id_rol FK
-        string nombre
-        string apellido
-        string correo
-        string password_hash
-        boolean activo
-    }
+    subgraph Modulo_Academico_Matriculas ["Módulo 2: Oferta y Matrículas"]
+        CU09["CU-09: Gestionar Programas"]
+        CU10["CU-10: Gestionar Cursos"]
+        CU11["CU-11: Gestionar Grupos/Fichas"]
+        CU12["CU-12: Asignar Docentes"]
+        CU13["CU-13: Matricular Aprendices"]
+        CU14["CU-14: Controlar Estado Matrícula"]
+    end
 
-    APRENDIZ {
-        int id_aprendiz PK
-        int id_usuario FK
-        string documento
-        string telefono
-    }
+    subgraph Modulo_Calificaciones ["Módulo 3: Calificaciones"]
+        CU15["CU-15: Programar Evidencias"]
+        CU16["CU-16: Calificar Notas (0.0 - 5.0)"]
+        CU17["CU-17: Planilla de Calificaciones"]
+        CU18["CU-18: Consultar Notas Personales"]
+    end
 
-    INSTRUCTOR {
-        int id_instructor PK
-        int id_usuario FK
-        string documento
-        string especialidad
-    }
+    subgraph Modulo_Asistencia ["Módulo 4: Asistencia"]
+        CU19["CU-19: Programar Sesiones"]
+        CU20["CU-20: Tomar Lista Asistencia"]
+        CU21["CU-21: Consultar Asistencia"]
+    end
 
-    PROGRAMA {
-        int id_programa PK
-        string nombre
-        string descripcion
-        boolean activo
-    }
+    subgraph Modulo_Analitica_IA ["Módulo 5: Analítica y Tutoría IA"]
+        CU22["CU-22: Panel Administrativo"]
+        CU23["CU-23: Dashboard Aprendiz Donut"]
+        CU24["CU-24: Generar Reportes PDF"]
+        CU25["CU-25: Consultar EDUNOVA AI"]
+        CU26["CU-26: Auditoría de Cambios"]
+    end
 
-    GRUPO {
-        int id_grupo PK
-        int id_programa FK
-        string codigo_ficha
-        string jornada
-        date fecha_inicio
-        date fecha_fin
-    }
+    Admin --> CU01
+    Admin --> CU04
+    Admin --> CU05
+    Admin --> CU06
+    Admin --> CU07
+    Admin --> CU08
+    Admin --> CU09
+    Admin --> CU10
+    Admin --> CU11
+    Admin --> CU12
+    Admin --> CU13
+    Admin --> CU14
+    Admin --> CU22
+    Admin --> CU24
+    Admin --> CU26
 
-    CURSO {
-        int id_curso PK
-        int id_programa FK
-        string nombre
-        string codigo
-    }
+    Inst --> CU01
+    Inst --> CU04
+    Inst --> CU05
+    Inst --> CU15
+    Inst --> CU16
+    Inst --> CU17
+    Inst --> CU19
+    Inst --> CU20
+    Inst --> CU24
 
-    MATRICULA {
-        int id_matricula PK
-        int id_aprendiz FK
-        int id_grupo FK
-        date fecha_matricula
-        string estado
-    }
-
-    ACTIVIDAD {
-        int id_actividad PK
-        int id_grupo FK
-        string nombre
-        decimal porcentaje
-        date fecha_limite
-    }
-
-    CALIFICACION {
-        int id_calificacion PK
-        int id_matricula FK
-        int id_actividad FK
-        decimal nota
-        string observacion
-    }
-
-    SESION {
-        int id_sesion PK
-        int id_grupo FK
-        date fecha
-        string tema
-    }
-
-    ASISTENCIA {
-        int id_asistencia PK
-        int id_matricula FK
-        int id_sesion FK
-        string estado
-        string observacion
-    }
+    Apren --> CU01
+    Apren --> CU02
+    Apren --> CU03
+    Apren --> CU04
+    Apren --> CU05
+    Apren --> CU18
+    Apren --> CU21
+    Apren --> CU23
+    Apren --> CU25
 ```
 
 ---
 
-## 5. DISEÑO DE LA API REST Y CONTROL DE ACCESO (RBAC)
+### 3.3. Requerimientos Funcionales (RF1 a RF26)
 
-### 5.1 Catálogo de Endpoints del Backend
-
-| Método | Endpoint | Descripción | Acceso Autorizado (RBAC) |
-| :---: | :--- | :--- | :---: |
-| `POST` | `/api/auth/login` | Autenticación y expedición de JWT según rol seleccionado. | Público |
-| `POST` | `/api/auth/register` | Registro de nuevos usuarios con validación obligatoria. | Público |
-| `GET` | `/api/usuarios` | Listado general de usuarios registrados en el sistema. | `ADMIN` |
-| `POST` | `/api/usuarios` | Creación administrativa de cuentas de usuario. | `ADMIN` |
-| `PUT` | `/api/usuarios/:id` | Modificación o desactivación lógica de usuarios. | `ADMIN` |
-| `GET` | `/api/aprendices` | Consulta de aprendices matriculados y sus perfiles. | `ADMIN`, `INSTRUCTOR` |
-| `POST` | `/api/aprendices` | Registro y vinculación de perfil de aprendiz. | `ADMIN` |
-| `GET` | `/api/instructores` | Consulta del directorio de docentes titulares. | `ADMIN` |
-| `POST` | `/api/instructores` | Registro de instructores y asignación técnica. | `ADMIN` |
-| `GET` | `/api/programas` | Catálogo de programas formativos activos. | Todos (Autenticados) |
-| `POST` | `/api/programas` | Creación de nuevos programas de formación. | `ADMIN` |
-| `GET` | `/api/grupos` | Consulta de fichas académicas y grupos en ejecución. | `ADMIN`, `INSTRUCTOR` |
-| `POST` | `/api/grupos` | Creación de grupos y asignación docente. | `ADMIN` |
-| `POST` | `/api/matriculas` | Inscripción formal de aprendices a fichas. | `ADMIN` |
-| `GET` | `/api/matriculas` | Consulta de matrículas activas por ficha. | `ADMIN`, `INSTRUCTOR` |
-| `POST` | `/api/calificaciones` | Registro de notas numéricas y observaciones. | `INSTRUCTOR` |
-| `GET` | `/api/calificaciones/:matriculaId` | Consulta de calificaciones por matrícula. | `ADMIN`, `INSTRUCTOR`, `APRENDIZ` (propia) |
-| `POST` | `/api/asistencias` | Registro de asistencia por aprendiz y sesión. | `INSTRUCTOR` |
-| `GET` | `/api/asistencias/:matriculaId` | Historial de asistencias de un aprendiz. | `ADMIN`, `INSTRUCTOR`, `APRENDIZ` (propia) |
-| `GET` | `/api/reportes` | Consolidado analítico de notas y asistencias. | `ADMIN`, `INSTRUCTOR` |
-
----
-
-## 6. IDENTIDAD VISUAL Y EXPERIENCIA DE USUARIO: OCEAN TECH PREMIUM
-
-La interfaz de EDUNOVA fue diseñada específicamente para satisfacer los estándares más exigentes de software SaaS comercial, combinando **Glassmorphism**, profundidad visual y una paleta cromática profesional:
-
-### 6.1 Tokens de Color Oficiales
-
-```css
-:root {
-  --color-petroleum:  #123B50;  /* Azul petróleo: Base institucional y gradientes */
-  --color-deep-blue:  #17365D;  /* Azul profundo: Navegación, sidebar y series de datos */
-  --color-midnight:   #102A43;  /* Azul noche: Superficie del tutor IA y alto contraste */
-  --color-turquoise:  #19B5A5;  /* Turquesa: Brillo tecnológico, activos y aprobados */
-  --color-cyan:       #48BFE3;  /* Cian: Acentos luminosos y comparativas */
-  --color-ice-blue:   #DCEEF5;  /* Azul hielo: Orbes ambientales y contenedores suaves */
-  --color-mint:       #70D6B3;  /* Verde menta: Progreso positivo y estados de éxito */
-  --color-amber:      #E9B949;  /* Ámbar: Control de asistencia, alertas y pendientes */
-  --color-slate-grey: #EDF2F7;  /* Gris azulado: Separadores delicados */
-  --color-canvas:     #F4F7FA;  /* Fondo general: Superficie limpia y luminosa */
-  --color-text-main:  #263746;  /* Texto principal: Alto contraste y legibilidad */
-  --color-text-muted: #718096;  /* Texto secundario: Etiquetas y metadatos */
-}
-```
-
-### 6.2 Componentes Visuales Clave
-* **Efecto Glassmorphism:** Paneles blancos translúcidos (`rgba(255, 255, 255, 0.85)`) con filtro de desenfoque (`backdrop-filter: blur(20px)`), bordes sutiles y sombra flotante `0 10px 35px 0 rgba(18, 59, 80, 0.08)`.
-* **Hero Banner Dinámico:** Gradiente `from-[#123B50] via-[#17365D] to-[#19B5A5]` con tipografía nítida en blanco, detalles en cian/ámbar y accesos directos de navegación rápida.
-* **4 Stat Cards con Identidad Individual:**
-  1. *Compañeros de Ficha:* Icono y badge en **Azul Profundo** (`#17365D`).
-  2. *Mis Cursos:* Icono y badge en **Cian Tecnológico** (`#48BFE3`).
-  3. *Evidencias Aprobadas:* Contenedor en **Turquesa** (`#19B5A5`) con barra de progreso verde menta.
-  4. *Mi Asistencia:* Contenedor en **Ámbar** (`#E9B949`) con porcentaje de cumplimiento.
-* **Recharts Donut Chart:** Distribución visual armoniosa con **Turquesa** (80% Aprobado) y **Ámbar** (20% Pendiente).
-* **Módulo EDUNOVA AI:** Tarjeta de noche tecnológica en azul noche (`#102A43`), destellos cian y 3 disparadores interactivos de análisis en vivo (`⚡ Mi Estado`, `⏳ Pendientes`, `🎯 Plan Guía`).
+| Código | Requisito Funcional | Entradas | Procesamiento | Salidas | Prioridad |
+| :---: | :--- | :--- | :--- | :--- | :---: |
+| **RF1** | **Autenticación por roles:** Permitir inicio de sesión con correo, contraseña y selección de rol (`ADMIN`, `INSTRUCTOR`, `APRENDIZ`). | Correo, contraseña, rol. | Valida hash bcrypt en BD y genera token JWT firmado. | Token JWT de sesión y redirección. | **Alta** |
+| **RF2** | **Registro de usuarios:** Registro de cuentas obligatorias para aprendices e instructores con datos de identificación. | Nombre, apellido, documento, correo, pass. | Valida unicidad de correo y documento, cifra contraseña con salt rounds $\ge 10$. | Registro en tabla `USUARIO` y confirmación. | **Alta** |
+| **RF3** | **Recuperación de contraseña:** Flujo para restablecimiento seguro de credenciales olvidadas. | Correo electrónico registrado. | Genera token de reseteo temporal con vigencia de 30 minutos. | Enlace de recuperación y formulario nuevo. | **Media** |
+| **RF4** | **Gestión de perfil:** Actualización de datos de contacto (teléfono, especialidad, foto de perfil). | Datos actualizados del usuario. | Valida formato y actualiza registros en tablas hijas (`APRENDIZ`/`INSTRUCTOR`). | Notificación de perfil actualizado. | **Media** |
+| **RF5** | **Cierre de sesión:** Finalización segura de sesión y revocación del token en el cliente. | Solicitud de cierre. | Elimina token del almacenamiento local y destruye estado en memoria. | Redirección inmediata a pantalla de Login. | **Alta** |
+| **RF6** | **CRUD de usuarios:** Mantenimiento del catálogo de usuarios con activación y desactivación lógica. | ID usuario, datos modificados. | Aplica cambios; en eliminación aplica `activo = false`. | Directorio de usuarios actualizado. | **Alta** |
+| **RF7** | **Gestión de aprendices:** Registro, edición y consulta de aprendices con documento de identidad. | Documento, nombres, ficha. | Persiste información en tabla `APRENDIZ` asociada a `USUARIO`. | Registro de aprendiz confirmado. | **Alta** |
+| **RF8** | **Gestión de instructores:** Registro y administración de datos y especialidad técnica docente. | Nombres, especialidad, documento. | Persiste en tabla `INSTRUCTOR` habilitando perfil docente. | Instructor listo para asignaciones. | **Alta** |
+| **RF9** | **Gestión de programas:** Crear, listar y editar programas de formación técnica y tecnológica. | Nombre programa, código, nivel. | Almacena programa en tabla `PROGRAMA`. | Programa disponible en catálogo. | **Alta** |
+| **RF10** | **Gestión de cursos:** Crear materias o asignaturas de formación vinculadas a programas. | Nombre asignatura, horas, programa ID. | Crea curso en tabla `CURSO` con llave foránea. | Curso activo para mallas curriculares. | **Alta** |
+| **RF11** | **Gestión de grupos/fichas:** Creación de grupos académicos con fechas de inicio, fin y jornada. | Número de ficha, jornada, fechas. | Genera registro en tabla `GRUPO` vinculado al programa. | Ficha creada y abierta a matrícula. | **Alta** |
+| **RF12** | **Asignación docente:** Vincular instructores titulares a grupos formativos específicos. | ID Grupo, ID Instructor. | Inserta registro en tabla pivote `GRUPO_INSTRUCTOR`. | Docente con permisos en la ficha. | **Alta** |
+| **RF13** | **Matrícula de aprendices:** Inscripción formal de aprendices en una ficha académica. | ID Aprendiz, ID Grupo, fecha. | Verifica que no exista matrícula previa y crea registro en `MATRICULA`. | Matrícula activa registrada. | **Alta** |
+| **RF14** | **Control de estado de matrícula:** Modificar estado formativo (`ACTIVO`, `APLAZADO`, `CANCELADO`). | ID Matrícula, nuevo estado. | Actualiza campo `estado` preservando el historial. | Estado de formación actualizado. | **Media** |
+| **RF15** | **Programación de evidencias:** Crear actividades evaluativas con porcentaje de ponderación. | Nombre evidencia, porcentaje, fecha. | Valida que la suma de porcentajes del curso no exceda el 100%. | Evidencia programada en `ACTIVIDAD`. | **Alta** |
+| **RF16** | **Registro de notas:** Asignación de notas numéricas de 0.0 a 5.0 y comentarios formativos. | ID Matrícula, ID Actividad, nota. | Valida rango $0.0 \le \text{nota} \le 5.0$ y guarda en `CALIFICACION`. | Nota registrada y asociada al aprendiz. | **Alta** |
+| **RF17** | **Homologación institucional:** Asignación automática de estado Aprobado (A) o Deficiente (D). | Nota registrada en el sistema. | Si $\text{nota} \ge 3.5 \rightarrow \text{"APROBADO"}$, caso contrario $\rightarrow \text{"DEFICIENTE"}$. | Badge visual y estado académico. | **Alta** |
+| **RF18** | **Consulta de notas de aprendiz:** Visualización privada de calificaciones para el estudiante. | Petición autenticada de aprendiz. | Filtra calificaciones exclusivamente por el `id_aprendiz` en sesión. | Tabla de notas y promedio ponderado. | **Alta** |
+| **RF19** | **Programación de sesiones:** Crear fechas de clase formativa asociadas a un grupo. | ID Grupo, fecha, tema de clase. | Almacena sesión en tabla `SESION`. | Sesión disponible en planilla. | **Alta** |
+| **RF20** | **Toma de asistencia digital:** Registro de presencia por aprendiz (`PRESENTE`, `RETARDO`, `FALTA`). | ID Matrícula, ID Sesión, estado. | Inserta registro en tabla `ASISTENCIA` impidiendo duplicados por sesión. | Asistencia confirmada. | **Alta** |
+| **RF21** | **Historial y porcentaje de asistencia:** Cálculo en tiempo real del porcentaje de cumplimiento. | ID Aprendiz / ID Matrícula. | Calcula: $(\text{Sesiones Presentes} / \text{Total Sesiones}) \times 100\%$. | Porcentaje visible en dashboard (ej. 92%). | **Alta** |
+| **RF22** | **Panel de mando administrativo:** Métricas e indicadores clave de rendimiento institucional. | Consulta agregada a la BD. | Ejecuta conteos agrupados (`COUNT`, `AVG`) de usuarios, fichas y asistencias. | 4 Tarjetas de métricas consolidadas. | **Media** |
+| **RF23** | **Dashboard visual del aprendiz:** Presentación de estadísticas con gráfico Recharts Donut. | Datos del aprendiz en sesión. | Modela datos de evidencias (80% Aprobado vs 20% Pendiente). | Gráfico Donut y 4 Stat Cards cromáticas. | **Alta** |
+| **RF24** | **Reportes académicos consolidados:** Generación de planillas de calificaciones y asistencias. | ID Ficha o ID Aprendiz. | Estructura reporte formal con membrete SENA listo para imprimir/PDF. | Documento académico descargable. | **Media** |
+| **RF25** | **Tutor pedagógico EDUNOVA AI:** Recomendaciones adaptativas de estudio basadas en notas y asistencia. | Promedio actual y materias cursadas. | Analiza fortalezas y debilidades formativas emitiendo consejos. | Cuadro de sugerencias y rutas de estudio. | **Media** |
+| **RF26** | **Bitácora de auditoría:** Registro de eventos críticos (calificaciones modificadas, cancelaciones). | Evento, usuario, timestamp. | Inserta traza en tabla de auditoría del sistema. | Registro inmutable de trazabilidad. | **Baja** |
 
 ---
 
-## 7. CRONOGRAMA DE DESARROLLO (4 SEMANAS – METODOLOGÍA SCRUM)
+### 3.4. Requerimientos No Funcionales (RNF-01 a RNF-12)
 
-```
-SEMANA 1: ANÁLISIS, REQUISITOS Y MODELADO
-├── Análisis de la problemática y formulación de objetivos
-├── Elaboración de historias de usuario y matriz de requisitos RF/RNF
-├── Diseño del modelo entidad-relación (MER) normalizado
-└── Creación del repositorio en GitHub con ramas Main, DEV y QA
-
-SEMANA 2: ARQUITECTURA DE DATOS Y SERVICIOS BACKEND
-├── Implementación del script MySQL 8 DDL y DML (seeders iniciales)
-├── Configuración de Prisma ORM y modelo schema.prisma
-├── Desarrollo de rutas REST en Express (auth, usuarios, cursos, notas)
-└── Pruebas de endpoints con Postman
-
-SEMANA 3: DESARROLLO FRONTEND REACT Y EXPERIENCIA DE USUARIO
-├── Maquetación en React 18 + Tailwind CSS bajo Ocean Tech Premium
-├── Construcción de autenticación dividida en 3 roles y demo 1-click
-├── Desarrollo de Sidebar, Header flotante y Dashboard del Aprendiz
-└── Integración de gráficos Recharts y simulación de EDUNOVA AI
-
-SEMANA 4: CONTROL DE CALIDAD, SEGURIDAD, DESPLIEGUE Y SUSTENTACIÓN
-├── Ejecución de casos de prueba funcionales (CP01 a CP12)
-├── Auditoría de seguridad (RBAC, sanitización de inputs y hashes)
-├── Sincronización final de documentación técnica en carpeta /documentos/
-└── Preparación de presentación técnica y sustentación final ante el SENA
-```
+| Código | Requisito No Funcional | Categoría | Especificación Técnica y Métrica de Aceptación |
+| :---: | :--- | :--- | :--- |
+| **RNF-01** | **Rendimiento** | Desempeño | Tiempo de respuesta del servidor en operaciones CRUD y consultas $\le 2.0$ segundos bajo condiciones normales de red. |
+| **RNF-02** | **Seguridad de contraseñas** | Seguridad | Encriptación unidireccional de contraseñas utilizando algoritmo robusto **bcrypt** con salt rounds $\ge 10$. Prohibido almacenar contraseñas en texto claro. |
+| **RNF-03** | **Seguridad en comunicaciones** | Seguridad | Intercambio de peticiones autenticadas mediante tokens **JWT** (JSON Web Tokens) firmados con clave secreta y expiración de 8 horas. |
+| **RNF-04** | **Usabilidad y UX** | Usabilidad | Interfaz estructurada bajo el estándar **Ocean Tech Premium Glassmorphism** (tarjetas flotantes translúcidas, fuentes nítidas Plus Jakarta Sans y curvas de aprendizaje intuitivas $\le 5$ min). |
+| **RNF-05** | **Compatibilidad de navegadores** | Compatibilidad | Funcionamiento idéntico en las últimas versiones estables de navegadores modernos: Google Chrome, Microsoft Edge, Mozilla Firefox, Brave y Safari. |
+| **RNF-06** | **Diseño adaptable (Responsive)** | Portabilidad | Adaptación fluida a pantallas de computadores de escritorio ($1920\times 1080$, $1366\times 768$), laptops, tabletas y teléfonos móviles mediante Tailwind CSS. |
+| **RNF-07** | **Integridad referencial de datos** | Confiabilidad | Base de datos relacional MySQL 8 configurada con restricciones estrictas de llaves primarias (`PK`), foráneas (`FK`), unicidad (`UNIQUE`) y no nulos (`NOT NULL`). |
+| **RNF-08** | **Disponibilidad del sistema** | Disponibilidad | La plataforma debe garantizar una disponibilidad continua $\ge 99.0\%$ durante las jornadas académicas del centro formativo. |
+| **RNF-09** | **Mantenibilidad del código** | Mantenibilidad | Arquitectura desacoplada en tres capas (Monolito Modular) con carpetas organizadas (`components/`, `controllers/`, `routes/`, `prisma/`) facilitando refactorizaciones. |
+| **RNF-10** | **Privacidad y aislamiento RBAC** | Privacidad | Aislamiento de datos a nivel de controlador backend: un aprendiz jamás podrá visualizar ni acceder a calificaciones de otros aprendices ni a configuraciones de administración. |
+| **RNF-11** | **Escalabilidad y concurrencia** | Escalabilidad | Capacidad para soportar un mínimo de **250 usuarios concurrentes** realizando consultas simultáneas sin degradación perceptible del rendimiento. |
+| **RNF-12** | **Respaldo y recuperación** | Recuperabilidad | Script reproducible DDL y DML versionado en el repositorio (`docs/database/edunova_db.sql`) permitiendo restauración completa de la base de datos en menos de 10 minutos. |
 
 ---
 
-## 8. PLAN DE PRUEBAS FUNCIONALES
+## 4. PLAN DE PRUEBAS Y MATRIZ DE TRAZABILIDAD
 
-| Código | Caso de Prueba | Procedimiento de Prueba | Resultado Esperado | Estado |
-| :---: | :--- | :--- | :--- | :---: |
-| **CP01** | Inicio de sesión con credenciales válidas. | Ingresar correo institucional y contraseña correcta en el rol correspondiente. | Acceso autorizado; carga el portal respectivo. | **PASÓ** |
-| **CP02** | Inicio de sesión con contraseña errónea. | Ingresar contraseña incorrecta para el usuario seleccionado. | Acceso bloqueado con mensaje de advertencia. | **PASÓ** |
-| **CP03** | Registro de nuevo usuario. | Diligenciar formulario de registro con datos obligatorios completos. | Usuario registrado exitosamente e inicio automático. | **PASÓ** |
-| **CP04** | Registro con correo duplicado. | Intentar registrar una cuenta con un correo ya existente. | Operación rechazada informando duplicidad. | **PASÓ** |
-| **CP05** | Creación y activación de programa. | Crear programa de formación ADSO con ficha asignada. | Programa almacenado y visible en el sistema. | **PASÓ** |
-| **CP06** | Matrícula de aprendiz a grupo. | Vincular aprendiz a la ficha ADSO-2874102. | Matrícula guardada; cursos reflejados en panel. | **PASÓ** |
-| **CP07** | Intento de doble matrícula. | Reintentar matricular al mismo aprendiz en la misma ficha activa. | Validación rechazada según regla de negocio RN03. | **PASÓ** |
-| **CP08** | Registro de nota válida (0.0 a 5.0). | Ingresar nota 4.8 con retroalimentación en evidencia Figma. | Calificación guardada y categorizada como Aprobada. | **PASÓ** |
-| **CP09** | Validación de nota fuera de rango. | Intentar registrar una nota de 5.5 o un valor negativo. | Sistema bloquea el envío indicando escala válida. | **PASÓ** |
-| **CP10** | Registro de asistencia por sesión. | Marcar asistencia (Presente/Retardo/Falta) por fecha. | Asistencia almacenada e integrada al porcentaje global. | **PASÓ** |
-| **CP11** | Privacidad de notas del aprendiz. | Iniciar sesión como Anyely Valeria y consultar notas. | Solo se muestran las calificaciones de Anyely Valeria. | **PASÓ** |
-| **CP12** | Control de acceso por roles (RBAC). | Intentar acceder a funciones administrativas desde rol Aprendiz. | Acceso denegado según jerarquía de seguridad. | **PASÓ** |
+### 4.1. Matriz de Trazabilidad (HU $\leftrightarrow$ RF $\leftrightarrow$ CU $\leftrightarrow$ CP)
 
----
+La siguiente matriz garantiza que cada historia de usuario cuente con su requisito funcional asociado, su caso de uso correspondiente y su respectivo caso de prueba verificado:
 
-## 9. CRITERIOS DE ACEPTACIÓN FORMAL DEL PROYECTO
-El proyecto **EDUNOVA** se considera aprobado y listo para entrega cuando cumple las siguientes condiciones:
-1. **Acceso Seguro por 3 Roles:** Administradores, instructores y aprendices ingresan mediante su sección específica.
-2. **Operatividad Académica:** Registro de notas, control de asistencia y visualización de asignaturas en ejecución.
-3. **Integridad Relacional:** Base de datos relacional consistente con llaves primarias, foráneas y restricciones únicas.
-4. **Diseño Visual de Nivel SaaS:** Cumplimiento riguroso de la paleta **Ocean Tech Premium**, tarjetas flotantes y adaptación responsive.
-5. **Trazabilidad en GitHub:** Repositorio público versionado con ramas `Main`, `DEV` y `QA`, con historial limpio de commits y documentación técnica en la carpeta `/documentos/`.
-
----
-
-## 10. PROTOCOLO DE MANTENIMIENTO CONTINUO Y SINCRONIZACIÓN DEL SRS
-
-> **IMPORTANTE – POLÍTICA DE ACTUALIZACIÓN PERMANENTE:**  
-> Cada vez que se implemente una nueva funcionalidad, se modifique una pantalla, se altere un endpoint de la API o se ajuste una entidad de base de datos en el código fuente de EDUNOVA:
-> 1. Se debe registrar el cambio en la tabla de **Control de Versiones** de este documento.
-> 2. Se debe actualizar la sección correspondiente del SRS (Requisitos Funcionales, Catálogo de API o Modelo MER).
-> 3. Se debe generar un commit explícito en Git documentando la actualización del SRS junto con el código implementado, garantizando que el repositorio en GitHub refleje siempre la realidad exacta del sistema.
+| Historia de Usuario | Requisito Funcional | Caso de Uso | Caso de Prueba (CP) | Procedimiento de Verificación | Estado |
+| :---: | :---: | :---: | :---: | :--- | :---: |
+| **HU-01** | **RF1** | **CU-01** | **CP-01** | Login con credenciales válidas en rol Aprendiz, Instructor y Admin. | **PASÓ** |
+| **HU-02** | **RF2** | **CU-02** | **CP-02** | Registro de nuevo usuario validando datos obligatorios y correo único. | **PASÓ** |
+| **HU-03** | **RF3** | **CU-03** | **CP-03** | Solicitud de cambio de contraseña con credenciales inválidas (rechazo). | **PASÓ** |
+| **HU-04** | **RF4** | **CU-04** | **CP-04** | Modificación de teléfono y especialidad desde el menú de perfil. | **PASÓ** |
+| **HU-05** | **RF5** | **CU-05** | **CP-05** | Cierre de sesión y verificación de destrucción de sesión local. | **PASÓ** |
+| **HU-06** | **RF6** | **CU-06** | **CP-06** | Desactivación lógica de usuario (`activo = false`) sin borrado físico. | **PASÓ** |
+| **HU-07** | **RF7** | **CU-07** | **CP-07** | Registro de aprendiz con documento de identidad y validación en tabla. | **PASÓ** |
+| **HU-08** | **RF8** | **CU-08** | **CP-08** | Creación de instructor con especialidad técnica docente. | **PASÓ** |
+| **HU-09** | **RF9** | **CU-09** | **CP-09** | Creación de programa ADSO y comprobación en catálogo. | **PASÓ** |
+| **HU-10** | **RF10** | **CU-10** | **CP-10** | Creación de asignatura técnica asociada a programa. | **PASÓ** |
+| **HU-11** | **RF11** | **CU-11** | **CP-11** | Apertura de ficha formativa 2874102 con fecha inicio/fin. | **PASÓ** |
+| **HU-12** | **RF12** | **CU-12** | **CP-12** | Asignación de docente titular a la ficha en `GRUPO_INSTRUCTOR`. | **PASÓ** |
+| **HU-13** | **RF13** | **CU-13** | **CP-13** | Matrícula de aprendiz en ficha 2874102. | **PASÓ** |
+| **HU-14** | **RF14** | **CU-14** | **CP-14** | Intento de doble matrícula del mismo aprendiz en la misma ficha (bloqueo). | **PASÓ** |
+| **HU-15** | **RF15** | **CU-15** | **CP-15** | Programación de evidencia con ponderación porcentual del 30%. | **PASÓ** |
+| **HU-16** | **RF16** | **CU-16** | **CP-16** | Calificación numérica válida (4.8 / 5.0) con retroalimentación. | **PASÓ** |
+| **HU-17** | **RF17** | **CU-17** | **CP-17** | Intento de ingresar nota fuera de rango (5.8 o negativa - rechazo). | **PASÓ** |
+| **HU-18** | **RF18** | **CU-18** | **CP-18** | Consulta de notas desde sesión del aprendiz Anyely (solo sus notas). | **PASÓ** |
+| **HU-19** | **RF19** | **CU-19** | **CP-19** | Creación de sesión de formación presencial por fecha y tema. | **PASÓ** |
+| **HU-20** | **RF20** | **CU-20** | **CP-20** | Toma de lista marcando Presente y verificación en tabla `ASISTENCIA`. | **PASÓ** |
+| **HU-21** | **RF21** | **CU-21** | **CP-21** | Cálculo automático del porcentaje de asistencia (92%). | **PASÓ** |
+| **HU-22** | **RF22** | **CU-22** | **CP-22** | Visualización de 4 stat cards en panel directivo del administrador. | **PASÓ** |
+| **HU-23** | **RF23** | **CU-23** | **CP-23** | Renderizado del gráfico Donut Recharts (80% aprobado vs 20% pendiente). | **PASÓ** |
+| **HU-24** | **RF24** | **CU-24** | **CP-24** | Generación de vista de reporte consolidado oficial. | **PASÓ** |
+| **HU-25** | **RF25** | **CU-25** | **CP-25** | Interacción con disparadores de EDUNOVA AI (`⚡ Mi Estado`, `⏳ Pendientes`). | **PASÓ** |
+| **HU-26** | **RF26** | **CU-26** | **CP-26** | Verificación de acceso denegado a panel admin desde sesión aprendiz. | **PASÓ** |
 
 ---
-*Documento elaborado y verificado para la sustentación del programa Tecnólogo en Análisis y Desarrollo de Software (ADSO) – SENA Regional Huila 2026.*
+
+### 4.2. Protocolo de Trazabilidad y Sincronización Continua en Git
+Para garantizar que el presente documento SRS conserve absoluta vigencia técnica:
+1. **Política de Commit Conjunto:** Cualquier refactorización o adición de código (nuevas pantallas, ajustes en endpoints o cambios en tablas de base de datos) debe incluir en el mismo commit la actualización del apartado correspondiente en `documentos/SRS_EDUNOVA.md`.
+2. **Historial de Versiones en Git:** La rama principal de desarrollo `DEV` mantendrá la versión vigente del SRS en el repositorio de GitHub:  
+   👉 [https://github.com/bautistanyely809-creator/PLATAFORMA-DE-GESTI-N-ACAD-MICA](https://github.com/bautistanyely809-creator/PLATAFORMA-DE-GESTI-N-ACAD-MICA)
+3. **Criterio de Entrega:** El proyecto se considera académicamente terminado cuando el 100% de los casos de prueba (CP-01 a CP-26) figuren en estado **PASÓ** y la documentación concuerde punto por punto con la plataforma en ejecución.
+
+---
+*Documento estructurado y aprobado conforme a las pautas de evaluación técnica del programa ADSO – Centro de Formación Industrial, SENA Regional Huila (Neiva, 2026).*
