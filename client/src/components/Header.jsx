@@ -185,6 +185,13 @@ export default function Header({ user, onLogout, onToggleMobileSidebar, onNaviga
                   </div>
                 ))}
               </div>
+
+              <button
+                onClick={() => { setShowNotifications(false); onNavigate && onNavigate('notificaciones'); }}
+                className="w-full py-1.5 bg-[#101010] hover:bg-[#151515] border border-[#3d3a39] text-[#ee6018] rounded-[3px] font-mono text-[10px] uppercase text-center mt-2 block transition-colors"
+              >
+                Abrir Centro de Notificaciones →
+              </button>
             </div>
           )}
         </div>

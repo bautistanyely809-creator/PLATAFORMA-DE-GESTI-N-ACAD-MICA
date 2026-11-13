@@ -13,8 +13,8 @@
 | **Centro de Formación:** | Centro de Formación Industrial – SENA Regional Huila (Neiva) |
 | **Modalidad:** | Desarrollo individual con asistencia de Inteligencia Artificial |
 | **Duración Estimada:** | 4 semanas (1 mes) |
-| **Versión del Documento:** | 2.2 (Sistema de Diseño Factory, Dark Terminal War Room, Streaming IA, Skeleton UI y Rendimiento) |
-| **Estado:** | Aprobado / En Ejecución Técnica |
+| **Versión del Documento:** | 3.0 (Implementación Integral de 7 Módulos Avanzados, Persistencia Real MySQL 8, Three.js 3D y Telemetría IA) |
+| **Estado:** | Aprobado / En Producción y Operación Continua |
 
 ---
 
@@ -27,7 +27,8 @@
 | **v1.2** | 13/11/2026 | Anyely Valeria | Actualización integral Ocean Tech Premium: paleta petróleo, turquesa, cian y ámbar; modelo MER de 13 entidades y catálogo de API REST. |
 | **v2.0** | 13/11/2026 | Anyely Valeria | Adaptación a la estructura formal integral SENA/IEEE (HU-01 a HU-26, CU-01 a CU-26, RF1 a RF26, RNF-01 a RNF-12 y Matriz de Trazabilidad). |
 | **v2.1** | 13/11/2026 | Anyely Valeria | **Sprint de Alto Rendimiento y UX Resiliente**: Diseño Skeleton para carga fluida, búsqueda con Debounce (300ms), paginación de cursos, streaming token a token de EDUNOVA AI, actualización optimista de interfaz (Optimistic UI), índices SQL en MySQL 8, prevención de consultas N+1 con Prisma, compresión Brotli/Gzip, caché Redis/In-Memory, cola de trabajos (Job Queue), timeouts en APIs externas (5000ms), code-splitting de JS (`manualChunks`) y monitoreo de usuarios reales (RUM). |
-| **v2.2** | 13/11/2026 | Anyely Valeria | **Implementación Integral del Sistema de Diseño Factory**: Reemplazo de estética pastel/glassmorphic por la estética Dark Terminal War Room (Obsidian `#101010`, Bone `#eeeeee`, Carbon `#1d1a18`, Ash `#3d3a39`, Signal Orange `#ee6018`, Metric Green `#a0ca92`), tipografía Geist / Geist Mono con tracking negativo ajustado, radio de 3px en botones y controles, tarjetas a 10px con bordes hairline nítidos y eliminación de sombras difusas. |
+| **v2.2** | 13/11/2026 | Anyely Valeria | **Implementación Integral del Sistema de Diseño Factory**: Reemplazo de estética pastel/glassmorphic por la estética Dark Terminal War Room (Obsidian `#101010`, Bone `#eeeeee`, Carbon `#1d1a18`, Ash `#3d3a39`, Signal Orange `#ee6018`, Metric Green `#a0ca92`), tipografía Geist / Geist Mono con tracking negativo ajustado, radio de 3px en botones y controles, tarjetas a 10px con bordes hairline nítidos y eliminación de sombras difusas. Núcleo 3D animable en Three.js con WebGL en el Hero Banner. |
+| **v3.0** | 13/11/2026 | Anyely Valeria | **Despliegue Integral de los 7 Módulos Académicos Avanzados Conectados a MySQL 8**: 1) Seguimiento Académico por Competencias y RAPs con historial auditado; 2) Gestión Completa de Evidencias con versionamiento (v1, v2...) y retroalimentación pedagógica; 3) Sistema de Recuperación de Competencias con acreditación automática; 4) Control de Asistencia Automatizado por sesión con detección de ausencias consecutivas y umbral institucional (&lt; 85%); 5) Centro de Reportes Oficiales SENA con exportación real en Excel (.csv) e impresión PDF; 6) Centro de Notificaciones Automáticas en tiempo real ante eventos del sistema; 7) EDUNOVA AI Contextual conectada a MySQL 8 con validación estricta de permisos RBAC y cálculos matemáticos en el backend. |
 
 ---
 
@@ -457,6 +458,89 @@ La siguiente matriz garantiza que cada historia de usuario cuente con su requisi
 | **HU-24** | **RF24** | **CU-24** | **CP-24** | Generación de vista de reporte consolidado oficial. | **PASÓ** |
 | **HU-25** | **RF25** | **CU-25** | **CP-25** | Interacción con disparadores de EDUNOVA AI (`⚡ Mi Estado`, `⏳ Pendientes`). | **PASÓ** |
 | **HU-26** | **RF26** | **CU-26** | **CP-26** | Verificación de acceso denegado a panel admin desde sesión aprendiz. | **PASÓ** |
+
+---
+
+## 5. ARQUITECTURA E IMPLEMENTACIÓN DE LOS 7 MÓDULOS AVANZADOS (v3.0)
+
+Con el propósito de transformar EDUNOVA en un sistema integral de seguimiento pedagógico para centros de formación del SENA, se implementaron siete módulos avanzados conectados a la base de datos relacional MySQL 8 (`edunova_db`) mediante Prisma ORM:
+
+```mermaid
+flowchart TD
+    subgraph Frontend ["Frontend React 18 + Vite + Factory Tokens"]
+        M1_UI["M1: Competencias & RAPs UI"]
+        M2_UI["M2: Gestión de Evidencias UI"]
+        M3_UI["M3: Recuperaciones UI"]
+        M4_UI["M4: Asistencia Automatizada UI"]
+        M5_UI["M5: Reportes PDF & Excel UI"]
+        M6_UI["M6: Notificaciones UI"]
+        M7_UI["M7: EDUNOVA AI Console"]
+    end
+
+    subgraph Backend ["Backend Node.js + Express API REST (Puerto 4000)"]
+        M1_API["/api/competencias"]
+        M2_API["/api/evidencias"]
+        M3_API["/api/recuperaciones"]
+        M4_API["/api/asistencia"]
+        M5_API["/api/reportes"]
+        M6_API["/api/notificaciones"]
+        M7_API["/api/ai"]
+        NotifService["NotificationService & Audit"]
+    end
+
+    subgraph BaseDatos ["MySQL 8.0 (edunova_db - 22 Tablas Relacionales)"]
+        TB_COMP["COMPETENCIA / RESULTADO_APRENDIZAJE / SEGUIMIENTO"]
+        TB_EVID["EVIDENCIA / ENTREGA_EVIDENCIA (Versiones v1, v2)"]
+        TB_REC["RECUPERACION (Refuerzos y Acreditación)"]
+        TB_ASIS["SESION_CLASE / REGISTRO_ASISTENCIA / JUSTIFICACION"]
+        TB_NOTIF["NOTIFICACION / HISTORIAL_AUDITORIA"]
+    end
+
+    M1_UI --> M1_API --> TB_COMP
+    M2_UI --> M2_API --> TB_EVID
+    M3_UI --> M3_API --> TB_REC
+    M4_UI --> M4_API --> TB_ASIS
+    M5_UI --> M5_API --> TB_COMP & TB_ASIS
+    M6_UI --> M6_API --> TB_NOTIF
+    M7_UI --> M7_API --> TB_COMP & TB_EVID & TB_ASIS
+    M2_API & M3_API & M4_API --> NotifService --> TB_NOTIF
+```
+
+### 5.1. Módulo 1: Seguimiento Académico por Competencias
+- **Tablas:** `COMPETENCIA`, `RESULTADO_APRENDIZAJE`, `SEGUIMIENTO_COMPETENCIA`, `HISTORIAL_SEGUIMIENTO`.
+- **Estados:** `PENDIENTE`, `EN_DESARROLLO`, `EN_EVALUACION`, `APROBADA`, `REQUIERE_REFUERZO`.
+- **Funcionalidades:** Cálculo automático del porcentaje de avance, consulta de RAPs asociados, trazabilidad histórica de cambios de estado y evaluación docente con observaciones pedagógicas.
+
+### 5.2. Módulo 2: Gestión Completa de Evidencias y Versionamiento
+- **Tablas:** `EVIDENCIA`, `ENTREGA_EVIDENCIA`, `CALIFICACION`.
+- **Estados:** `BORRADOR`, `PUBLICADA`, `PENDIENTE_ENTREGA`, `ENTREGADA`, `EN_REVISION`, `APROBADA`, `REQUIERE_CORRECCION`, `NO_APROBADA`, `VENCIDA`.
+- **Control de Versiones:** Incremento secuencial de versión (`version = v1, v2...`). Regla estricta de negocio: no permite sobreescribir una entrega aprobada sin generar una nueva versión justificada. Retroalimentación cualitativa y cuantitativa (0.0 a 5.0).
+
+### 5.3. Módulo 3: Sistema de Recuperación de Competencias
+- **Tablas:** `RECUPERACION` (relacionada con `INSCRIPCION`, `RESULTADO_APRENDIZAJE` e `INSTRUCTOR`).
+- **Estados:** `IDENTIFICADA`, `ASIGNADA`, `EN_PROCESO`, `ENTREGADA`, `EN_EVALUACION`, `SUPERADA`, `PENDIENTE_NUEVA_ACTIVIDAD`.
+- **Automatización de Acreditación:** Al calificar una recuperación en estado `SUPERADA`, el sistema actualiza automáticamente el registro de `SEGUIMIENTO_COMPETENCIA` a `APROBADA` y registra el evento en el historial de auditoría.
+
+### 5.4. Módulo 4: Control de Asistencia Automatizado
+- **Tablas:** `SESION_CLASE`, `REGISTRO_ASISTENCIA`, `JUSTIFICACION_ASISTENCIA`.
+- **Estados:** `ASISTIO`, `AUSENTE`, `RETARDO`, `EXCUSA_PENDIENTE`, `JUSTIFICADA`.
+- **Restricción de Integridad:** Clave compuesta única `uk_sesion_inscripcion` que impide registrar asistencias duplicadas para la misma sesión y aprendiz.
+- **Automatizaciones:** Detección de $\ge 3$ ausencias consecutivas, cálculo del porcentaje acumulado de asistencia por sesión y generación de alertas para aprendices con asistencia $< 85\%$. Radicación y revisión de excusas médicas/laborales.
+
+### 5.5. Módulo 5: Centro de Reportes PDF y Excel
+- **Endpoints:** `/api/reportes/aprendiz/:id`, `/api/reportes/ficha/:id`, `/api/reportes/exportar/excel`.
+- **Exportación Excel:** Generación de archivos CSV con marca de orden de bytes (BOM UTF-8 `\uFEFF`) para compatibilidad nativa con Microsoft Excel y separadores normalizados.
+- **Reporte PDF Imprimible:** Plantilla estructurada con membrete oficial del SENA, fecha de emisión, firma digital criptográfica simulada y desglose tabular de calificaciones y competencias.
+
+### 5.6. Módulo 6: Sistema de Notificaciones Automáticas
+- **Tablas:** `NOTIFICACION` (categorías: `EVIDENCIA`, `CALIFICACION`, `ASISTENCIA`, `RECUPERACION`, `COMPETENCIA`, `ALERTA`, `ANUNCIO`).
+- **Despacho Automático:** Notificaciones individuales o a toda la ficha ante eventos como publicación de evidencia, calificación registrada, inasistencia o asignación de plan de mejoramiento.
+- **Interacción:** Filtros por categoría, contador reactivo de no leídas, marcado individual y masivo, y botón de redirección directa al módulo específico.
+
+### 5.7. Módulo 7: EDUNOVA AI con Datos Académicos Reales
+- **Arquitectura:** Controlador exclusivo `ai.controller.js` conectado directamente con Prisma Client y la base de datos MySQL 8.
+- **Seguridad y Privacidad:** Verificación estricta de rol (el aprendiz jamás tiene visibilidad de las calificaciones privadas de otros compañeros).
+- **Procesamiento de Consultas:** Cálculos analíticos ejecutados en el motor SQL; la IA interpreta los datos reales y ofrece diagnósticos contextuales certeros, recomendaciones preventivas y planes de estudio sin alucinaciones.
 
 ---
 

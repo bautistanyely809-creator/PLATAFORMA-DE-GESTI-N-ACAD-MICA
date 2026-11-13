@@ -14,7 +14,10 @@ import {
   User, 
   Settings,
   ShieldCheck,
-  Terminal
+  Terminal,
+  Award,
+  RotateCcw,
+  Bell
 } from 'lucide-react';
 
 export default function Sidebar({ 
@@ -32,47 +35,53 @@ export default function Sidebar({
 
   const navItems = [
     {
-      group: 'CONTROL SURFACE',
+      group: 'ACADEMIC CORE',
       items: [
         { 
           id: 'dashboard', 
-          label: 'Dashboard', 
+          label: 'Dashboard Operativo', 
           icon: LayoutDashboard,
           code: '01'
         },
         { 
-          id: 'cursos', 
-          label: user.rol === 'APRENDIZ' ? 'My Courses' : 'Courses & Cohorts', 
-          icon: BookOpen,
+          id: 'competencias', 
+          label: 'M1. Competencias & RAPs', 
+          icon: Award,
           code: '02'
         },
         { 
-          id: 'calificaciones', 
-          label: user.rol === 'APRENDIZ' ? 'Grades & Work' : 'Gradebook', 
+          id: 'evidencias', 
+          label: 'M2. Gestión de Evidencias', 
           icon: ClipboardList,
           code: '03'
         },
         { 
-          id: 'asistencia', 
-          label: user.rol === 'APRENDIZ' ? 'Attendance' : 'Attendance Registry', 
-          icon: CalendarCheck,
+          id: 'recuperaciones', 
+          label: 'M3. Recuperaciones', 
+          icon: RotateCcw,
           code: '04'
+        },
+        { 
+          id: 'asistencia', 
+          label: 'M4. Control Asistencia', 
+          icon: CalendarCheck,
+          code: '05'
         },
       ]
     },
     {
-      group: 'MANAGEMENT',
+      group: 'ANALYTICS & COMMS',
       items: [
-        ...(user.rol === 'ADMIN' || user.rol === 'INSTRUCTOR' ? [
-          { id: 'aprendices', label: 'Apprentices', icon: Users, code: '05' },
-        ] : []),
-        ...(user.rol === 'ADMIN' ? [
-          { id: 'instructores', label: 'Instructors', icon: GraduationCap, code: '06' },
-        ] : []),
         { 
           id: 'reportes', 
-          label: 'Telemetry & Reports', 
+          label: 'M5. Reportes PDF & Excel', 
           icon: BarChart3,
+          code: '06'
+        },
+        { 
+          id: 'notificaciones', 
+          label: 'M6. Notificaciones', 
+          icon: Bell,
           code: '07'
         },
       ]
@@ -82,7 +91,7 @@ export default function Sidebar({
       items: [
         { 
           id: 'ai', 
-          label: 'EDUNOVA AI', 
+          label: 'M7. EDUNOVA AI (MySQL 8)', 
           icon: Sparkles, 
           badge: 'LIVE',
           isAI: true,

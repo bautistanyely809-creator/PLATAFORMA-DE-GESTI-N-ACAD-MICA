@@ -401,3 +401,4 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     </div>
   );
 }
+
