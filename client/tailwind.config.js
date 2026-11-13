@@ -8,43 +8,65 @@ export default {
     extend: {
       colors: {
         edunova: {
-          // 1. Azul Marino del Escudo y Libro
-          navy: '#0A2540',
-          'navy-dark': '#06172A',
-          'navy-light': '#14385C',
-          'navy-border': '#1E4775',
+          // Paleta Oficial SaaS Rediseño
+          midnight: '#0B1D33',      // Azul medianoche (Fondo Sidebar, encabezados oscuros)
+          darkNavy: '#102A43',      // Azul oscuro secundario
+          electric: '#3978F6',      // Azul eléctrico (Acciones primarias, degradados vivos)
+          gold: '#DCA91F',          // Dorado principal (Insignias, acentos destacados)
+          goldLight: '#F5C94A',     // Dorado claro (Degradados de botón, resplandores)
+          teal: '#13BFA5',          // Turquesa (KPIs de éxito, métricas)
+          violet: '#8767ED',        // Violeta IA (Módulo EDUNOVA AI, procesamiento inteligente)
+          canvas: '#F3F5FA',        // Gris claro (Fondo general de la aplicación)
+          surface: '#FFFFFF',       // Blanco puro (Tarjetas SaaS, modales)
+          textPrimary: '#172B46',   // Texto principal (Alta legibilidad)
+          textSecondary: '#718096', // Texto secundario (Subtítulos, placeholders)
+          success: '#16A36A',       // Verde de éxito (Aprobado, presente)
+          danger: '#EF4444',        // Rojo de error (Inasistencias, alertas)
           
-          // 2. Dorado Académico de los Laureles y Borde Interior
-          gold: '#D4A328',
-          'gold-hover': '#BF8F1B',
-          'gold-light': '#FDF6E2',
-          'gold-muted': '#E5C568',
-          
-          // 3. Verde Esmeralda del Checkmark de Aprobación
-          emerald: '#059669',
-          'emerald-light': '#E6F4EA',
-          
-          // 4. Fondos y Textos del Sistema
-          canvas: '#F8FAFC',
-          light: '#F8FAFC',     // Alias retrocompatible
+          // Alias de retrocompatibilidad
+          navy: '#0B1D33',
+          'navy-dark': '#0B1D33',
+          'navy-light': '#102A43',
+          light: '#F3F5FA',
           card: '#FFFFFF',
-          text: '#1E293B',
-          dark: '#1E293B',      // Alias retrocompatible
-          muted: '#64748B',
+          text: '#172B46',
+          dark: '#172B46',
+          muted: '#718096',
           border: '#E2E8F0',
-          
-          // Estados de apoyo
-          warning: '#EAB308',
-          danger: '#DC2626',
-          success: '#059669',
+          warning: '#DCA91F',
+          emerald: '#16A36A',
+          primary: '#3978F6',
         }
       },
       fontFamily: {
-        sans: ['Inter', 'Poppins', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'Poppins', 'system-ui', '-apple-system', 'sans-serif'],
       },
       boxShadow: {
-        'gold': '0 4px 14px 0 rgba(212, 163, 40, 0.25)',
-        'navy': '0 4px 20px 0 rgba(10, 37, 64, 0.15)',
+        'saas-sm': '0 1px 3px 0 rgba(11, 29, 51, 0.05), 0 1px 2px 0 rgba(11, 29, 51, 0.03)',
+        'saas-card': '0 4px 20px -2px rgba(11, 29, 51, 0.06), 0 2px 6px -1px rgba(11, 29, 51, 0.04)',
+        'saas-hover': '0 12px 30px -4px rgba(11, 29, 51, 0.12), 0 4px 12px -2px rgba(11, 29, 51, 0.06)',
+        'gold-glow': '0 4px 20px 0 rgba(220, 169, 31, 0.35)',
+        'electric-glow': '0 4px 20px 0 rgba(57, 120, 246, 0.35)',
+        'ai-glow': '0 8px 32px 0 rgba(135, 103, 237, 0.30)',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { opacity: '0', transform: 'translateY(12px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        pulseSlow: {
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.85', transform: 'scale(1.03)' },
+        }
+      },
+      animation: {
+        fadeIn: 'fadeIn 0.3s ease-out forwards',
+        slideUp: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        pulseSlow: 'pulseSlow 4s ease-in-out infinite',
       }
     },
   },
