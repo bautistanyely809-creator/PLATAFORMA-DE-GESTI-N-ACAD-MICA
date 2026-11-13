@@ -9,11 +9,46 @@
   }
 
   body {
-    @apply bg-edunova-canvas text-edunova-textPrimary font-sans antialiased selection:bg-edunova-electric selection:text-white;
+    @apply bg-edunova-cloud text-edunova-textPrimary font-sans antialiased selection:bg-edunova-lavender selection:text-edunova-textPrimary;
+    background-color: #F8F5FC;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(247, 184, 220, 0.45) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(200, 181, 245, 0.50) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(165, 216, 250, 0.45) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(252, 228, 242, 0.50) 0px, transparent 50%);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
 }
 
-/* Scrollbar moderno estilizado */
+/* Efectos de Cristal / Glassmorphism */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 35px 0 rgba(167, 139, 250, 0.10);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.90);
+  box-shadow: 0 4px 20px 0 rgba(167, 139, 250, 0.08);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px 0 rgba(167, 139, 250, 0.18);
+  border-color: rgba(200, 181, 245, 0.60);
+}
+
+/* Scrollbar pastel estilizado */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -24,12 +59,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #E2D9F3;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #C8B5F5;
 }
 
 /* Accesibilidad de movimiento reducido */
