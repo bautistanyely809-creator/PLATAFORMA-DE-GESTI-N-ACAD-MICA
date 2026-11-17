@@ -53,7 +53,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
   const debouncedSearch = useDebounce(searchTerm, 300);
 
   const fichaInfo = {
-    codigo: '2874102',
+    codigo: '3413988',
     programa: 'Technologist in Software Analysis & Development (ADSO)',
     centro: 'Center for Industrial Training – SENA Huila',
     aprendicesCount: 32,
@@ -215,7 +215,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
         {/* Eyebrow in Factory Mono */}
         <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-[#101010] mb-3">
           <span className="status-pulse-orange"></span>
-          <span>OPERATOR TERMINAL // COHORT 2874102</span>
+          <span>OPERATOR TERMINAL // COHORT 3413988</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">

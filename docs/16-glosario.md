@@ -14,7 +14,7 @@ Este glosario define los términos pedagógicos del Servicio Nacional de Aprendi
 * **Etapa Productiva:** Período formativo en el que el aprendiz aplica, complementa y consolida sus competencias en el sector productivo mediante contrato de aprendizaje, proyecto o pasantía.
 * **Evidencia de Aprendizaje:** Prueba fehaciente (de conocimiento, desempeño o producto) presentada por el aprendiz para demostrar el dominio de un resultado de aprendizaje.
 * **Expediente Académico:** Historial integral de un aprendiz que compendia sus calificaciones, novedades, asistencias y competencias aprobadas.
-* **Ficha de Caracterización:** Código numérico único nacional (ej: 2874102) que identifica a un grupo o cohorte de aprendices asignados a un programa formativo específico.
+* **Ficha de Caracterización:** Código numérico único nacional (ej: 3413988) que identifica a un grupo o cohorte de aprendices asignados a un programa formativo específico.
 * **Instructor:** Profesional encargado de orientar, acompañar y evaluar los procesos de aprendizaje en el SENA.
 * **Juicio Evaluativo:** Dictamen pedagógico oficial emitido por el instructor que declara una competencia como "Aprobada" (A) o "No Aprobada" / "Requiere Refuerzo" (D).
 * **Plan de Mejoramiento / Recuperación:** Conjunto concertado de actividades pedagógicas complementarias asignadas al aprendiz para superar deficiencias académicas antes de comités formativos.

@@ -35,7 +35,7 @@ export default function Auth({ onLoginSuccess }) {
     correo: '',
     password: '',
     confirmPassword: '',
-    ficha: 'ADSO-2874102',
+    ficha: 'ADSO-3413988',
     especialidad: 'Desarrollo Web & Software',
     codigoSeguridad: ''
   });

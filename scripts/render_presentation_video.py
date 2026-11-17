@@ -193,7 +193,7 @@ def render_scene_3(frame_idx, n_frames):
     # Hero Welcome Banner for Student
     draw.rounded_rectangle([(80, 100), (1840, 230)], radius=8, fill=(18, 59, 80), outline=C_CYAN, width=1)
     draw.text((115, 120), "¡Bienvenido, Aprendiz Carlos Mendoza!", font=FONT_HEADING, fill=C_WHITE)
-    draw.text((115, 168), "Programa: Tecnólogo en Análisis y Desarrollo de Software · Ficha: 2874102 · SENA Regional Huila", font=FONT_SUBTITLE, fill=C_ICE_BLUE)
+    draw.text((115, 168), "Programa: Tecnólogo en Análisis y Desarrollo de Software · Ficha: 3413988 · SENA Regional Huila", font=FONT_SUBTITLE, fill=C_ICE_BLUE)
     
     # 4 Metric Cards
     metrics = [
@@ -225,7 +225,7 @@ def render_scene_3(frame_idx, n_frames):
     draw.rounded_rectangle([(1020, 510), (1810, 930)], radius=6, fill=(10, 15, 20), outline=(25, 60, 80), width=1)
     draw.text((1045, 530), "> Usuario: ¿Cuál es mi diagnóstico de rendimiento?", font=FONT_BODY, fill=C_CYAN)
     draw.text((1045, 580), "EDUNOVA AI:", font=get_font(22, True), fill=C_MINT)
-    draw.text((1045, 620), "Carlos, tu avance en la Ficha 2874102 es del 80.0%. Tienes 4 de 5", font=FONT_BODY, fill=C_WHITE)
+    draw.text((1045, 620), "Carlos, tu avance en la Ficha 3413988 es del 80.0%. Tienes 4 de 5", font=FONT_BODY, fill=C_WHITE)
     draw.text((1045, 660), "competencias aprobadas. Tu asistencia acumulada es del 88.5%,", font=FONT_BODY, fill=C_WHITE)
     draw.text((1045, 700), "por encima del umbral institucional del 85%. Te sugiero radicar", font=FONT_BODY, fill=C_WHITE)
     draw.text((1045, 740), "la evidencia de Base de Datos para asegurar la excelencia.", font=FONT_BODY, fill=C_WHITE)
@@ -240,7 +240,7 @@ def render_scene_4(frame_idx, n_frames):
     draw_header(draw, "PERFIL 2: INSTRUCTOR")
     
     # Top Card: Attendance Sheet in Live Action
-    draw_card(draw, [(80, 100), (1840, 520)], "Planilla de Asistencia Automatizada en Vivo", "Control diario por sesión · Detección de alertas de inasistencia", "Ficha 2874102", C_TURQUOISE)
+    draw_card(draw, [(80, 100), (1840, 520)], "Planilla de Asistencia Automatizada en Vivo", "Control diario por sesión · Detección de alertas de inasistencia", "Ficha 3413988", C_TURQUOISE)
     
     # Table Header
     headers = ["Documento", "Nombre del Aprendiz", "Estado de Sesión", "Observación Pedagógica", "Acumulado"]
@@ -320,8 +320,8 @@ def render_scene_5(frame_idx, n_frames):
     draw_card(draw, [(990, 270), (1840, 960)], "Pistas de Auditoría Forense y Seguridad", "Trazabilidad inmutable de operaciones críticas", "ISO 29148", C_MINT)
     # Mock audit table
     audits = [
-        ("17/11 07:15", "INSTRUCTOR", "EVALUAR_COMPETENCIA", "Ficha 2874102 · Competencia 01 Aprobada", "192.168.1.45"),
-        ("17/11 07:05", "ADMIN", "MATRICULAR_APRENDIZ", "Inscripción id_aprendiz=45 a Ficha 2874102", "192.168.1.10"),
+        ("17/11 07:15", "INSTRUCTOR", "EVALUAR_COMPETENCIA", "Ficha 3413988 · Competencia 01 Aprobada", "192.168.1.45"),
+        ("17/11 07:05", "ADMIN", "MATRICULAR_APRENDIZ", "Inscripción id_aprendiz=45 a Ficha 3413988", "192.168.1.10"),
         ("17/11 06:50", "INSTRUCTOR", "REGISTRAR_ASISTENCIA", "Sesión 14 Aperturada · 28 Aprendices", "192.168.1.45"),
         ("16/11 18:30", "APRENDIZ", "ENTREGAR_EVIDENCIA", "Taller 02 Radicado · Versión 2", "186.84.90.12"),
     ]
@@ -371,7 +371,7 @@ def render_scene_6(frame_idx, n_frames):
     # Author & Repo Box
     draw.rounded_rectangle([(90, 770), (1830, 960)], radius=8, fill=(16, 45, 65), outline=C_TURQUOISE, width=1)
     draw.text((130, 800), "Desarrollado por: Anyely Valeria Bautista", font=get_font(28, True), fill=C_WHITE)
-    draw.text((130, 845), "Programa: Tecnólogo en Análisis y Desarrollo de Software (ADSO) · Ficha: 2874102", font=FONT_BODY, fill=C_ICE_BLUE)
+    draw.text((130, 845), "Programa: Tecnólogo en Análisis y Desarrollo de Software (ADSO) · Ficha: 3413988", font=FONT_BODY, fill=C_ICE_BLUE)
     draw.text((130, 885), "Centro de Formación Industrial · SENA Regional Huila (Neiva) · Rama Git: DEV", font=FONT_BODY, fill=C_TEXT_MUTED)
     
     draw.rounded_rectangle([(1450, 810), (1790, 920)], radius=6, fill=C_CARD_BG, outline=C_MINT, width=2)

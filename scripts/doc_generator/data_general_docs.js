@@ -20,7 +20,7 @@ El desarrollo del proyecto se enmarca dentro de las actividades formativas del p
 * **Regional:** Huila
 * **Centro de Formación:** Centro de la Industria, la Empresa y los Servicios (CIES) / Centro de Formación Industrial
 * **Programa de Formación:** Tecnólogo en Análisis y Desarrollo de Software (ADSO)
-* **Código de Ficha:** 2874102
+* **Código de Ficha:** 3413988
 * **Desarrolladora / Autora:** Anyely Valeria Bautista
 * **Modalidad de Desarrollo:** Desarrollo individual asistido por Inteligencia Artificial y metodologías ágiles (Scrum)
 * **Versión del Sistema:** v3.0 (Rama \`DEV\`)
@@ -531,7 +531,7 @@ Este índice maestro articula todos los documentos técnicos de la plataforma **
 
 ## 📑 1. Documentación de Ingeniería de Software (01 a 16)
 1. [01. Introducción General del Sistema EDUNOVA](01-introduccion.md)
-   * Resumen Ejecutivo, Contexto Institucional SENA (ADSO Ficha 2874102) y Propósito.
+   * Resumen Ejecutivo, Contexto Institucional SENA (ADSO Ficha 3413988) y Propósito.
 2. [02. Planteamiento del Problema](02-planteamiento-del-problema.md)
    * Situación actual, Pregunta problema y Árbol de problemas.
 3. [03. Justificación y Vigilancia Tecnológica](03-justificacion.md)
@@ -1121,7 +1121,7 @@ Cursos o fichas formativas específicas vinculadas a un programa.
 | :--- | :--- | :---: | :---: | :--- | :--- |
 | \`id_curso\` | INT | NO | PK | Auto-increment | Identificador único de la ficha. |
 | \`id_programa\` | INT | NO | FK, INDEX | | Referencia a \`PROGRAMA.id_programa\`. |
-| \`nombre\` | VARCHAR(150) | NO | | | Denominación de la ficha (ej: "ADSO 2874102"). |
+| \`nombre\` | VARCHAR(150) | NO | | | Denominación de la ficha (ej: "ADSO 3413988"). |
 | \`descripcion\` | TEXT | SÍ | | NULL | Modalidad, jornada o detalles del grupo. |
 | \`fecha_inicio\` | DATE | NO | | | Fecha de inicio de la etapa lectiva. |
 | \`fecha_fin\` | DATE | NO | | | Fecha estimada de finalización. |
@@ -1539,7 +1539,7 @@ Este glosario define los términos pedagógicos del Servicio Nacional de Aprendi
 * **Etapa Productiva:** Período formativo en el que el aprendiz aplica, complementa y consolida sus competencias en el sector productivo mediante contrato de aprendizaje, proyecto o pasantía.
 * **Evidencia de Aprendizaje:** Prueba fehaciente (de conocimiento, desempeño o producto) presentada por el aprendiz para demostrar el dominio de un resultado de aprendizaje.
 * **Expediente Académico:** Historial integral de un aprendiz que compendia sus calificaciones, novedades, asistencias y competencias aprobadas.
-* **Ficha de Caracterización:** Código numérico único nacional (ej: 2874102) que identifica a un grupo o cohorte de aprendices asignados a un programa formativo específico.
+* **Ficha de Caracterización:** Código numérico único nacional (ej: 3413988) que identifica a un grupo o cohorte de aprendices asignados a un programa formativo específico.
 * **Instructor:** Profesional encargado de orientar, acompañar y evaluar los procesos de aprendizaje en el SENA.
 * **Juicio Evaluativo:** Dictamen pedagógico oficial emitido por el instructor que declara una competencia como "Aprobada" (A) o "No Aprobada" / "Requiere Refuerzo" (D).
 * **Plan de Mejoramiento / Recuperación:** Conjunto concertado de actividades pedagógicas complementarias asignadas al aprendiz para superar deficiencias académicas antes de comités formativos.

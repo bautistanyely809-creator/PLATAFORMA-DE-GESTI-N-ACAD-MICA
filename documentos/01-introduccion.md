@@ -14,7 +14,7 @@ El desarrollo del proyecto se enmarca dentro de las actividades formativas del p
 * **Regional:** Huila
 * **Centro de Formación:** Centro de la Industria, la Empresa y los Servicios (CIES) / Centro de Formación Industrial
 * **Programa de Formación:** Tecnólogo en Análisis y Desarrollo de Software (ADSO)
-* **Código de Ficha:** 2874102
+* **Código de Ficha:** 3413988
 * **Desarrolladora / Autora:** Anyely Valeria Bautista
 * **Modalidad de Desarrollo:** Desarrollo individual asistido por Inteligencia Artificial y metodologías ágiles (Scrum)
 * **Versión del Sistema:** v3.0 (Rama `DEV`)

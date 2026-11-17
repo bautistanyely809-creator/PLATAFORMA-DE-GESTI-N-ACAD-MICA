@@ -9,7 +9,7 @@
 | **Proyecto:** | EDUNOVA – Academic Management System |
 | **Aprendiz Líder / Desarrolladora:** | Anyely Valeria Bautista |
 | **Programa de Formación:** | Tecnólogo en Análisis y Desarrollo de Software (ADSO) |
-| **Ficha de Caracterización:** | 2874102 |
+| **Ficha de Caracterización:** | 3413988 |
 | **Centro de Formación:** | Centro de Formación Industrial – SENA Regional Huila (Neiva) |
 | **Modalidad:** | Desarrollo individual con asistencia de Inteligencia Artificial y metodologías ágiles (Scrum) |
 | **Duración Estimada:** | 4 semanas (1 mes de ejecución lectiva) |
@@ -221,7 +221,7 @@ Las siguientes capacidades se encuentran completamente programadas, conectadas a
 * **API REST:** Representational State Transfer Application Programming Interface.
 * **Bcrypt:** Función criptográfica de hash de contraseñas adaptativa con salt.
 * **CU:** Caso de Uso (Use Case).
-* **Ficha:** Código numérico único nacional que identifica a una cohorte o grupo académico en el SENA (ej. 2874102).
+* **Ficha:** Código numérico único nacional que identifica a una cohorte o grupo académico en el SENA (ej. 3413988).
 * **Glassmorphism:** Estilo visual caracterizado por fondos translúcidos, desenfoque de fondo y bordes finos.
 * **HMR:** Hot Module Replacement (reemplazo en caliente de módulos en Vite).
 * **HU:** Historia de Usuario (User Story).
@@ -1166,7 +1166,7 @@ El Administrador selecciona 'Crear Ficha / Curso'.
 **5. Flujo Principal de Eventos (Paso a Paso):**  
 El Administrador abre el formulario de registro de curso.
 Selecciona el programa de formación de un menú desplegable.
-Diligencia el nombre/código de ficha (ej: 'ADSO 2874102'), descripción, fecha de inicio y fecha de finalización.
+Diligencia el nombre/código de ficha (ej: 'ADSO 3413988'), descripción, fecha de inicio y fecha de finalización.
 Hace clic en 'Guardar Ficha'.
 El servidor valida las fechas (fecha_fin > fecha_inicio) y registra el curso en la tabla CURSO.
 El frontend actualiza la cuadrícula de fichas activas.
@@ -2474,7 +2474,7 @@ El usuario hace clic en el botón 'Exportar a Excel (CSV)'.
 **5. Flujo Principal de Eventos (Paso a Paso):**  
 El usuario pulsa el botón de exportación en cualquier módulo tabular.
 El frontend o backend estructura los datos en formato CSV incorporando el BOM UTF-8 (\uFEFF) para preservar tildes y caracteres especiales en español.
-Se dispara la descarga automática del archivo con nombre descriptivo (ej: 'EDUNOVA_Dossier_Ficha_2874102.csv').
+Se dispara la descarga automática del archivo con nombre descriptivo (ej: 'EDUNOVA_Dossier_Ficha_3413988.csv').
 El usuario abre el archivo directamente en Excel sin problemas de codificación.
 
 **6. Flujos Alternativos:**  
@@ -3176,7 +3176,7 @@ Cursos o fichas formativas específicas vinculadas a un programa.
 | :--- | :--- | :---: | :---: | :--- | :--- |
 | `id_curso` | INT | NO | PK | Auto-increment | Identificador único de la ficha. |
 | `id_programa` | INT | NO | FK, INDEX | | Referencia a `PROGRAMA.id_programa`. |
-| `nombre` | VARCHAR(150) | NO | | | Denominación de la ficha (ej: "ADSO 2874102"). |
+| `nombre` | VARCHAR(150) | NO | | | Denominación de la ficha (ej: "ADSO 3413988"). |
 | `descripcion` | TEXT | SÍ | | NULL | Modalidad, jornada o detalles del grupo. |
 | `fecha_inicio` | DATE | NO | | | Fecha de inicio de la etapa lectiva. |
 | `fecha_fin` | DATE | NO | | | Fecha estimada de finalización. |
@@ -3667,7 +3667,7 @@ Este glosario define los términos pedagógicos del Servicio Nacional de Aprendi
 * **Etapa Productiva:** Período formativo en el que el aprendiz aplica, complementa y consolida sus competencias en el sector productivo mediante contrato de aprendizaje, proyecto o pasantía.
 * **Evidencia de Aprendizaje:** Prueba fehaciente (de conocimiento, desempeño o producto) presentada por el aprendiz para demostrar el dominio de un resultado de aprendizaje.
 * **Expediente Académico:** Historial integral de un aprendiz que compendia sus calificaciones, novedades, asistencias y competencias aprobadas.
-* **Ficha de Caracterización:** Código numérico único nacional (ej: 2874102) que identifica a un grupo o cohorte de aprendices asignados a un programa formativo específico.
+* **Ficha de Caracterización:** Código numérico único nacional (ej: 3413988) que identifica a un grupo o cohorte de aprendices asignados a un programa formativo específico.
 * **Instructor:** Profesional encargado de orientar, acompañar y evaluar los procesos de aprendizaje en el SENA.
 * **Juicio Evaluativo:** Dictamen pedagógico oficial emitido por el instructor que declara una competencia como "Aprobada" (A) o "No Aprobada" / "Requiere Refuerzo" (D).
 * **Plan de Mejoramiento / Recuperación:** Conjunto concertado de actividades pedagógicas complementarias asignadas al aprendiz para superar deficiencias académicas antes de comités formativos.
@@ -3692,4 +3692,4 @@ Este glosario define los términos pedagógicos del Servicio Nacional de Aprendi
 
 
 ## FIN DEL DOCUMENTO SRS MAESTRO UNIFICADO · EDUNOVA ACADEMIC MANAGEMENT (RAMA DEV)
-> **Certificación de Autenticidad y Trazabilidad:** Este documento técnico unificado contiene la totalidad de los requisitos, diseño arquitectónico, historias de usuario, diagramas UML, casos de uso, modelo relacional, diccionario de datos, plan de pruebas y trazabilidad del proyecto EDUNOVA, desarrollado por la aprendiz Anyely Valeria Bautista (Ficha 2874102 - SENA Centro de Formación Industrial).
+> **Certificación de Autenticidad y Trazabilidad:** Este documento técnico unificado contiene la totalidad de los requisitos, diseño arquitectónico, historias de usuario, diagramas UML, casos de uso, modelo relacional, diccionario de datos, plan de pruebas y trazabilidad del proyecto EDUNOVA, desarrollado por la aprendiz Anyely Valeria Bautista (Ficha 3413988 - SENA Centro de Formación Industrial).

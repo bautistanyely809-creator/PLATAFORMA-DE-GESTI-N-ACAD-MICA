@@ -125,11 +125,11 @@ async function main() {
   // 2. PROGRAMA DE FORMACIÓN
   console.log('📚 Creando programa institucional...');
   const programa = await prisma.programa.upsert({
-    where: { codigo: 'ADSO-2874102' },
+    where: { codigo: 'ADSO-3413988' },
     update: {},
     create: {
       nombre: 'Tecnólogo en Análisis y Desarrollo de Software',
-      codigo: 'ADSO-2874102',
+      codigo: 'ADSO-3413988',
       descripcion: 'Formación profesional integral en desarrollo full-stack, metodologías ágiles, bases de datos y arquitectura SaaS.',
       estado: 'ACTIVO'
     }
@@ -142,7 +142,7 @@ async function main() {
     update: {},
     create: {
       id_programa: programa.id_programa,
-      nombre: 'Ficha ADSO 2874102 - Jornada Diurna (Neiva)',
+      nombre: 'Ficha ADSO 3413988 - Jornada Diurna (Neiva)',
       descripcion: 'Ficha líder del Centro de Formación Industrial SENA Regional Huila. Énfasis en React, Node.js y MySQL.',
       fecha_inicio: new Date('2026-02-01'),
       fecha_fin: new Date('2026-11-30'),
@@ -569,7 +569,7 @@ async function main() {
       {
         id_usuario: adminUser.id_usuario,
         titulo: 'Alerta Académica: Asistencia en Seguimiento',
-        mensaje: 'La ficha ADSO 2874102 registra 1 aprendiz con asistencia inferior al umbral del 85%.',
+        mensaje: 'La ficha ADSO 3413988 registra 1 aprendiz con asistencia inferior al umbral del 85%.',
         categoria: 'ALERTA',
         leida: false,
         enlace: '/dashboard?tab=asistencia'

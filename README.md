@@ -47,7 +47,7 @@ Toda la documentación arquitectónica, técnica, diccionario de datos y especif
 ## 📌 Información Institucional del Proyecto
 - **Nombre Oficial:** EDUNOVA – Academic Management System
 - **Aprendiz / Desarrolladora:** Anyely Valeria Bautista
-- **Programa de Formación:** Tecnólogo en Análisis y Desarrollo de Software (ADSO) – Ficha 2874102
+- **Programa de Formación:** Tecnólogo en Análisis y Desarrollo de Software (ADSO) – Ficha 3413988
 - **Centro de Formación:** Centro de Formación Industrial – SENA Regional Huila
 - **Ubicación:** Neiva, Huila, Colombia
 - **Versión del Sistema:** v3.0 (7 Módulos Avanzados, MySQL 8 Real, Three.js 3D & Telemetría IA)
@@ -239,5 +239,5 @@ npm run dev
 
 ## 👩‍💻 Créditos y Autora
 - **Anyely Valeria Bautista** – Desarrolladora Líder Full Stack
-- **Programa:** Análisis y Desarrollo de Software (ADSO) · Ficha 2874102
+- **Programa:** Análisis y Desarrollo de Software (ADSO) · Ficha 3413988
 - **Centro:** Centro de Formación Industrial – SENA Regional Huila (Neiva)
