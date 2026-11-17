@@ -15,31 +15,32 @@
 
 ## 📑 Documentación Técnica Oficial del Sistema (Estándar IEEE 830 / ISO 29148)
 
-Toda la documentación arquitectónica, técnica, diccionario de datos y especificación completa de casos de uso se encuentra centralizada en la carpeta [`/docs`](docs/):
+Toda la documentación arquitectónica, técnica, diccionario de datos y especificación completa de casos de uso se encuentra centralizada y sincronizada tanto en [`/documentos`](documentos/) como en [`/docs`](docs/):
 
-👉 **[Acceder a la Tabla de Contenido General de EDUNOVA (docs/10-tabla-de-contenido.md)](docs/10-tabla-de-contenido.md)**  
-👉 **[Catálogo Completo de Casos de Uso (CU-001 a CU-036)](docs/04-casos-de-uso/README.md)**
+👉 **[Acceder al Documento SRS de EDUNOVA (documentos/SRS_EDUNOVA.md)](documentos/SRS_EDUNOVA.md)**  
+👉 **[Acceder a la Tabla de Contenido General de EDUNOVA (documentos/10-tabla-de-contenido.md)](documentos/10-tabla-de-contenido.md)**  
+👉 **[Catálogo Completo de Casos de Uso (CU-001 a CU-036)](documentos/04-casos-de-uso/README.md)**
 
-### 🗺️ Mapa de Navegación Documental:
-* [01. Introducción General](docs/01-introduccion.md)
-* [02. Planteamiento del Problema](docs/02-planteamiento-del-problema.md)
-* [03. Justificación y Vigilancia Tecnológica](docs/03-justificacion.md)
-* [04. Objetivos del Sistema](docs/04-objetivos.md)
-* [05. Alcance y Límites](docs/05-alcance.md)
-* [06. Arquitectura del Sistema](docs/06-arquitectura-del-sistema.md)
-* [07. Requisitos Funcionales y Matriz de Trazabilidad](docs/07-requisitos-funcionales.md)
-* [08. Requisitos No Funcionales](docs/08-requisitos-no-funcionales.md)
-* [09. Actores y Perfiles del Sistema](docs/09-actores-del-sistema.md)
-* [10. Tabla de Contenido General](docs/10-tabla-de-contenido.md)
-* [11. Casos de Uso y Diagramas UML](docs/11-casos-de-uso.md)
-* [12. Modelo Entidad-Relación](docs/12-modelo-entidad-relacion.md)
-* [13. Diccionario de Datos](docs/13-diccionario-de-datos.md)
-* [14. Tecnologías y Stack Técnico](docs/14-tecnologias.md)
-* [15. Seguridad, Autenticación y Permisos (RBAC)](docs/15-seguridad-y-permisos.md)
-* [16. Glosario de Términos](docs/16-glosario.md)
-* [Casos de Uso Detallados (CU-001 a CU-036)](docs/04-casos-de-uso/README.md)
+### 🗺️ Mapa de Navegación Documental (Disponible en `/documentos` y `/docs`):
+* [01. Introducción General](documentos/01-introduccion.md)
+* [02. Planteamiento del Problema](documentos/02-planteamiento-del-problema.md)
+* [03. Justificación y Vigilancia Tecnológica](documentos/03-justificacion.md)
+* [04. Objetivos del Sistema](documentos/04-objetivos.md)
+* [05. Alcance y Límites](documentos/05-alcance.md)
+* [06. Arquitectura del Sistema](documentos/06-arquitectura-del-sistema.md)
+* [07. Requisitos Funcionales y Matriz de Trazabilidad](documentos/07-requisitos-funcionales.md)
+* [08. Requisitos No Funcionales](documentos/08-requisitos-no-funcionales.md)
+* [09. Actores y Perfiles del Sistema](documentos/09-actores-del-sistema.md)
+* [10. Tabla de Contenido General](documentos/10-tabla-de-contenido.md)
+* [11. Casos de Uso y Diagramas UML](documentos/11-casos-de-uso.md)
+* [12. Modelo Entidad-Relación](documentos/12-modelo-entidad-relacion.md)
+* [13. Diccionario de Datos](documentos/13-diccionario-de-datos.md)
+* [14. Tecnologías y Stack Técnico](documentos/14-tecnologias.md)
+* [15. Seguridad, Autenticación y Permisos (RBAC)](documentos/15-seguridad-y-permisos.md)
+* [16. Glosario de Términos](documentos/16-glosario.md)
+* [Casos de Uso Detallados (CU-001 a CU-036)](documentos/04-casos-de-uso/README.md)
 
-> **⚡ Política de Trazabilidad Continua:** Cada modificación, nuevo endpoint o actualización visual en el código fuente de EDUNOVA se refleja directamente en la documentación técnica en `docs/`, garantizando total coherencia entre la especificación y la implementación en la rama `DEV`.
+> **⚡ Política de Trazabilidad Continua:** Cada modificación, nuevo endpoint o actualización visual en el código fuente de EDUNOVA se refleja directamente en la documentación técnica en `documentos/` y `docs/`, garantizando total coherencia entre la especificación y la implementación en la rama `DEV`.
 
 ---
 

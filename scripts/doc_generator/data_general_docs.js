@@ -1563,3 +1563,4 @@ Este glosario define los términos pedagógicos del Servicio Nacional de Aprendi
 * **Token Streaming:** Transmisión continua y fragmentada de texto generado por modelos de lenguaje en tiempo real hacia el navegador web mediante Server-Sent Events.
 `
 };
+
