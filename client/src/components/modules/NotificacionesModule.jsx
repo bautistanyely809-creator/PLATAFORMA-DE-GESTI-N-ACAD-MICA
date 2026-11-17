@@ -208,3 +208,4 @@ export default function NotificacionesModule({ user, onNavigate }) {
     </div>
   );
 }
+

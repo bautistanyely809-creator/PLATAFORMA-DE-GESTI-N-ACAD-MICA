@@ -9,3 +9,4 @@ router.post('/:id_evidencia/entregar', verifyToken, requireRole('APRENDIZ'), con
 router.post('/entregas/:id_entrega/calificar', verifyToken, requireRole('INSTRUCTOR', 'ADMIN'), controller.calificarEntrega);
 
 module.exports = router;
+

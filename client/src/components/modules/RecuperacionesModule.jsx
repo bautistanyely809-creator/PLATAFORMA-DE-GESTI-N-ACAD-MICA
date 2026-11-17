@@ -474,3 +474,4 @@ export default function RecuperacionesModule({ user }) {
     </div>
   );
 }
+

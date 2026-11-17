@@ -114,3 +114,4 @@ export const api = {
     consultar: (data) => request('/ai/query', { method: 'POST', body: data })
   }
 };
+

@@ -340,3 +340,4 @@ export default function ReportesModule({ user }) {
     </div>
   );
 }
+

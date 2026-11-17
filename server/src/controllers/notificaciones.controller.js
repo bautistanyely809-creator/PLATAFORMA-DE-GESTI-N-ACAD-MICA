@@ -61,3 +61,4 @@ exports.marcarTodasComoLeidas = async (req, res) => {
     res.status(500).json({ message: 'Error al marcar todas las notificaciones', error: error.message });
   }
 };
+

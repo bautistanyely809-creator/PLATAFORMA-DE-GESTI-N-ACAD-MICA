@@ -10,3 +10,4 @@ router.post('/:id_recuperacion/entregar', verifyToken, requireRole('APRENDIZ'), 
 router.post('/:id_recuperacion/evaluar', verifyToken, requireRole('INSTRUCTOR', 'ADMIN'), controller.evaluarRecuperacion);
 
 module.exports = router;
+

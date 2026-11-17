@@ -172,3 +172,4 @@ exports.evaluarCompetencia = async (req, res) => {
     res.status(500).json({ message: 'Error al evaluar la competencia', error: error.message });
   }
 };
+

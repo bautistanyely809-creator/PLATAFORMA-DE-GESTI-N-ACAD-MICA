@@ -8,3 +8,4 @@ router.put('/:id/leida', controller.marcarComoLeida);
 router.put('/marcar-todas/todas', controller.marcarTodasComoLeidas);
 
 module.exports = router;
+

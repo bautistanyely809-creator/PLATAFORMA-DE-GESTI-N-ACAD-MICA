@@ -357,3 +357,4 @@ exports.streamIA = async (req, res) => {
     res.status(500).json({ message: 'Error en el streaming de EDUNOVA AI', error: error.message });
   }
 };
+

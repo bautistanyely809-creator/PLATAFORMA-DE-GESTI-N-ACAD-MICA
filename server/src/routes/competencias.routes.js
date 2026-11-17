@@ -9,3 +9,4 @@ router.get('/ficha/:id_curso', controller.getSeguimientoFicha);
 router.post('/evaluar', verifyToken, requireRole('INSTRUCTOR', 'ADMIN'), controller.evaluarCompetencia);
 
 module.exports = router;
+

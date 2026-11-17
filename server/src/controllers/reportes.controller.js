@@ -207,3 +207,4 @@ exports.exportarExcel = async (req, res) => {
     res.status(500).json({ message: 'Error al exportar reporte a Excel', error: error.message });
   }
 };
+

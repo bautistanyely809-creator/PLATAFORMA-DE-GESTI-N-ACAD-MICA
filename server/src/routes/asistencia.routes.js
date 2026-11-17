@@ -11,3 +11,4 @@ router.post('/justificar', verifyToken, controller.radicarJustificacion);
 router.get('/estadisticas/:id_curso', controller.getEstadisticasAsistencia);
 
 module.exports = router;
+
