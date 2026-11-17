@@ -287,3 +287,4 @@ exports.getEstadisticasAsistencia = async (req, res) => {
     res.status(500).json({ message: 'Error al calcular estadísticas de asistencia', error: error.message });
   }
 };
+

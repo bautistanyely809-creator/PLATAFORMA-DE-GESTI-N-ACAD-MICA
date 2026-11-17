@@ -493,3 +493,4 @@ export default function AsistenciaModule({ user }) {
     </div>
   );
 }
+

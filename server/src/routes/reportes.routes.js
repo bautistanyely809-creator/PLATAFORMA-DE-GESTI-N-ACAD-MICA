@@ -8,3 +8,4 @@ router.get('/ficha/:id_curso', controller.getReporteFicha);
 router.get('/exportar/excel', controller.exportarExcel);
 
 module.exports = router;
+

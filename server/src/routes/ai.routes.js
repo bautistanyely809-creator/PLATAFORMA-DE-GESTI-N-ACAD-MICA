@@ -6,3 +6,4 @@ router.post('/query', controller.consultarIA);
 router.post('/stream', controller.streamIA);
 
 module.exports = router;
+

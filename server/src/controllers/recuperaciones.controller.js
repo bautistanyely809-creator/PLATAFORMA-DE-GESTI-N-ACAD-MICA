@@ -238,3 +238,4 @@ exports.evaluarRecuperacion = async (req, res) => {
     res.status(500).json({ message: 'Error al evaluar recuperación', error: error.message });
   }
 };
+
