@@ -8,31 +8,32 @@ const path = require('path');
 const generalDocs = require('./data_general_docs');
 const useCases = require('./data_use_cases');
 
-const DOCS_DIR = path.resolve(__dirname, '../../docs');
-const CU_DIR = path.resolve(DOCS_DIR, '04-casos-de-uso');
-
-// 1. Asegurar directorios
-if (!fs.existsSync(DOCS_DIR)) fs.mkdirSync(DOCS_DIR, { recursive: true });
-if (!fs.existsSync(CU_DIR)) fs.mkdirSync(CU_DIR, { recursive: true });
+const TARGET_DIRS = [
+  path.resolve(__dirname, '../../docs'),
+  path.resolve(__dirname, '../../documentos')
+];
 
 console.log('🚀 Iniciando generación de documentación técnica de EDUNOVA...');
 
-// 2. Generar documentos generales (01 a 16)
-let generalCount = 0;
-for (const [filename, content] of Object.entries(generalDocs)) {
-  const filePath = path.join(DOCS_DIR, filename);
-  fs.writeFileSync(filePath, content.trim() + '\n', 'utf8');
-  console.log(` ✅ Generado: docs/${filename}`);
-  generalCount++;
-}
+for (const baseDir of TARGET_DIRS) {
+  const cuDir = path.resolve(baseDir, '04-casos-de-uso');
+  if (!fs.existsSync(baseDir)) fs.mkdirSync(baseDir, { recursive: true });
+  if (!fs.existsSync(cuDir)) fs.mkdirSync(cuDir, { recursive: true });
 
-// 3. Generar archivos individuales de Casos de Uso (CU-001 a CU-036)
-let cuCount = 0;
-for (const cu of useCases) {
-  const cuFilename = `${cu.id}.md`;
-  const cuPath = path.join(CU_DIR, cuFilename);
+  console.log(`\n📂 Escribiendo en directorio: ${path.relative(path.resolve(__dirname, '../..'), baseDir)}`);
 
-  const markdown = `# ESPECIFICACIÓN DE CASO DE USO: ${cu.id}
+  // Documentos generales
+  for (const [filename, content] of Object.entries(generalDocs)) {
+    const filePath = path.join(baseDir, filename);
+    fs.writeFileSync(filePath, content.trim() + '\n', 'utf8');
+  }
+
+  // Casos de uso
+  for (const cu of useCases) {
+    const cuFilename = `${cu.id}.md`;
+    const cuPath = path.join(cuDir, cuFilename);
+
+    const markdown = `# ESPECIFICACIÓN DE CASO DE USO: ${cu.id}
 ## ${cu.nombre.toUpperCase()}
 
 ---
@@ -119,13 +120,11 @@ ${cu.reglasNegocio.map(rn => `* **${rn}**`).join('\n')}
 * **Enlace a la Tabla de Contenido General:** [Ir a la Tabla de Contenido General](../10-tabla-de-contenido.md)
 `;
 
-  fs.writeFileSync(cuPath, markdown.trim() + '\n', 'utf8');
-  console.log(` ✅ Generado: docs/04-casos-de-uso/${cuFilename}`);
-  cuCount++;
-}
+    fs.writeFileSync(cuPath, markdown.trim() + '\n', 'utf8');
+  }
 
-// 4. Generar docs/04-casos-de-uso/README.md
-const cuReadmeContent = `# CATÁLOGO GENERAL DE CASOS DE USO DE EDUNOVA
+  // README de casos de uso
+  const cuReadmeContent = `# CATÁLOGO GENERAL DE CASOS DE USO DE EDUNOVA
 
 Este directorio compendia la especificación técnica formal e individual de los **36 Casos de Uso** del sistema **EDUNOVA – Academic Management System** (Rama \`DEV\`), elaborados bajo el estándar internacional **IEEE 830 / ISO/IEC/IEEE 29148**.
 
@@ -152,10 +151,8 @@ ${useCases.map(cu => `| **${cu.id}** | ${cu.nombre} | ${cu.modulo} | ${cu.actore
 * [Ir a Diagramas UML de Casos de Uso](../11-casos-de-uso.md)
 `;
 
-fs.writeFileSync(path.join(CU_DIR, 'README.md'), cuReadmeContent.trim() + '\n', 'utf8');
-console.log(' ✅ Generado: docs/04-casos-de-uso/README.md');
+  fs.writeFileSync(path.join(cuDir, 'README.md'), cuReadmeContent.trim() + '\n', 'utf8');
+}
 
-console.log(`\n🎉 Generación completada con éxito:`);
-console.log(`   - ${generalCount} documentos maestros en docs/`);
-console.log(`   - ${cuCount} casos de uso individuales en docs/04-casos-de-uso/`);
-console.log(`   - 1 índice maestro en docs/04-casos-de-uso/README.md`);
+console.log('\n🎉 Generación completada con éxito en docs/ y documentos/.');
+

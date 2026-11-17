@@ -28,7 +28,32 @@
 | **v2.0** | 13/11/2026 | Anyely Valeria | Adaptación a la estructura formal integral SENA/IEEE (HU-01 a HU-26, CU-01 a CU-26, RF1 a RF26, RNF-01 a RNF-12 y Matriz de Trazabilidad). |
 | **v2.1** | 13/11/2026 | Anyely Valeria | **Sprint de Alto Rendimiento y UX Resiliente**: Diseño Skeleton para carga fluida, búsqueda con Debounce (300ms), paginación de cursos, streaming token a token de EDUNOVA AI, actualización optimista de interfaz (Optimistic UI), índices SQL en MySQL 8, prevención de consultas N+1 con Prisma, compresión Brotli/Gzip, caché Redis/In-Memory, cola de trabajos (Job Queue), timeouts en APIs externas (5000ms), code-splitting de JS (`manualChunks`) y monitoreo de usuarios reales (RUM). |
 | **v2.2** | 13/11/2026 | Anyely Valeria | **Implementación Integral del Sistema de Diseño Factory**: Reemplazo de estética pastel/glassmorphic por la estética Dark Terminal War Room (Obsidian `#101010`, Bone `#eeeeee`, Carbon `#1d1a18`, Ash `#3d3a39`, Signal Orange `#ee6018`, Metric Green `#a0ca92`), tipografía Geist / Geist Mono con tracking negativo ajustado, radio de 3px en botones y controles, tarjetas a 10px con bordes hairline nítidos y eliminación de sombras difusas. Núcleo 3D animable en Three.js con WebGL en el Hero Banner. |
-| **v3.0** | 13/11/2026 | Anyely Valeria | **Despliegue Integral de los 7 Módulos Académicos Avanzados Conectados a MySQL 8**: 1) Seguimiento Académico por Competencias y RAPs con historial auditado; 2) Gestión Completa de Evidencias con versionamiento (v1, v2...) y retroalimentación pedagógica; 3) Sistema de Recuperación de Competencias con acreditación automática; 4) Control de Asistencia Automatizado por sesión con detección de ausencias consecutivas y umbral institucional (&lt; 85%); 5) Centro de Reportes Oficiales SENA con exportación real en Excel (.csv) e impresión PDF; 6) Centro de Notificaciones Automáticas en tiempo real ante eventos del sistema; 7) EDUNOVA AI Contextual conectada a MySQL 8 con validación estricta de permisos RBAC y cálculos matemáticos en el backend. |
+| **v3.0** | 13/11/2026 | Anyely Valeria | **Despliegue Integral de los 7 Módulos Académicos Avanzados Conectados a MySQL 8**: 1) Seguimiento Académico por Competencias y RAPs con historial auditado; 2) Gestión Completa de Evidencias con versionamiento (v1, v2...) y retroalimentación pedagógica; 3) Sistema de Recuperación de Competencias con acreditación automática; 4) Control de Asistencia Automatizado por sesión con detección de ausencias consecutivas y umbral institucional (< 85%); 5) Centro de Reportes Oficiales SENA con exportación real en Excel (.csv) e impresión PDF; 6) Centro de Notificaciones Automáticas en tiempo real ante eventos del sistema; 7) EDUNOVA AI Contextual conectada a MySQL 8 con validación estricta de permisos RBAC y cálculos matemáticos en el backend. |
+| **v3.1** | 17/11/2026 | Anyely Valeria | **Documentación Técnica Integral en /documentos y /docs**: Organización de 16 documentos modulares (01 a 16) y 36 especificaciones formales de Casos de Uso (CU-001 a CU-036) bajo IEEE 830 / ISO 29148, Diccionario de Datos de 22 tablas y MER exhaustivo. |
+
+---
+
+## 📑 ÍNDICE Y MAPA DE DOCUMENTOS TÉCNICOS EN ESTE DIRECTORIO
+
+Toda la documentación técnica se encuentra desglosada y navegable dentro de esta carpeta [`/documentos`](./):
+
+* 📋 **[Tabla de Contenido General (10-tabla-de-contenido.md)](10-tabla-de-contenido.md)**
+* 📦 **[Catálogo Completo de Casos de Uso (04-casos-de-uso/README.md)](04-casos-de-uso/README.md)** (36 Casos de Uso individuales CU-001 a CU-036)
+* [01. Introducción General](01-introduccion.md)
+* [02. Planteamiento del Problema y Árbol de Causas](02-planteamiento-del-problema.md)
+* [03. Justificación y Vigilancia Tecnológica](03-justificacion.md)
+* [04. Objetivos del Sistema](04-objetivos.md)
+* [05. Alcance y Funcionalidades](05-alcance.md)
+* [06. Arquitectura del Sistema (3 Capas y Despliegue)](06-arquitectura-del-sistema.md)
+* [07. Requisitos Funcionales y Matriz de Trazabilidad](07-requisitos-funcionales.md)
+* [08. Requisitos No Funcionales (RNF-01 a RNF-15)](08-requisitos-no-funcionales.md)
+* [09. Actores y Perfiles del Sistema (Matriz RBAC)](09-actores-del-sistema.md)
+* [11. Casos de Uso y 10 Diagramas UML Mermaid](11-casos-de-uso.md)
+* [12. Modelo Entidad-Relación (22 Tablas)](12-modelo-entidad-relacion.md)
+* [13. Diccionario de Datos Exhaustivo](13-diccionario-de-datos.md)
+* [14. Tecnologías y Stack Técnico](14-tecnologias.md)
+* [15. Seguridad, Autenticación y Permisos](15-seguridad-y-permisos.md)
+* [16. Glosario de Términos Formativos e Informáticos](16-glosario.md)
 
 ---
 
