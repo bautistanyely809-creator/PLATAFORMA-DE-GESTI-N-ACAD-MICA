@@ -937,3 +937,4 @@ fs.writeFileSync(docsSRSPath, srs.trim() + '\n', 'utf8');
 console.log(` ✅ Generado con éxito: docs/SRS_EDUNOVA.md (${(fs.statSync(docsSRSPath).size / 1024).toFixed(1)} KB)`);
 
 console.log('\n🎉 ¡SRS Maestro Integral compilado exitosamente en un solo documento!');
+
