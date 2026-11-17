@@ -92,7 +92,7 @@ export default function CompetenciasModule({ user }) {
             Progreso Formativo por Competencias Laborales
           </h2>
           <p className="text-xs text-[#8c8682] mt-0.5">
-            Programa: Tecnólogo en Análisis y Desarrollo de Software (ADSO) · Ficha 2874102
+            Programa: Tecnólogo en Análisis y Desarrollo de Software (ADSO) · Ficha 3413988
           </p>
         </div>
 

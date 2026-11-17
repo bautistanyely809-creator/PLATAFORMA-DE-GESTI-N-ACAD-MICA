@@ -198,7 +198,7 @@ const useCases = [
     flujoPrincipal: [
       "El Administrador abre el formulario de registro de curso.",
       "Selecciona el programa de formación de un menú desplegable.",
-      "Diligencia el nombre/código de ficha (ej: 'ADSO 2874102'), descripción, fecha de inicio y fecha de finalización.",
+      "Diligencia el nombre/código de ficha (ej: 'ADSO 3413988'), descripción, fecha de inicio y fecha de finalización.",
       "Hace clic en 'Guardar Ficha'.",
       "El servidor valida las fechas (fecha_fin > fecha_inicio) y registra el curso en la tabla CURSO.",
       "El frontend actualiza la cuadrícula de fichas activas."
@@ -799,7 +799,7 @@ const useCases = [
     flujoPrincipal: [
       "El usuario pulsa el botón de exportación en cualquier módulo tabular.",
       "El frontend o backend estructura los datos en formato CSV incorporando el BOM UTF-8 (\\uFEFF) para preservar tildes y caracteres especiales en español.",
-      "Se dispara la descarga automática del archivo con nombre descriptivo (ej: 'EDUNOVA_Dossier_Ficha_2874102.csv').",
+      "Se dispara la descarga automática del archivo con nombre descriptivo (ej: 'EDUNOVA_Dossier_Ficha_3413988.csv').",
       "El usuario abre el archivo directamente en Excel sin problemas de codificación."
     ],
     flujosAlternativos: [],

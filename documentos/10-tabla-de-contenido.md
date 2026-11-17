@@ -6,7 +6,7 @@ Este índice maestro articula todos los documentos técnicos de la plataforma **
 
 ## 📑 1. Documentación de Ingeniería de Software (01 a 16)
 1. [01. Introducción General del Sistema EDUNOVA](01-introduccion.md)
-   * Resumen Ejecutivo, Contexto Institucional SENA (ADSO Ficha 2874102) y Propósito.
+   * Resumen Ejecutivo, Contexto Institucional SENA (ADSO Ficha 3413988) y Propósito.
 2. [02. Planteamiento del Problema](02-planteamiento-del-problema.md)
    * Situación actual, Pregunta problema y Árbol de problemas.
 3. [03. Justificación y Vigilancia Tecnológica](03-justificacion.md)

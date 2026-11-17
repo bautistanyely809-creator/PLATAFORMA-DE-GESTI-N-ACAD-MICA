@@ -22,7 +22,7 @@ let srs = `# ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS / ERS)
 | **Proyecto:** | EDUNOVA – Academic Management System |
 | **Aprendiz Líder / Desarrolladora:** | Anyely Valeria Bautista |
 | **Programa de Formación:** | Tecnólogo en Análisis y Desarrollo de Software (ADSO) |
-| **Ficha de Caracterización:** | 2874102 |
+| **Ficha de Caracterización:** | 3413988 |
 | **Centro de Formación:** | Centro de Formación Industrial – SENA Regional Huila (Neiva) |
 | **Modalidad:** | Desarrollo individual con asistencia de Inteligencia Artificial y metodologías ágiles (Scrum) |
 | **Duración Estimada:** | 4 semanas (1 mes de ejecución lectiva) |
@@ -238,7 +238,7 @@ Las siguientes capacidades se encuentran completamente programadas, conectadas a
 * **API REST:** Representational State Transfer Application Programming Interface.
 * **Bcrypt:** Función criptográfica de hash de contraseñas adaptativa con salt.
 * **CU:** Caso de Uso (Use Case).
-* **Ficha:** Código numérico único nacional que identifica a una cohorte o grupo académico en el SENA (ej. 2874102).
+* **Ficha:** Código numérico único nacional que identifica a una cohorte o grupo académico en el SENA (ej. 3413988).
 * **Glassmorphism:** Estilo visual caracterizado por fondos translúcidos, desenfoque de fondo y bordes finos.
 * **HMR:** Hot Module Replacement (reemplazo en caliente de módulos en Vite).
 * **HU:** Historia de Usuario (User Story).
@@ -924,7 +924,7 @@ La siguiente matriz certifica la correspondencia biunívoca entre Historias de U
 srs += `## 5. GLOSARIO DE TÉRMINOS\n\n` + generalDocs['16-glosario.md'].replace(/^# .*\n/, '') + '\n\n';
 
 srs += `## FIN DEL DOCUMENTO SRS MAESTRO UNIFICADO · EDUNOVA ACADEMIC MANAGEMENT (RAMA DEV)\n`;
-srs += `> **Certificación de Autenticidad y Trazabilidad:** Este documento técnico unificado contiene la totalidad de los requisitos, diseño arquitectónico, historias de usuario, diagramas UML, casos de uso, modelo relacional, diccionario de datos, plan de pruebas y trazabilidad del proyecto EDUNOVA, desarrollado por la aprendiz Anyely Valeria Bautista (Ficha 2874102 - SENA Centro de Formación Industrial).\n`;
+srs += `> **Certificación de Autenticidad y Trazabilidad:** Este documento técnico unificado contiene la totalidad de los requisitos, diseño arquitectónico, historias de usuario, diagramas UML, casos de uso, modelo relacional, diccionario de datos, plan de pruebas y trazabilidad del proyecto EDUNOVA, desarrollado por la aprendiz Anyely Valeria Bautista (Ficha 3413988 - SENA Centro de Formación Industrial).\n`;
 
 // Escribir a documentos/SRS_EDUNOVA.md y docs/SRS_EDUNOVA.md
 const docSRSPath = path.resolve(__dirname, '../documentos/SRS_EDUNOVA.md');

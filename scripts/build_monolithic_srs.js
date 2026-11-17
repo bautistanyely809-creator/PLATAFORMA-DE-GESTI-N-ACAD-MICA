@@ -22,7 +22,7 @@ let srs = `# ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS / ERS)
 | **Nombre Oficial del Software:** | EDUNOVA – Academic Management System |
 | **Aprendiz Desarrolladora:** | Anyely Valeria Bautista |
 | **Programa de Formación:** | Tecnólogo en Análisis y Desarrollo de Software (ADSO) |
-| **Número de Ficha de Caracterización:** | 2874102 |
+| **Número de Ficha de Caracterización:** | 3413988 |
 | **Centro de Formación:** | Centro de Formación Industrial – SENA Regional Huila (Neiva) |
 | **Modalidad de Desarrollo:** | Desarrollo individual con asistencia de Inteligencia Artificial y metodologías ágiles (Scrum) |
 | **Duración Estimada:** | 4 semanas (1 mes de ejecución lectiva) |
@@ -51,7 +51,7 @@ let srs = `# ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS / ERS)
 
 1. [SECCIÓN 1: INTRODUCCIÓN GENERAL](#sección-1-introducción-general)
    - 1.1 Resumen Ejecutivo
-   - 1.2 Contexto Institucional SENA (ADSO 2874102)
+   - 1.2 Contexto Institucional SENA (ADSO 3413988)
    - 1.3 Propósito del Sistema
 2. [SECCIÓN 2: PLANTEAMIENTO DEL PROBLEMA](#sección-2-planteamiento-del-problema)
    - 2.1 Descripción de la Situación Actual
@@ -169,7 +169,7 @@ srs += `## SECCIÓN 15: SEGURIDAD, AUTENTICACIÓN Y PERMISOS (RBAC)\n\n` + gener
 srs += `## SECCIÓN 16: GLOSARIO DE TÉRMINOS\n\n` + generalDocs['16-glosario.md'].replace(/^# .*\n/, '') + '\n\n---\n\n';
 
 srs += `## FIN DEL DOCUMENTO MAESTRO SRS EDUNOVA (RAMA DEV)\n`;
-srs += `> **Certificación de Autenticidad:** Este documento técnico unificado refleja con exactitud la totalidad del código fuente, controladores, esquemas relacionales de MySQL 8 y servicios implementados en el repositorio de la plataforma EDUNOVA por la aprendiz Anyely Valeria Bautista (Ficha 2874102 - SENA Centro de Formación Industrial).\n`;
+srs += `> **Certificación de Autenticidad:** Este documento técnico unificado refleja con exactitud la totalidad del código fuente, controladores, esquemas relacionales de MySQL 8 y servicios implementados en el repositorio de la plataforma EDUNOVA por la aprendiz Anyely Valeria Bautista (Ficha 3413988 - SENA Centro de Formación Industrial).\n`;
 
 // Escribir a documentos/SRS_EDUNOVA.md y docs/SRS_EDUNOVA.md
 const docSRSPath = path.resolve(__dirname, '../documentos/SRS_EDUNOVA.md');

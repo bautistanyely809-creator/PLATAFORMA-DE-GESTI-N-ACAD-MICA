@@ -194,7 +194,7 @@ export default function AsistenciaModule({ user }) {
         <div className="bg-[#1d1a18] p-5 rounded-[10px] border border-[#3d3a39]">
           <span className="font-mono text-[10px] uppercase text-[#8c8682]">ASISTENCIA PROMEDIO</span>
           <h3 className="text-3xl font-normal text-[#a0ca92] mt-2">{resumen.promedioAsistenciaGrupal || 0}%</h3>
-          <p className="text-xs font-mono text-[#a0ca92] mt-1">Ficha ADSO 2874102</p>
+          <p className="text-xs font-mono text-[#a0ca92] mt-1">Ficha ADSO 3413988</p>
         </div>
 
         <div className="bg-[#1d1a18] p-5 rounded-[10px] border border-[#3d3a39]">

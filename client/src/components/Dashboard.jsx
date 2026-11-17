@@ -221,7 +221,7 @@ export default function Dashboard({ currentUser, onLogout }) {
                     </div>
                     <div className="mt-4 space-y-3 font-mono text-xs">
                       <div className="flex justify-between items-center">
-                        <span className="text-[#eeeeee]">ADSO 2874102</span>
+                        <span className="text-[#eeeeee]">ADSO 3413988</span>
                         <span className="text-[#a0ca92] bg-[#101010] border border-[#3d3a39] px-2 py-0.5 rounded-[3px]">FASE EJECUCIÓN</span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -282,7 +282,7 @@ export default function Dashboard({ currentUser, onLogout }) {
                 <div>
                   <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-[3px] bg-[#101010] text-[#fafafa] font-mono text-[10px] uppercase tracking-wider mb-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#ee6018]"></span>
-                    <span>CATÁLOGO DE FORMACIÓN // FICHA 2874102</span>
+                    <span>CATÁLOGO DE FORMACIÓN // FICHA 3413988</span>
                   </div>
                   <h2 className="text-xl font-normal text-[#eeeeee] tracking-tight">
                     Cursos y Fichas Académicas
@@ -304,7 +304,7 @@ export default function Dashboard({ currentUser, onLogout }) {
                 <div className="bg-[#1d1a18] rounded-[10px] border border-[#3d3a39] p-6 space-y-4 hover:border-[#4d4947] transition-colors">
                   <div className="flex justify-between items-start">
                     <span className="px-2.5 py-0.5 rounded-[3px] text-[10px] font-mono bg-[#101010] text-[#fafafa] border border-[#3d3a39]">
-                      FICHA ADSO 2874102-A
+                      FICHA ADSO 3413988-A
                     </span>
                     <span className="text-[10px] font-mono text-[#a0ca92] bg-[#101010] border border-[#a0ca92]/40 px-2 py-0.5 rounded-[3px]">
                       ACTIVO
@@ -323,7 +323,7 @@ export default function Dashboard({ currentUser, onLogout }) {
                 <div className="bg-[#1d1a18] rounded-[10px] border border-[#3d3a39] p-6 space-y-4 hover:border-[#4d4947] transition-colors">
                   <div className="flex justify-between items-start">
                     <span className="px-2.5 py-0.5 rounded-[3px] text-[10px] font-mono bg-[#101010] text-[#fafafa] border border-[#3d3a39]">
-                      FICHA ADSO 2874102-B
+                      FICHA ADSO 3413988-B
                     </span>
                     <span className="text-[10px] font-mono text-[#a0ca92] bg-[#101010] border border-[#a0ca92]/40 px-2 py-0.5 rounded-[3px]">
                       ACTIVO

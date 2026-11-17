@@ -67,7 +67,7 @@ Cursos o fichas formativas específicas vinculadas a un programa.
 | :--- | :--- | :---: | :---: | :--- | :--- |
 | `id_curso` | INT | NO | PK | Auto-increment | Identificador único de la ficha. |
 | `id_programa` | INT | NO | FK, INDEX | | Referencia a `PROGRAMA.id_programa`. |
-| `nombre` | VARCHAR(150) | NO | | | Denominación de la ficha (ej: "ADSO 2874102"). |
+| `nombre` | VARCHAR(150) | NO | | | Denominación de la ficha (ej: "ADSO 3413988"). |
 | `descripcion` | TEXT | SÍ | | NULL | Modalidad, jornada o detalles del grupo. |
 | `fecha_inicio` | DATE | NO | | | Fecha de inicio de la etapa lectiva. |
 | `fecha_fin` | DATE | NO | | | Fecha estimada de finalización. |
