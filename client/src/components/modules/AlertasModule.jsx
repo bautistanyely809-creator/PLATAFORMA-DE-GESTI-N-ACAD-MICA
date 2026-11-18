@@ -532,3 +532,4 @@ export default function AlertasModule({ user }) {
     </div>
   );
 }
+

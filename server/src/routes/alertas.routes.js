@@ -10,3 +10,4 @@ router.patch('/:id/estado', verifyToken, requireRole('ADMIN', 'INSTRUCTOR'), con
 router.post('/evaluar-reglas', verifyToken, requireRole('ADMIN', 'INSTRUCTOR'), controller.evaluarReglasAutomaticas);
 
 module.exports = router;
+

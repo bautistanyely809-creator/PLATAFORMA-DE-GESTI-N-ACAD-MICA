@@ -10,3 +10,4 @@ router.put('/:id', verifyToken, requireRole('ADMIN', 'INSTRUCTOR'), controller.a
 router.patch('/:id/cancelar', verifyToken, requireRole('ADMIN', 'INSTRUCTOR'), controller.cancelarEvento);
 
 module.exports = router;
+

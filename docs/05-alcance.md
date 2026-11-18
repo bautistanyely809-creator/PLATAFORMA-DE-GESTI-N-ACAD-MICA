@@ -42,3 +42,35 @@ Para mantener absoluta transparencia con respecto al estado real del desarrollo,
 2. Los aprendices solo tienen acceso de lectura a sus propios datos e historial.
 3. El cálculo de porcentajes de inasistencia es consistente y automático sin intervención manual del usuario.
 4. Las contraseñas de los usuarios nunca se transmiten en texto plano ni se guardan sin hash Bcrypt.
+
+
+### 5.2.8 Módulo 8: Calendario Académico Centralizado
+- Matriz interactiva mensual, semanal y de agenda.
+- Agendamiento de clases, evaluaciones, entregas de aula y comités.
+- Cancelación con motivo justificado y notificación a fichas.
+
+### 5.2.9 Módulo 9: Perfil Académico 360° del Aprendiz
+- Expediente digital formativo integral sin duplicidad de fuentes de datos.
+- Cálculo de 6 indicadores en tiempo real (% avance competencias, % asistencia, evidencias aprobadas, recuperaciones, alertas y solicitudes).
+- 7 Pestañas de detalle académico y registro de tutorías/acompañamiento.
+
+### 5.2.10 Módulo 10: Sistema de Alertas Tempranas
+- Motor automático de reglas preventivas para detección de inasistencias (> 2 ausencias) y evidencias vencidas.
+- Clasificación por 5 niveles de criticidad e historial inmutable de trazabilidad.
+- Gestión de estado con obligatoriedad de justificación de cierre.
+
+### 5.2.11 Módulo 11: Aula Virtual LMS Integrada
+- Creación de unidades didácticas ordenadas por curso.
+- Publicación de recursos educativos (PDF, documentos, enlaces).
+- Asignación de actividades evaluables con proyección automática al Calendario Académico.
+- Recepción de entregas y calificación docente de 0.0 a 5.0 con retroalimentación.
+
+### 5.2.12 Módulo 12: Programación y Gestión de Ambientes
+- Catálogo de laboratorios, talleres y auditorios con aforo y equipamiento.
+- Detección estricta de conflictos de programación y reservas concurrentes (HTTP 409).
+- Generación automática de eventos en el calendario institucional.
+
+### 5.2.13 Módulo 13: Centro de Solicitudes Institucionales
+- Radicación digital con consecutivo único anual oficial (`SOL-2026-XXXX`).
+- Clasificación temática (Académica, Certificados, Asistencia, Soporte).
+- Asignación de funcionarios responsables, emisión de respuestas oficiales e historial inmutable.

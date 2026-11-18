@@ -545,3 +545,4 @@ export default function Perfil360Module({ user }) {
     </div>
   );
 }
+

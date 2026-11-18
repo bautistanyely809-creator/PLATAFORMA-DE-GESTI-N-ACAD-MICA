@@ -256,3 +256,4 @@ exports.responderSolicitud = async (req, res) => {
     res.status(500).json({ message: 'Error al responder solicitud', error: error.message });
   }
 };
+

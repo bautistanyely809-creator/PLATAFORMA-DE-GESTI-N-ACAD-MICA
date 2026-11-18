@@ -189,3 +189,42 @@ erDiagram
         string estado
     }
 ```
+
+
+### 12.3 Extensiones del Modelo Relacional — Expansión Integral (13 Nuevas Entidades)
+A continuación se especifican las 13 entidades incorporadas en MySQL 8 para soportar los 6 nuevos módulos:
+
+```mermaid
+erDiagram
+    USUARIO ||--o{ EVENTO_CALENDARIO : crea
+    USUARIO ||--o{ HISTORIAL_ALERTA : audita
+    USUARIO ||--o{ SOLICITUD_INSTITUCIONAL : radica
+    USUARIO ||--o{ SOLICITUD_INSTITUCIONAL : atiende
+    USUARIO ||--o{ HISTORIAL_SOLICITUD : registra
+
+    APRENDIZ ||--o{ ALERTA_TEMPRANA : recibe
+    APRENDIZ ||--o{ ACCION_ACOMPANAMIENTO : participa
+
+    INSTRUCTOR ||--o{ EVENTO_CALENDARIO : programa
+    INSTRUCTOR ||--o{ ALERTA_TEMPRANA : atiende
+    INSTRUCTOR ||--o{ AULA_VIRTUAL : lidera
+    INSTRUCTOR ||--o{ RESERVA_AMBIENTE : agenda
+    INSTRUCTOR ||--o{ ACCION_ACOMPANAMIENTO : imparte
+
+    CURSO ||--o{ EVENTO_CALENDARIO : asigna
+    CURSO ||--o{ ALERTA_TEMPRANA : asocia
+    CURSO ||--o{ AULA_VIRTUAL : alberga
+    CURSO ||--o{ RESERVA_AMBIENTE : convoca
+
+    AULA_VIRTUAL ||--|{ UNIDAD_AULA : contiene
+    UNIDAD_AULA ||--o{ MATERIAL_AULA : publica
+    UNIDAD_AULA ||--o{ ACTIVIDAD_AULA : asigna
+    ACTIVIDAD_AULA ||--o{ ENTREGA_ACTIVIDAD_AULA : recibe
+    INSCRIPCION ||--o{ ENTREGA_ACTIVIDAD_AULA : efectua
+
+    AMBIENTE ||--o{ RESERVA_AMBIENTE : hospeda
+    AMBIENTE ||--o{ EVENTO_CALENDARIO : ubica
+
+    ALERTA_TEMPRANA ||--|{ HISTORIAL_ALERTA : traza
+    SOLICITUD_INSTITUCIONAL ||--|{ HISTORIAL_SOLICITUD : traza
+```

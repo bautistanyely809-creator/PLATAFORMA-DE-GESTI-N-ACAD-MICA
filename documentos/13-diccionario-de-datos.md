@@ -341,3 +341,159 @@ Bitácora de seguridad forense y trazabilidad de operaciones críticas.
 | `detalle` | TEXT | NO | | | JSON o descripción con parámetros de cambio. |
 | `ip_address` | VARCHAR(50) | SÍ | | NULL | Dirección IP del cliente originador. |
 | `fecha` | DATETIME | NO | INDEX | CURRENT_TIMESTAMP | Marca de tiempo inmutable. |
+
+
+### 13.23 Tabla EVENTO_CALENDARIO
+Centraliza la planificación de actividades, clases presenciales, entregas y reservas.
+
+| Campo | Tipo de Dato | Nulo | Clave | Valor por Defecto | Descripción |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| `id_evento` | INT | NO | PK (AI) | Auto | Identificador único del evento. |
+| `titulo` | VARCHAR(150) | NO | | | Título representativo de la actividad. |
+| `descripcion` | TEXT | SÍ | | NULL | Detalle de objetivos o instrucciones. |
+| `categoria` | VARCHAR(50) | NO | | 'CLASE' | Categoría: CLASE, EVALUACION, ENTREGA, INSTITUCIONAL, RESERVA_AMBIENTE. |
+| `fecha_inicio` | DATETIME | NO | MUL | | Fecha y hora de inicio. |
+| `fecha_fin` | DATETIME | NO | | | Fecha y hora de culminación. |
+| `hora_inicio` | VARCHAR(10) | SÍ | | NULL | Hora visual formateada. |
+| `hora_fin` | VARCHAR(10) | SÍ | | NULL | Hora visual final. |
+| `ubicacion` | VARCHAR(100) | SÍ | | NULL | Nombre del ambiente o enlace virtual. |
+| `id_ambiente` | INT | SÍ | FK | NULL | Referencia a tabla AMBIENTE. |
+| `id_instructor`| INT | SÍ | FK | NULL | Referencia a tabla INSTRUCTOR. |
+| `id_curso` | INT | SÍ | FK | NULL | Referencia a tabla CURSO (Ficha 3413988). |
+| `id_usuario_creador` | INT | NO | FK | | Referencia a USUARIO creador. |
+| `estado` | VARCHAR(20) | NO | | 'ACTIVO' | Estado: ACTIVO, MODIFICADO, CANCELADO. |
+| `motivo_cancelacion` | TEXT | SÍ | | NULL | Motivo justificado si fue cancelado. |
+
+### 13.24 Tabla ALERTA_TEMPRANA
+Almacena las alertas preventivas de rendimiento académico y asistencia.
+
+| Campo | Tipo de Dato | Nulo | Clave | Valor por Defecto | Descripción |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| `id_alerta` | INT | NO | PK (AI) | Auto | Identificador único de la alerta. |
+| `tipo` | VARCHAR(50) | NO | MUL | | INASISTENCIA, EVIDENCIA_VENCIDA, COMPETENCIA_SIN_AVANCE, etc. |
+| `titulo` | VARCHAR(150) | NO | | | Título del riesgo detectado. |
+| `descripcion` | TEXT | NO | | | Causa y datos cuantitativos del riesgo. |
+| `id_aprendiz` | INT | SÍ | FK | NULL | Referencia a APRENDIZ afectado. |
+| `id_curso` | INT | SÍ | FK | NULL | Referencia a CURSO / Ficha. |
+| `id_instructor_responsable` | INT | SÍ | FK | NULL | Instructor a cargo del seguimiento. |
+| `prioridad` | VARCHAR(20) | NO | MUL | 'MEDIA' | CRITICA, ALTA, MEDIA, BAJA, INFORMATIVA. |
+| `estado` | VARCHAR(20) | NO | MUL | 'NUEVA' | NUEVA, EN_SEGUIMIENTO, ATENDIDA, CERRADA. |
+| `origen` | VARCHAR(20) | NO | | 'AUTOMATICA' | AUTOMATICA (motor) o MANUAL. |
+| `fecha_generacion` | DATETIME | NO | | CURRENT_TIMESTAMP | Momento de detección. |
+| `fecha_atencion` | DATETIME | SÍ | | NULL | Fecha de intervención docente. |
+| `fecha_cierre` | DATETIME | SÍ | | NULL | Fecha formal de cierre. |
+| `justificacion_cierre` | TEXT | SÍ | | NULL | Argumento obligatorio de cierre. |
+
+### 13.25 Tabla AULA_VIRTUAL
+Representa el espacio digital LMS de cada ficha formativa.
+
+| Campo | Tipo de Dato | Nulo | Clave | Valor por Defecto | Descripción |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| `id_aula` | INT | NO | PK (AI) | Auto | Identificador único del aula. |
+| `id_curso` | INT | NO | FK | | Ficha formativa vinculada. |
+| `id_instructor`| INT | NO | FK | | Docente titular del espacio. |
+| `nombre` | VARCHAR(150) | NO | | | Nombre formal del aula. |
+| `descripcion` | TEXT | SÍ | | NULL | Presentación y objetivos pedagógicos. |
+| `imagen_portada`| VARCHAR(255)| SÍ | | NULL | Ruta del banner gráfico. |
+| `estado` | VARCHAR(20) | NO | | 'ACTIVO' | ACTIVO o ARCHIVADO. |
+
+### 13.26 Tabla UNIDAD_AULA
+Secciones temáticas en que se divide el aula virtual.
+
+| Campo | Tipo de Dato | Nulo | Clave | Valor por Defecto | Descripción |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| `id_unidad` | INT | NO | PK (AI) | Auto | Identificador de la unidad. |
+| `id_aula` | INT | NO | FK | | Aula a la que pertenece. |
+| `titulo` | VARCHAR(150) | NO | | | Nombre de la unidad temática. |
+| `descripcion` | TEXT | SÍ | | NULL | Resumen del contenido temático. |
+| `orden` | INT | NO | | 1 | Posición ordinal en el curso. |
+
+### 13.27 Tabla ACTIVIDAD_AULA
+Talleres y actividades evaluables publicadas en el aula virtual.
+
+| Campo | Tipo de Dato | Nulo | Clave | Valor por Defecto | Descripción |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| `id_actividad` | INT | NO | PK (AI) | Auto | Identificador de la actividad. |
+| `id_unidad` | INT | NO | FK | | Unidad contenedora. |
+| `id_evidencia`| INT | SÍ | FK | NULL | Enlace opcional a EVIDENCIA sin duplicar. |
+| `titulo` | VARCHAR(150) | NO | | | Título del entregable. |
+| `descripcion` | TEXT | NO | | | Explicación del taller. |
+| `instrucciones`| TEXT | SÍ | | NULL | Criterios y requerimientos específicos. |
+| `fecha_limite` | DATETIME | SÍ | | NULL | Vencimiento proyectado en Calendario. |
+| `estado` | VARCHAR(20) | NO | | 'PUBLICADA' | PUBLICADA o BORRADOR. |
+
+### 13.28 Tabla ENTREGA_ACTIVIDAD_AULA
+Soluciones entregadas por los aprendices y evaluadas por los instructores.
+
+| Campo | Tipo de Dato | Nulo | Clave | Valor por Defecto | Descripción |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| `id_entrega_actividad` | INT | NO | PK (AI) | Auto | Identificador del envío. |
+| `id_actividad`| INT | NO | FK | | Actividad correspondiente. |
+| `id_inscripcion`| INT | NO | FK | | Aprendiz que entrega. |
+| `archivo_url` | VARCHAR(500) | SÍ | | NULL | URL del repositorio o documento. |
+| `comentario` | TEXT | SÍ | | NULL | Nota adjunta del estudiante. |
+| `estado` | VARCHAR(20) | NO | | 'ENTREGADA' | ENTREGADA, APROBADA, REQUIERE_CORRECCION. |
+| `calificacion` | DECIMAL(4,2)| SÍ | | NULL | Nota numérica (0.0 a 5.0). |
+| `retroalimentacion`| TEXT | SÍ | | NULL | Comentarios y feedback docente. |
+| `fecha_entrega`| DATETIME | NO | | CURRENT_TIMESTAMP | Momento del envío. |
+| `fecha_evaluacion`| DATETIME | SÍ| | NULL | Momento de la calificación. |
+
+### 13.29 Tabla AMBIENTE
+Inventario de espacios físicos y laboratorios de la institución.
+
+| Campo | Tipo de Dato | Nulo | Clave | Valor por Defecto | Descripción |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| `id_ambiente` | INT | NO | PK (AI) | Auto | Identificador del ambiente. |
+| `codigo` | VARCHAR(50) | NO | UNI | | Código patrimonial (ej. AMB-SISTEMAS-101). |
+| `nombre` | VARCHAR(100) | NO | | | Nombre del laboratorio. |
+| `ubicacion` | VARCHAR(100) | NO | | | Sede, bloque y piso. |
+| `capacidad` | INT | NO | | | Aforo máximo de personas. |
+| `tipo` | VARCHAR(50) | NO | MUL | | SISTEMAS, LABORATORIO, AUDITORIO, AULA_TEORICA. |
+| `equipamiento`| TEXT | SÍ | | NULL | Hardware e infraestructura disponible. |
+| `estado` | VARCHAR(30) | NO | MUL | 'DISPONIBLE' | DISPONIBLE, OCUPADO, EN_MANTENIMIENTO, INACTIVO. |
+
+### 13.30 Tabla RESERVA_AMBIENTE
+Agendamiento de ambientes con validación de conflictos de horario.
+
+| Campo | Tipo de Dato | Nulo | Clave | Valor por Defecto | Descripción |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| `id_reserva` | INT | NO | PK (AI) | Auto | Identificador de la reserva. |
+| `id_ambiente` | INT | NO | FK | | Espacio físico reservado. |
+| `id_curso` | INT | SÍ | FK | NULL | Ficha académica beneficiaria. |
+| `id_instructor`| INT | NO | FK | | Docente responsable. |
+| `motivo` | VARCHAR(200) | NO | | | Objeto de la actividad formativa. |
+| `fecha` | DATE | NO | MUL | | Día de la reserva. |
+| `hora_inicio` | VARCHAR(10) | NO | | | Hora de inicio (ej. 08:00). |
+| `hora_fin` | VARCHAR(10) | NO | | | Hora de salida (ej. 12:00). |
+| `estado` | VARCHAR(20) | NO | | 'CONFIRMADA' | CONFIRMADA o CANCELADO. |
+
+### 13.31 Tabla SOLICITUD_INSTITUCIONAL
+Centro de atención con radicado oficial único anual.
+
+| Campo | Tipo de Dato | Nulo | Clave | Valor por Defecto | Descripción |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| `id_solicitud` | INT | NO | PK (AI) | Auto | Identificador del trámite. |
+| `radicado` | VARCHAR(50) | NO | UNI | | Radicado oficial (ej. SOL-2026-0001). |
+| `id_usuario_solicitante` | INT | NO | FK | | Usuario solicitante. |
+| `id_usuario_responsable` | INT | SÍ | FK | NULL | Funcionario o docente asignado. |
+| `categoria` | VARCHAR(50) | NO | MUL | | ACADEMICA, CERTIFICADO, ASISTENCIA, etc. |
+| `asunto` | VARCHAR(200) | NO | | | Resumen del requerimiento. |
+| `descripcion` | TEXT | NO | | | Argumentación detallada. |
+| `prioridad` | VARCHAR(20) | NO | | 'MEDIA' | BAJA, MEDIA, ALTA, URGENTE. |
+| `estado` | VARCHAR(20) | NO | MUL | 'RECIBIDA' | RECIBIDA, EN_PROCESO, RESPONDIDA, CERRADA. |
+| `respuesta` | TEXT | SÍ | | NULL | Respuesta oficial de la institución. |
+| `fecha_creacion`| DATETIME | NO | | CURRENT_TIMESTAMP | Radicación inicial. |
+| `fecha_cierre` | DATETIME | SÍ | | NULL | Fecha de resolución definitiva. |
+
+### 13.32 Tabla HISTORIAL_SOLICITUD
+Registro de auditoría inmutable de cada solicitud.
+
+| Campo | Tipo de Dato | Nulo | Clave | Valor por Defecto | Descripción |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| `id_historial` | INT | NO | PK (AI) | Auto | Identificador de auditoría. |
+| `id_solicitud`| INT | NO | FK | | Solicitud trazada. |
+| `estado_anterior`| VARCHAR(50)| NO | | | Estado previo al cambio. |
+| `estado_nuevo` | VARCHAR(50) | NO | | | Nuevo estado aplicado. |
+| `id_usuario` | INT | NO | FK | | Funcionario que ejecutó el cambio. |
+| `comentario` | TEXT | SÍ | | NULL | Justificación del cambio o respuesta. |
+| `fecha` | DATETIME | NO | | CURRENT_TIMESTAMP | Estampa de tiempo exacta. |
