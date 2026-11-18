@@ -17,7 +17,12 @@ import {
   Terminal,
   Award,
   RotateCcw,
-  Bell
+  Bell,
+  Calendar,
+  UserCheck,
+  AlertTriangle,
+  Building2,
+  FileText
 } from 'lucide-react';
 
 export default function Sidebar({ 
@@ -96,6 +101,48 @@ export default function Sidebar({
           badge: 'LIVE',
           isAI: true,
           code: '08'
+        },
+      ]
+    },
+    {
+      group: 'EXPANSIÓN INTEGRAL',
+      items: [
+        { 
+          id: 'calendario', 
+          label: 'Calendario Académico', 
+          icon: Calendar,
+          code: '09'
+        },
+        { 
+          id: 'perfil360', 
+          label: 'Perfil Académico 360°', 
+          icon: UserCheck,
+          code: '10'
+        },
+        { 
+          id: 'alertas', 
+          label: 'Alertas Tempranas', 
+          icon: AlertTriangle,
+          badge: 'PREVENTIVO',
+          code: '11'
+        },
+        { 
+          id: 'aula_virtual', 
+          label: 'Aula Virtual LMS', 
+          icon: BookOpen,
+          code: '12'
+        },
+        { 
+          id: 'ambientes', 
+          label: 'Gestión de Ambientes', 
+          icon: Building2,
+          code: '13'
+        },
+        { 
+          id: 'solicitudes', 
+          label: 'Centro de Solicitudes', 
+          icon: FileText,
+          code: '14'
         },
       ]
     }

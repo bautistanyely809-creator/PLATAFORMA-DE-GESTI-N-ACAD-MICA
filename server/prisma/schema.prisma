@@ -92,6 +92,10 @@ enum CategoriaNotificacion {
   COMPETENCIA
   ALERTA
   ANUNCIO
+  CALENDARIO
+  AULA_VIRTUAL
+  AMBIENTE
+  SOLICITUD
 }
 
 // =========================================================================
@@ -113,6 +117,11 @@ model Usuario {
   instructor          Instructor?
   notificaciones      Notificacion[]
   auditorias          HistorialAuditoria[]
+  eventosCreados       EventoCalendario[]
+  historialAlertas     HistorialAlerta[]
+  solicitudesCreadas   SolicitudInstitucional[] @relation("Solicitante")
+  solicitudesAsignadas SolicitudInstitucional[] @relation("Responsable")
+  historialSolicitudes HistorialSolicitud[]
 
   @@index([correo, rol])
   @@index([estado])
@@ -128,6 +137,8 @@ model Aprendiz {
 
   usuario         Usuario        @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
   inscripciones   Inscripcion[]
+  alertas         AlertaTemprana[]
+  acciones        AccionAcompanamiento[]
 
   @@index([documento])
   @@map("APRENDIZ")
@@ -145,6 +156,11 @@ model Instructor {
   seguimientos    SeguimientoCompetencia[]
   sesiones        SesionClase[]
   recuperaciones  Recuperacion[]
+  eventos         EventoCalendario[]
+  alertasAsignadas AlertaTemprana[]
+  aulas           AulaVirtual[]
+  reservas        ReservaAmbiente[]
+  accionesDocente AccionAcompanamiento[]
 
   @@index([especialidad])
   @@map("INSTRUCTOR")
@@ -184,6 +200,10 @@ model Curso {
   inscripciones   Inscripcion[]
   evidencias      Evidencia[]
   sesiones        SesionClase[]
+  eventos         EventoCalendario[]
+  alertas         AlertaTemprana[]
+  aulas           AulaVirtual[]
+  reservas        ReservaAmbiente[]
 
   @@index([id_programa, estado])
   @@map("CURSO")
@@ -219,6 +239,7 @@ model Inscripcion {
   entregas            EntregaEvidencia[]
   recuperaciones      Recuperacion[]
   registrosAsistencia RegistroAsistencia[]
+  entregasAula        EntregaActividadAula[]
 
   @@unique([id_aprendiz, id_curso], name: "uk_aprendiz_curso")
   @@index([id_curso, estado])
@@ -321,6 +342,7 @@ model Evidencia {
   rap                 ResultadoAprendizaje?   @relation(fields: [id_rap], references: [id_rap], onDelete: SetNull)
   calificaciones      Calificacion[]
   entregas            EntregaEvidencia[]
+  actividadesAula     ActividadAula[]
 
   @@index([id_curso, estado])
   @@index([id_rap])
@@ -524,4 +546,298 @@ model HistorialAuditoria {
   @@index([modulo, fecha])
   @@index([id_usuario])
   @@map("HISTORIAL_AUDITORIA")
+}
+
+// =========================================================================
+// 9. MÓDULO 1: CALENDARIO ACADÉMICO CENTRALIZADO
+// =========================================================================
+
+model EventoCalendario {
+  id_evento           Int               @id @default(autoincrement())
+  titulo              String            @db.VarChar(150)
+  descripcion         String?           @db.Text
+  categoria           String            @default("CLASE") @db.VarChar(50)
+  fecha_inicio        DateTime
+  fecha_fin           DateTime
+  hora_inicio         String?           @db.VarChar(10)
+  hora_fin            String?           @db.VarChar(10)
+  ubicacion           String?           @db.VarChar(100)
+  id_ambiente         Int?
+  id_instructor       Int?
+  id_curso            Int?
+  id_usuario_creador  Int
+  estado              String            @default("ACTIVO") @db.VarChar(20)
+  motivo_cancelacion  String?           @db.Text
+  fecha_creacion      DateTime          @default(now())
+  fecha_actualizacion DateTime          @updatedAt
+
+  ambiente            Ambiente?         @relation(fields: [id_ambiente], references: [id_ambiente], onDelete: SetNull)
+  instructor          Instructor?       @relation(fields: [id_instructor], references: [id_instructor], onDelete: SetNull)
+  curso               Curso?            @relation(fields: [id_curso], references: [id_curso], onDelete: SetNull)
+  creador             Usuario           @relation(fields: [id_usuario_creador], references: [id_usuario], onDelete: Cascade)
+
+  @@index([fecha_inicio, fecha_fin])
+  @@index([id_curso])
+  @@index([id_instructor])
+  @@index([categoria, estado])
+  @@map("EVENTO_CALENDARIO")
+}
+
+// =========================================================================
+// 10. MÓDULO 2: ACCIONES DE ACOMPAÑAMIENTO (PERFIL 360°)
+// =========================================================================
+
+model AccionAcompanamiento {
+  id_accion           Int               @id @default(autoincrement())
+  id_aprendiz         Int
+  id_instructor       Int
+  tipo_accion         String            @db.VarChar(50)
+  descripcion         String            @db.Text
+  compromiso          String?           @db.Text
+  fecha               DateTime          @default(now())
+
+  aprendiz            Aprendiz          @relation(fields: [id_aprendiz], references: [id_aprendiz], onDelete: Cascade)
+  instructor          Instructor        @relation(fields: [id_instructor], references: [id_instructor], onDelete: Cascade)
+
+  @@index([id_aprendiz])
+  @@index([id_instructor])
+  @@map("ACCION_ACOMPANAMIENTO")
+}
+
+// =========================================================================
+// 11. MÓDULO 3: SISTEMA DE ALERTAS TEMPRANAS
+// =========================================================================
+
+model AlertaTemprana {
+  id_alerta                 Int               @id @default(autoincrement())
+  tipo                      String            @db.VarChar(50)
+  titulo                    String            @db.VarChar(150)
+  descripcion               String            @db.Text
+  id_aprendiz               Int?
+  id_curso                  Int?
+  id_instructor_responsable Int?
+  prioridad                 String            @default("MEDIA") @db.VarChar(20)
+  estado                    String            @default("NUEVA") @db.VarChar(20)
+  origen                    String            @default("AUTOMATICA") @db.VarChar(20)
+  fecha_generacion          DateTime          @default(now())
+  fecha_atencion            DateTime?
+  fecha_cierre              DateTime?
+  justificacion_cierre      String?           @db.Text
+
+  aprendiz                  Aprendiz?         @relation(fields: [id_aprendiz], references: [id_aprendiz], onDelete: Cascade)
+  curso                     Curso?            @relation(fields: [id_curso], references: [id_curso], onDelete: SetNull)
+  instructor                Instructor?       @relation(fields: [id_instructor_responsable], references: [id_instructor], onDelete: SetNull)
+  historial                 HistorialAlerta[]
+
+  @@index([id_aprendiz, estado])
+  @@index([id_curso, prioridad])
+  @@index([tipo, estado])
+  @@map("ALERTA_TEMPRANA")
+}
+
+model HistorialAlerta {
+  id_historial        Int               @id @default(autoincrement())
+  id_alerta           Int
+  estado_anterior     String            @db.VarChar(50)
+  estado_nuevo        String            @db.VarChar(50)
+  comentario          String?           @db.Text
+  id_usuario          Int
+  fecha               DateTime          @default(now())
+
+  alerta              AlertaTemprana    @relation(fields: [id_alerta], references: [id_alerta], onDelete: Cascade)
+  usuario             Usuario           @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+
+  @@index([id_alerta])
+  @@map("HISTORIAL_ALERTA")
+}
+
+// =========================================================================
+// 12. MÓDULO 4: AULA VIRTUAL (LMS INTEGRADO)
+// =========================================================================
+
+model AulaVirtual {
+  id_aula             Int               @id @default(autoincrement())
+  id_curso            Int
+  id_instructor       Int
+  nombre              String            @db.VarChar(150)
+  descripcion         String?           @db.Text
+  imagen_portada      String?           @db.VarChar(255)
+  estado              String            @default("ACTIVO") @db.VarChar(20)
+  fecha_creacion      DateTime          @default(now())
+  fecha_actualizacion DateTime          @updatedAt
+
+  curso               Curso             @relation(fields: [id_curso], references: [id_curso], onDelete: Cascade)
+  instructor          Instructor        @relation(fields: [id_instructor], references: [id_instructor], onDelete: Cascade)
+  unidades            UnidadAula[]
+
+  @@index([id_curso])
+  @@index([id_instructor])
+  @@map("AULA_VIRTUAL")
+}
+
+model UnidadAula {
+  id_unidad           Int               @id @default(autoincrement())
+  id_aula             Int
+  titulo              String            @db.VarChar(150)
+  descripcion         String?           @db.Text
+  orden               Int               @default(1)
+  fecha_creacion      DateTime          @default(now())
+
+  aula                AulaVirtual       @relation(fields: [id_aula], references: [id_aula], onDelete: Cascade)
+  materiales          MaterialAula[]
+  actividades         ActividadAula[]
+
+  @@index([id_aula, orden])
+  @@map("UNIDAD_AULA")
+}
+
+model MaterialAula {
+  id_material         Int               @id @default(autoincrement())
+  id_unidad           Int
+  titulo              String            @db.VarChar(150)
+  descripcion         String?           @db.Text
+  tipo                String            @db.VarChar(50)
+  url_recurso         String            @db.VarChar(500)
+  peso_mb             Decimal?          @db.Decimal(6, 2)
+  fecha_publicacion   DateTime          @default(now())
+
+  unidad              UnidadAula        @relation(fields: [id_unidad], references: [id_unidad], onDelete: Cascade)
+
+  @@index([id_unidad])
+  @@map("MATERIAL_AULA")
+}
+
+model ActividadAula {
+  id_actividad        Int                    @id @default(autoincrement())
+  id_unidad           Int
+  id_evidencia        Int?
+  titulo              String                 @db.VarChar(150)
+  descripcion         String                 @db.Text
+  instrucciones       String?                @db.Text
+  fecha_limite        DateTime?
+  archivo_adjunto     String?                @db.VarChar(500)
+  estado              String                 @default("PUBLICADA") @db.VarChar(20)
+  fecha_creacion      DateTime               @default(now())
+
+  unidad              UnidadAula             @relation(fields: [id_unidad], references: [id_unidad], onDelete: Cascade)
+  evidencia           Evidencia?             @relation(fields: [id_evidencia], references: [id_evidencia], onDelete: SetNull)
+  entregas            EntregaActividadAula[]
+
+  @@index([id_unidad])
+  @@index([id_evidencia])
+  @@map("ACTIVIDAD_AULA")
+}
+
+model EntregaActividadAula {
+  id_entrega_actividad Int             @id @default(autoincrement())
+  id_actividad         Int
+  id_inscripcion       Int
+  archivo_url          String?         @db.VarChar(500)
+  archivo_nombre       String?         @db.VarChar(255)
+  comentario           String?         @db.Text
+  estado               String          @default("ENTREGADA") @db.VarChar(20)
+  calificacion         Decimal?        @db.Decimal(4, 2)
+  retroalimentacion    String?         @db.Text
+  fecha_entrega        DateTime        @default(now())
+  fecha_evaluacion     DateTime?
+  evaluador_nombre     String?         @db.VarChar(100)
+
+  actividad            ActividadAula   @relation(fields: [id_actividad], references: [id_actividad], onDelete: Cascade)
+  inscripcion          Inscripcion     @relation(fields: [id_inscripcion], references: [id_inscripcion], onDelete: Cascade)
+
+  @@index([id_actividad, id_inscripcion])
+  @@map("ENTREGA_ACTIVIDAD_AULA")
+}
+
+// =========================================================================
+// 13. MÓDULO 5: PROGRAMACIÓN Y GESTIÓN DE AMBIENTES
+// =========================================================================
+
+model Ambiente {
+  id_ambiente         Int               @id @default(autoincrement())
+  codigo              String            @unique @db.VarChar(50)
+  nombre              String            @db.VarChar(100)
+  descripcion         String?           @db.Text
+  ubicacion           String            @db.VarChar(100)
+  capacidad           Int
+  tipo                String            @db.VarChar(50)
+  equipamiento        String?           @db.Text
+  estado              String            @default("DISPONIBLE") @db.VarChar(30)
+  observaciones       String?           @db.Text
+  fecha_creacion      DateTime          @default(now())
+
+  reservas            ReservaAmbiente[]
+  eventos             EventoCalendario[]
+
+  @@index([tipo, estado])
+  @@map("AMBIENTE")
+}
+
+model ReservaAmbiente {
+  id_reserva          Int               @id @default(autoincrement())
+  id_ambiente         Int
+  id_curso            Int?
+  id_instructor       Int
+  motivo              String            @db.VarChar(200)
+  fecha               DateTime          @db.Date
+  hora_inicio         String            @db.VarChar(10)
+  hora_fin            String            @db.VarChar(10)
+  estado              String            @default("CONFIRMADA") @db.VarChar(20)
+  observaciones       String?           @db.Text
+  fecha_creacion      DateTime          @default(now())
+
+  ambiente            Ambiente          @relation(fields: [id_ambiente], references: [id_ambiente], onDelete: Cascade)
+  curso               Curso?            @relation(fields: [id_curso], references: [id_curso], onDelete: SetNull)
+  instructor          Instructor        @relation(fields: [id_instructor], references: [id_instructor], onDelete: Cascade)
+
+  @@index([id_ambiente, fecha])
+  @@index([id_curso])
+  @@index([id_instructor])
+  @@map("RESERVA_AMBIENTE")
+}
+
+// =========================================================================
+// 14. MÓDULO 6: CENTRO DE SOLICITUDES INSTITUCIONALES
+// =========================================================================
+
+model SolicitudInstitucional {
+  id_solicitud           Int                  @id @default(autoincrement())
+  radicado               String               @unique @db.VarChar(50)
+  id_usuario_solicitante Int
+  id_usuario_responsable Int?
+  categoria              String               @db.VarChar(50)
+  asunto                 String               @db.VarChar(200)
+  descripcion            String               @db.Text
+  archivo_adjunto        String?              @db.VarChar(500)
+  prioridad              String               @default("MEDIA") @db.VarChar(20)
+  estado                 String               @default("RECIBIDA") @db.VarChar(20)
+  respuesta              String?              @db.Text
+  fecha_creacion         DateTime             @default(now())
+  fecha_actualizacion    DateTime             @updatedAt
+  fecha_cierre           DateTime?
+
+  solicitante            Usuario              @relation("Solicitante", fields: [id_usuario_solicitante], references: [id_usuario], onDelete: Cascade)
+  responsable            Usuario?             @relation("Responsable", fields: [id_usuario_responsable], references: [id_usuario], onDelete: SetNull)
+  historial              HistorialSolicitud[]
+
+  @@index([id_usuario_solicitante])
+  @@index([id_usuario_responsable])
+  @@index([estado, categoria])
+  @@map("SOLICITUD_INSTITUCIONAL")
+}
+
+model HistorialSolicitud {
+  id_historial        Int                   @id @default(autoincrement())
+  id_solicitud        Int
+  estado_anterior     String                @db.VarChar(50)
+  estado_nuevo        String                @db.VarChar(50)
+  id_usuario          Int
+  comentario          String?               @db.Text
+  fecha               DateTime              @default(now())
+
+  solicitud           SolicitudInstitucional @relation(fields: [id_solicitud], references: [id_solicitud], onDelete: Cascade)
+  usuario             Usuario                @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
+
+  @@index([id_solicitud])
+  @@map("HISTORIAL_SOLICITUD")
 }

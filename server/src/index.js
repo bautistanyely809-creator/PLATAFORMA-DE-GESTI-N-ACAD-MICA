@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+require('dotenv').config(); // Fallback a cwd
 
 const cacheService = require('./services/cache.service');
 const jobQueue = require('./services/jobQueue.service');
@@ -64,7 +66,7 @@ app.get('/api/health', cacheService.middleware(60000), (req, res) => {
   });
 });
 
-// Importar rutas de los 7 Módulos Avanzados
+// Importar rutas de los Módulos Base y Nuevos Módulos de Expansión
 const authRoutes = require('./routes/auth.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
 const competenciasRoutes = require('./routes/competencias.routes');
@@ -75,6 +77,14 @@ const reportesRoutes = require('./routes/reportes.routes');
 const notificacionesRoutes = require('./routes/notificaciones.routes');
 const aiRoutes = require('./routes/ai.routes');
 
+// 6 Nuevos Módulos de Expansión
+const calendarioRoutes = require('./routes/calendario.routes');
+const perfil360Routes = require('./routes/perfil360.routes');
+const alertasRoutes = require('./routes/alertas.routes');
+const aulaRoutes = require('./routes/aula.routes');
+const ambientesRoutes = require('./routes/ambientes.routes');
+const solicitudesRoutes = require('./routes/solicitudes.routes');
+
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', cacheService.middleware(30000), dashboardRoutes);
 app.use('/api/competencias', competenciasRoutes);
@@ -84,6 +94,14 @@ app.use('/api/asistencia', asistenciaRoutes);
 app.use('/api/reportes', reportesRoutes);
 app.use('/api/notificaciones', notificacionesRoutes);
 app.use('/api/ai', aiRoutes);
+
+// Registro de endpoints de los 6 nuevos módulos
+app.use('/api/calendario', calendarioRoutes);
+app.use('/api/perfil-360', perfil360Routes);
+app.use('/api/alertas', alertasRoutes);
+app.use('/api/aula', aulaRoutes);
+app.use('/api/ambientes', ambientesRoutes);
+app.use('/api/solicitudes', solicitudesRoutes);
 
 // Endpoint para probar la cola de tareas pesadas en segundo plano
 app.post('/api/jobs/reporte-academico', (req, res) => {
