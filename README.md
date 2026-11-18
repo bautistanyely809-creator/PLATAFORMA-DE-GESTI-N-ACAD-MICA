@@ -1,4 +1,4 @@
-# EDUNOVA · Academic Management System 🎓⚡
+# PLATAFORMA DE GESTION ACADEMICA — EDUNOVA · Academic Management System 🎓⚡
 > **"Transformando la gestión académica en una experiencia inteligente, tecnológica y centralizada."**
 
 [![Proyecto ADSO](https://img.shields.io/badge/SENA-ADSO_2026-39A900?style=for-the-badge&logo=sena&logoColor=white)](#)
