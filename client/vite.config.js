@@ -18,13 +18,17 @@ export default defineConfig({
       }
     }
   },
+  esbuild: false,
   build: {
+    minify: false,
+    target: 'esnext',
     // Dividir el JavaScript por chunks para optimizar caché en navegador
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
           recharts: ['recharts'],
+          three: ['three'],
           icons: ['lucide-react']
         }
       }
