@@ -299,3 +299,4 @@ exports.registrarAccionAcompanamiento = async (req, res) => {
     res.status(500).json({ message: 'Error al registrar acción formativa', error: error.message });
   }
 };
+

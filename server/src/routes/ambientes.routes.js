@@ -12,3 +12,4 @@ router.post('/reservas', verifyToken, requireRole('ADMIN', 'INSTRUCTOR'), contro
 router.patch('/reservas/:id/cancelar', verifyToken, requireRole('ADMIN', 'INSTRUCTOR'), controller.cancelarReserva);
 
 module.exports = router;
+

@@ -646,3 +646,4 @@ export default function AulaVirtualModule({ user }) {
     </div>
   );
 }
+

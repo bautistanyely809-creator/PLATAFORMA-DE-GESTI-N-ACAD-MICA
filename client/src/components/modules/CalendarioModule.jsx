@@ -596,3 +596,4 @@ export default function CalendarioModule({ user }) {
     </div>
   );
 }
+

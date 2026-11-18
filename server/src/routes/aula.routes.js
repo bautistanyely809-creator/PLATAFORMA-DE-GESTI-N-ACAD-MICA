@@ -13,3 +13,4 @@ router.post('/actividades/:id_actividad/entregar', verifyToken, requireRole('APR
 router.post('/entregas/:id_entrega/evaluar', verifyToken, requireRole('ADMIN', 'INSTRUCTOR'), controller.evaluarEntrega);
 
 module.exports = router;
+

@@ -10,3 +10,4 @@ router.patch('/:id/asignar', verifyToken, requireRole('ADMIN'), controller.asign
 router.patch('/:id/responder', verifyToken, requireRole('ADMIN', 'INSTRUCTOR'), controller.responderSolicitud);
 
 module.exports = router;
+

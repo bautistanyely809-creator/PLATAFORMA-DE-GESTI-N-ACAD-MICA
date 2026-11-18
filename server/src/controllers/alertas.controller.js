@@ -314,3 +314,4 @@ exports.evaluarReglasAutomaticas = async (req, res) => {
     res.status(500).json({ message: 'Error al evaluar reglas automáticas', error: error.message });
   }
 };
+

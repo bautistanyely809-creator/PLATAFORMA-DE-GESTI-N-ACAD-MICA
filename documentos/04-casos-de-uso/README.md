@@ -5,8 +5,8 @@ Este directorio compendia la especificación técnica formal e individual de los
 ---
 
 ## 📊 Resumen Métrico de Casos de Uso
-* **Total de Casos de Uso Especificados:** 36
-* **Casos de Uso Implementados y Conectados a MySQL 8:** 35 (97.2%)
+* **Total de Casos de Uso Especificados:** 48
+* **Casos de Uso Implementados y Conectados a MySQL 8:** 47 (97.9%)
 * **Casos de Uso Propuestos / Mock:** 1 (CU-003 - Restablecimiento de Contraseña por Correo SMTP)
 
 ---
@@ -51,6 +51,18 @@ Este directorio compendia la especificación técnica formal e individual de los
 | **CU-034** | Despacho Automatizado de Notificaciones por Disparador de Evento | Módulo 6: Notificaciones y Eventos | Servicio de Notificaciones y Eventos | 🟢 Implementado | [Ver CU-034](CU-034.md) |
 | **CU-035** | Consulta Contextual al Asistente Académico EDUNOVA AI | Módulo 7: Asistente Inteligente EDUNOVA AI | Aprendiz / Instructor | 🟢 Implementado | [Ver CU-035](CU-035.md) |
 | **CU-036** | Streaming en Tiempo Real de Diagnóstico Académico (Token a Token) | Módulo 7: Asistente Inteligente EDUNOVA AI | Usuario Autenticado | 🟢 Implementado | [Ver CU-036](CU-036.md) |
+| **CU-037** | Programar Evento en Calendario Académico | Módulo 8: Calendario Académico | Instructor / Administrador | 🟢 Implementado | [Ver CU-037](CU-037.md) |
+| **CU-038** | Navegar y Filtrar el Calendario Académico | Módulo 8: Calendario Académico | Aprendiz / Instructor / Admin | 🟢 Implementado | [Ver CU-038](CU-038.md) |
+| **CU-039** | Cancelar Evento de Calendario con Trazabilidad | Módulo 8: Calendario Académico | Instructor / Administrador | 🟢 Implementado | [Ver CU-039](CU-039.md) |
+| **CU-040** | Consultar Expediente Académico Digital 360° | Módulo 9: Perfil Académico 360° | Aprendiz / Instructor / Admin | 🟢 Implementado | [Ver CU-040](CU-040.md) |
+| **CU-041** | Registrar Acción de Acompañamiento Formativo y Tutoría | Módulo 9: Perfil Académico 360° | Instructor / Administrador | 🟢 Implementado | [Ver CU-041](CU-041.md) |
+| **CU-042** | Detección Automatizada de Riesgos Formativos (Motor de Reglas) | Módulo 10: Sistema de Alertas Tempranas | Motor de Reglas / Sistema | 🟢 Implementado | [Ver CU-042](CU-042.md) |
+| **CU-043** | Gestionar y Cerrar Alerta Temprana con Justificación | Módulo 10: Sistema de Alertas Tempranas | Instructor / Administrador | 🟢 Implementado | [Ver CU-043](CU-043.md) |
+| **CU-044** | Administrar Aula Virtual y Unidades Didácticas | Módulo 11: Aula Virtual LMS | Instructor / Administrador | 🟢 Implementado | [Ver CU-044](CU-044.md) |
+| **CU-045** | Publicar Recursos y Actividades con Proyección al Calendario | Módulo 11: Aula Virtual LMS | Instructor | 🟢 Implementado | [Ver CU-045](CU-045.md) |
+| **CU-046** | Entregar y Calificar Actividades en Aula Virtual | Módulo 11: Aula Virtual LMS | Aprendiz / Instructor | 🟢 Implementado | [Ver CU-046](CU-046.md) |
+| **CU-047** | Programar Reserva de Ambientes con Detección de Conflictos | Módulo 12: Gestión de Ambientes | Instructor / Administrador | 🟢 Implementado | [Ver CU-047](CU-047.md) |
+| **CU-048** | Radicar y Atender Solicitud Institucional con Radicado Único | Módulo 13: Centro de Solicitudes | Aprendiz / Funcionario | 🟢 Implementado | [Ver CU-048](CU-048.md) |
 
 ---
 

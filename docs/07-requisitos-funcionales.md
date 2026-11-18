@@ -83,3 +83,28 @@
 | **RF-034** | [CU-034](04-casos-de-uso/CU-034.md) | M6: Notificaciones| `NOTIFICACION`, Event Bus | Sistema Automatizado |
 | **RF-035** | [CU-035](04-casos-de-uso/CU-035.md) | M7: EDUNOVA AI | `USUARIO`, Contexto MySQL | Aprendiz / Instructor |
 | **RF-036** | [CU-036](04-casos-de-uso/CU-036.md) | M7: EDUNOVA AI | Stream SSE / Telemetría | Aprendiz / Instructor |
+
+
+### 7.1.8 Requisitos del Módulo de Calendario Académico
+* **RF-037:** El sistema debe permitir a instructores y administradores programar eventos con fecha, franja horaria y ubicación.
+* **RF-038:** El sistema debe permitir navegar entre meses y filtrar eventos por categoría de forma reactiva.
+* **RF-039:** El sistema debe permitir cancelar eventos registrando obligatoriamente el motivo y notificando a los aprendices.
+
+### 7.1.9 Requisitos del Módulo de Perfil Académico 360°
+* **RF-040:** El sistema debe compilar el expediente digital 360° calculando en tiempo real los indicadores de avance y asistencia.
+* **RF-041:** El sistema debe permitir al instructor registrar sesiones de tutoría y compromisos pedagógicos formativos.
+
+### 7.1.10 Requisitos del Módulo de Alertas Tempranas
+* **RF-042:** El sistema debe evaluar de forma automatizada las inasistencias y evidencias vencidas para generar alertas de prioridad Alta/Crítica.
+* **RF-043:** El sistema debe registrar un historial inmutable de cambios de estado y requerir justificación para cerrar alertas.
+
+### 7.1.11 Requisitos del Módulo de Aula Virtual LMS
+* **RF-044:** El sistema debe permitir estructurar contenidos en unidades temáticas ordenadas.
+* **RF-045:** El sistema debe sincronizar automáticamente la fecha límite de las actividades creadas en el Calendario Académico.
+* **RF-046:** El sistema debe permitir la entrega de archivos por parte de los aprendices y su evaluación docente con nota de 0.0 a 5.0.
+
+### 7.1.12 Requisitos del Módulo de Gestión de Ambientes
+* **RF-047:** El sistema debe validar la disponibilidad del aula física y bloquear reservas simultáneas incompatibles mediante HTTP 409.
+
+### 7.1.13 Requisitos del Módulo de Solicitudes Institucionales
+* **RF-048:** El sistema debe generar un radicado único anual (`SOL-2026-XXXX`) y permitir emitir respuestas oficiales con trazabilidad completa.

@@ -225,3 +225,4 @@ exports.cancelarEvento = async (req, res) => {
     res.status(500).json({ message: 'Error al cancelar evento', error: error.message });
   }
 };
+

@@ -9,3 +9,4 @@ router.get('/:id_aprendiz', controller.getPerfil360PorId);
 router.post('/:id_aprendiz/accion', verifyToken, requireRole('INSTRUCTOR', 'ADMIN'), controller.registrarAccionAcompanamiento);
 
 module.exports = router;
+

@@ -26,7 +26,7 @@ let srs = `# ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS / ERS)
 | **Centro de Formación:** | Centro de Formación Industrial – SENA Regional Huila (Neiva) |
 | **Modalidad de Desarrollo:** | Desarrollo individual con asistencia de Inteligencia Artificial y metodologías ágiles (Scrum) |
 | **Duración Estimada:** | 4 semanas (1 mes de ejecución lectiva) |
-| **Versión del Documento:** | 3.2 (SRS Monolítico Maestro Integral · Rama DEV) |
+| **Versión del Documento:** | 4.0 (SRS Monolítico Maestro Integral — Expansión de 6 Nuevos Módulos Académicos · Rama DEV) |
 | **Estado del Documento:** | Aprobado · Conectado con MySQL 8 y 7 Módulos Avanzados Operativos |
 
 ---
@@ -43,7 +43,7 @@ let srs = `# ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS / ERS)
 | **v2.2** | 13/11/2026 | Anyely Valeria | Integración de Three.js con WebGL en el Hero Banner y refinamiento de la paleta Factory / Ocean Tech. |
 | **v3.0** | 13/11/2026 | Anyely Valeria | Despliegue de los 7 Módulos Académicos Avanzados conectados a MySQL 8 con 22 tablas relacionales. |
 | **v3.1** | 17/11/2026 | Anyely Valeria | Especificación modular de 16 documentos y 36 Casos de Uso individuales bajo IEEE 830. |
-| **v3.2** | 17/11/2026 | Anyely Valeria | **Consolidación Monolítica Maestra**: Integración total de la introducción, árbol de problemas, vigilancia tecnológica, arquitectura, requisitos funcionales/no funcionales, matriz de trazabilidad, actores, 10 diagramas UML Mermaid, los 36 casos de uso detallados en extenso, MER de 22 tablas, diccionario de datos exhaustivo, stack de tecnologías, seguridad RBAC y glosario en un único documento maestro. |
+| **v4.0** | 18/11/2026 | Anyely Valeria | **Expansión Integral de EDUNOVA**: Incorporación de los 6 nuevos módulos requeridos (Calendario Académico, Perfil Académico 360°, Sistema de Alertas Tempranas, Aula Virtual LMS, Gestión de Ambientes y Centro de Solicitudes), ampliando la base de datos a 35 entidades relacionales, catálogo a 48 Casos de Uso (CU-001 a CU-048) y 48 Requisitos Funcionales (RF-001 a RF-048) bajo estándar IEEE 830 / ISO 29148.\n| **v3.2** | 17/11/2026 | Anyely Valeria | **Consolidación Monolítica Maestra**: Integración total de la introducción, árbol de problemas, vigilancia tecnológica, arquitectura, requisitos funcionales/no funcionales, matriz de trazabilidad, actores, 10 diagramas UML Mermaid, los 36 casos de uso detallados en extenso, MER de 22 tablas, diccionario de datos exhaustivo, stack de tecnologías, seguridad RBAC y glosario en un único documento maestro. |
 
 ---
 
@@ -86,7 +86,7 @@ let srs = `# ESPECIFICACIÓN DE REQUISITOS DE SOFTWARE (SRS / ERS)
     - 10.1 Introducción
     - 10.2 Diagrama General del Sistema EDUNOVA
     - 10.3 Diez (10) Diagramas UML de Casos de Uso por Módulo Funcional
-11. [SECCIÓN 11: ESPECIFICACIÓN DETALLADA DE LOS 36 CASOS DE USO (CU-001 a CU-036)](#sección-11-especificación-detallada-de-los-36-casos-de-uso)
+11. [SECCIÓN 11: ESPECIFICACIÓN DETALLADA DE LOS 48 CASOS DE USO (CU-001 a CU-048)](#sección-11-especificación-detallada-de-los-36-casos-de-uso)
     - CU-001 al CU-036 con sus 14 secciones completas por caso de uso
 12. [SECCIÓN 12: MODELO ENTIDAD-RELACIÓN (MER)](#sección-12-modelo-entidad-relación-mer)
     - 12.1 Descripción General y Normalización 3FN
@@ -118,8 +118,8 @@ srs += `## SECCIÓN 9: ACTORES Y PERFILES DEL SISTEMA\n\n` + generalDocs['09-act
 srs += `## SECCIÓN 10: CASOS DE USO Y DIAGRAMAS UML\n\n` + generalDocs['11-casos-de-uso.md'].replace(/^# .*\n/, '') + '\n\n---\n\n';
 
 // Sección 11: Todos los 36 Casos de Uso integrados
-srs += `## SECCIÓN 11: ESPECIFICACIÓN DETALLADA DE LOS 36 CASOS DE USO\n\n`;
-srs += `Esta sección compendia la especificación individual y exhaustiva de cada uno de los 36 casos de uso del sistema EDUNOVA, estructurados con 14 apartados formales:\n\n`;
+srs += `## SECCIÓN 11: ESPECIFICACIÓN DETALLADA DE LOS 48 CASOS DE USO\n\n`;
+srs += `Esta sección compendia la especificación individual y exhaustiva de cada uno de los 48 casos de uso del sistema EDUNOVA (incluyendo los módulos de expansión CU-037 a CU-048), estructurados con 14 apartados formales:\n\n`;
 
 for (const cu of useCases) {
   srs += `### CASO DE USO ${cu.id}: ${cu.nombre.toUpperCase()}\n\n`;
