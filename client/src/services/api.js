@@ -8,9 +8,23 @@ const API_BASE = '/api';
 // Helper para peticiones fetch con manejo de JSON y errores
 async function request(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
+  
+  // Obtener token JWT si existe en sesión
+  let token = null;
+  try {
+    const saved = localStorage.getItem('edunova_current_user');
+    if (saved) {
+      const u = JSON.parse(saved);
+      token = u.token;
+    }
+  } catch (_) {}
+
+  const authHeader = token ? { 'Authorization': `Bearer ${token}` } : {};
+
   const config = {
     headers: {
       'Content-Type': 'application/json',
+      ...authHeader,
       ...options.headers
     },
     ...options
@@ -112,6 +126,91 @@ export const api = {
   // =========================================================================
   ai: {
     consultar: (data) => request('/ai/query', { method: 'POST', body: data })
+  },
+
+  // =========================================================================
+  // EXPANSIÓN M1: CALENDARIO ACADÉMICO CENTRALIZADO
+  // =========================================================================
+  calendario: {
+    getEventos: (params = {}) => {
+      const qs = new URLSearchParams(params).toString();
+      return request(`/calendario${qs ? `?${qs}` : ''}`);
+    },
+    getEventoById: (id) => request(`/calendario/${id}`),
+    crear: (data) => request('/calendario', { method: 'POST', body: data }),
+    actualizar: (id, data) => request(`/calendario/${id}`, { method: 'PUT', body: data }),
+    cancelar: (id, motivo) => request(`/calendario/${id}/cancelar`, { method: 'PATCH', body: { motivo } })
+  },
+
+  // =========================================================================
+  // EXPANSIÓN M2: PERFIL ACADÉMICO 360° DEL APRENDIZ
+  // =========================================================================
+  perfil360: {
+    getMiPerfil: () => request('/perfil-360/me'),
+    getPorId: (id_aprendiz = 1) => request(`/perfil-360/${id_aprendiz}`),
+    getAprendicesFicha: (id_curso = 1) => request(`/perfil-360/ficha/${id_curso}`),
+    registrarAccion: (id_aprendiz, data) => request(`/perfil-360/${id_aprendiz}/accion`, { method: 'POST', body: data })
+  },
+
+  // =========================================================================
+  // EXPANSIÓN M3: SISTEMA DE ALERTAS TEMPRANAS
+  // =========================================================================
+  alertas: {
+    getAlertas: (params = {}) => {
+      const qs = new URLSearchParams(params).toString();
+      return request(`/alertas${qs ? `?${qs}` : ''}`);
+    },
+    getPorId: (id) => request(`/alertas/${id}`),
+    crear: (data) => request('/alertas', { method: 'POST', body: data }),
+    cambiarEstado: (id, data) => request(`/alertas/${id}/estado`, { method: 'PATCH', body: data }),
+    evaluarReglas: () => request('/alertas/evaluar-reglas', { method: 'POST' })
+  },
+
+  // =========================================================================
+  // EXPANSIÓN M4: AULA VIRTUAL (LMS INTEGRADO)
+  // =========================================================================
+  aula: {
+    getAulas: (params = {}) => {
+      const qs = new URLSearchParams(params).toString();
+      return request(`/aula${qs ? `?${qs}` : ''}`);
+    },
+    getPorId: (id) => request(`/aula/${id}`),
+    crearAula: (data) => request('/aula', { method: 'POST', body: data }),
+    crearUnidad: (id_aula, data) => request(`/aula/${id_aula}/unidades`, { method: 'POST', body: data }),
+    publicarMaterial: (id_unidad, data) => request(`/aula/unidades/${id_unidad}/materiales`, { method: 'POST', body: data }),
+    publicarActividad: (id_unidad, data) => request(`/aula/unidades/${id_unidad}/actividades`, { method: 'POST', body: data }),
+    entregarActividad: (id_actividad, data) => request(`/aula/actividades/${id_actividad}/entregar`, { method: 'POST', body: data }),
+    evaluarEntrega: (id_entrega, data) => request(`/aula/entregas/${id_entrega}/evaluar`, { method: 'POST', body: data })
+  },
+
+  // =========================================================================
+  // EXPANSIÓN M5: PROGRAMACIÓN Y GESTIÓN DE AMBIENTES
+  // =========================================================================
+  ambientes: {
+    getAmbientes: (params = {}) => {
+      const qs = new URLSearchParams(params).toString();
+      return request(`/ambientes${qs ? `?${qs}` : ''}`);
+    },
+    getPorId: (id) => request(`/ambientes/${id}`),
+    crear: (data) => request('/ambientes', { method: 'POST', body: data }),
+    actualizar: (id, data) => request(`/ambientes/${id}`, { method: 'PUT', body: data }),
+    getDisponibilidad: (id, fecha = '') => request(`/ambientes/${id}/disponibilidad${fecha ? `?fecha=${fecha}` : ''}`),
+    crearReserva: (data) => request('/ambientes/reservas', { method: 'POST', body: data }),
+    cancelarReserva: (id, motivo) => request(`/ambientes/reservas/${id}/cancelar`, { method: 'PATCH', body: { motivo } })
+  },
+
+  // =========================================================================
+  // EXPANSIÓN M6: CENTRO DE SOLICITUDES INSTITUCIONALES
+  // =========================================================================
+  solicitudes: {
+    getSolicitudes: (params = {}) => {
+      const qs = new URLSearchParams(params).toString();
+      return request(`/solicitudes${qs ? `?${qs}` : ''}`);
+    },
+    getPorId: (id) => request(`/solicitudes/${id}`),
+    crear: (data) => request('/solicitudes', { method: 'POST', body: data }),
+    asignar: (id, data) => request(`/solicitudes/${id}/asignar`, { method: 'PATCH', body: data }),
+    responder: (id, data) => request(`/solicitudes/${id}/responder`, { method: 'PATCH', body: data })
   }
 };
 

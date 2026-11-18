@@ -246,6 +246,20 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                 <ArrowRight size={13} />
               </button>
               <button
+                onClick={() => onNavigate && onNavigate('perfil360')}
+                className="px-4 h-9 bg-transparent hover:bg-[#101010]/10 text-[#101010] border border-[#101010]/20 font-normal text-xs rounded-[3px] flex items-center justify-center gap-2 transition-colors"
+              >
+                <Award size={13} />
+                <span>Perfil 360°</span>
+              </button>
+              <button
+                onClick={() => onNavigate && onNavigate('calendario')}
+                className="px-4 h-9 bg-transparent hover:bg-[#101010]/10 text-[#101010] border border-[#101010]/20 font-normal text-xs rounded-[3px] flex items-center justify-center gap-2 transition-colors"
+              >
+                <CalendarCheck size={13} />
+                <span>Calendario</span>
+              </button>
+              <button
                 onClick={() => onNavigate && onNavigate('reportes')}
                 className="px-4 h-9 bg-transparent hover:bg-[#101010]/10 text-[#101010] border border-[#101010]/20 font-normal text-xs rounded-[3px] flex items-center justify-center gap-2 transition-colors"
               >

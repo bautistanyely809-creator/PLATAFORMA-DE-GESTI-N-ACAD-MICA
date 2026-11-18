@@ -10,6 +10,12 @@ import AsistenciaModule from './modules/AsistenciaModule';
 import ReportesModule from './modules/ReportesModule';
 import NotificacionesModule from './modules/NotificacionesModule';
 import AiModule from './modules/AiModule';
+import CalendarioModule from './modules/CalendarioModule';
+import Perfil360Module from './modules/Perfil360Module';
+import AlertasModule from './modules/AlertasModule';
+import AulaVirtualModule from './modules/AulaVirtualModule';
+import AmbientesModule from './modules/AmbientesModule';
+import SolicitudesModule from './modules/SolicitudesModule';
 import { 
   Users, 
   GraduationCap, 
@@ -273,6 +279,36 @@ export default function Dashboard({ currentUser, onLogout }) {
           {/* MÓDULO 7: EDUNOVA AI CON DATOS REALES */}
           {activeTab === 'ai' && (
             <AiModule user={user} />
+          )}
+
+          {/* EXPANSIÓN M1: CALENDARIO ACADÉMICO CENTRALIZADO */}
+          {activeTab === 'calendario' && (
+            <CalendarioModule user={user} />
+          )}
+
+          {/* EXPANSIÓN M2: PERFIL ACADÉMICO 360° */}
+          {activeTab === 'perfil360' && (
+            <Perfil360Module user={user} />
+          )}
+
+          {/* EXPANSIÓN M3: SISTEMA DE ALERTAS TEMPRANAS */}
+          {activeTab === 'alertas' && (
+            <AlertasModule user={user} />
+          )}
+
+          {/* EXPANSIÓN M4: AULA VIRTUAL LMS */}
+          {activeTab === 'aula_virtual' && (
+            <AulaVirtualModule user={user} />
+          )}
+
+          {/* EXPANSIÓN M5: PROGRAMACIÓN Y GESTIÓN DE AMBIENTES */}
+          {activeTab === 'ambientes' && (
+            <AmbientesModule user={user} />
+          )}
+
+          {/* EXPANSIÓN M6: CENTRO DE SOLICITUDES INSTITUCIONALES */}
+          {activeTab === 'solicitudes' && (
+            <SolicitudesModule user={user} />
           )}
 
           {/* TAB CURSOS / CATÁLOGO */}
