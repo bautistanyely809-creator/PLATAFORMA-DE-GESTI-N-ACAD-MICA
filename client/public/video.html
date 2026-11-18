@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDUNOVA · Video Oficial de Presentación y Descarga</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --obsidian: #101010;
+      --carbon: #181e24;
+      --petrol: #123B50;
+      --turquoise: #19B5A5;
+      --cyan: #48BFE3;
+      --amber: #E9B949;
+      --mint: #70D6B3;
+      --border: #2a3b4c;
+      --text-muted: #8c9ba5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--obsidian);
+      color: #ffffff;
+      font-family: 'Geist', -apple-system, sans-serif;
+      padding: 30px 20px;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 25px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 30px;
+    }
+    .logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .logo-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: -0.5px;
+    }
+    .tagline {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .btn-download {
+      background: linear-gradient(135deg, var(--turquoise), #107f74);
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(25, 181, 165, 0.3);
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(25, 181, 165, 0.5);
+      background: linear-gradient(135deg, var(--cyan), var(--turquoise));
+    }
+    .video-hero-card {
+      background: var(--carbon);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 35px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    video {
+      width: 100%;
+      max-height: 640px;
+      border-radius: 8px;
+      background: #000;
+      display: block;
+      border: 1px solid var(--border);
+    }
+    .video-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .meta-badges span {
+      background: rgba(18, 59, 80, 0.6);
+      border: 1px solid var(--turquoise);
+      color: var(--cyan);
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-right: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .narration-studio {
+      background: var(--carbon);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+    .studio-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    .studio-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .btn-narrate {
+      background: var(--petrol);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-narrate:hover {
+      background: var(--cyan);
+      color: var(--obsidian);
+    }
+    .scenes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+    }
+    .scene-card {
+      background: rgba(10, 15, 20, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .scene-card.active {
+      border-color: var(--turquoise);
+      box-shadow: 0 0 15px rgba(25, 181, 165, 0.3);
+      background: rgba(18, 59, 80, 0.25);
+    }
+    .scene-badge {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--turquoise);
+      margin-bottom: 8px;
+    }
+    .scene-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .scene-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .scene-script {
+      font-size: 13px;
+      color: #dceef5;
+      background: rgba(0,0,0,0.4);
+      padding: 10px 12px;
+      border-radius: 6px;
+      border-left: 3px solid var(--cyan);
+      font-style: italic;
+    }
+    footer {
+      text-align: center;
+      padding: 30px 0;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-badge">
+        <div>
+          <div class="logo-title">EDUNOVA</div>
+          <div class="tagline">Academic Management System · SENA ADSO Ficha 3413988</div>
+        </div>
+      </div>
+      <div>
+        <a href="EDUNOVA_Presentacion_Oficial.mp4" download="EDUNOVA_Presentacion_Oficial.mp4" class="btn-download">
+          📥 Descargar Video MP4 (1080p Full HD)
+        </a>
+      </div>
+    </header>
+
+    <!-- Reproductor Principal -->
+    <div class="video-hero-card">
+      <video controls autoplay loop muted>
+        <source src="EDUNOVA_Presentacion_Oficial.mp4" type="video/mp4">
+        Tu navegador no soporta el formato de video MP4.
+      </video>
+      <div class="video-meta">
+        <div class="meta-badges">
+          <span>1080p Full HD</span>
+          <span>60 FPS Master</span>
+          <span>MP4 H.264</span>
+          <span>Tamaño: 33.0 MB</span>
+        </div>
+        <div>
+          <span>Video oficial generado por el motor de producción EDUNOVA</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estudio de Narración Interactiva -->
+    <div class="narration-studio">
+      <div class="studio-header">
+        <div>
+          <div class="studio-title">🎙️ Estudio de Narración y Desglose por Perfiles</div>
+          <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+            Haz clic en "Iniciar Locución" para escuchar la voz en off sincronizada con el recorrido de la plataforma.
+          </p>
+        </div>
+        <div>
+          <button id="btnNarrate" class="btn-narrate" onclick="toggleNarration()">
+            ▶ Iniciar Locución con Voz en Off
+          </button>
+        </div>
+      </div>
+
+      <div class="scenes-grid">
+        <!-- Escena 1 -->
+        <div class="scene-card" id="card-0">
+          <div class="scene-badge">Escena 1 · 00:00 - 00:15</div>
+          <div class="scene-title">Identidad Visual & Eslogan</div>
+          <div class="scene-desc">Animación de entrada del logo EDUNOVA, partículas de red y tipografía Geist.</div>
+          <div class="scene-script">
+            "¿Alguna vez te has preguntado cuánto tiempo se pierde cuando las calificaciones y asistencias viven dispersas en hojas de cálculo? Bienvenido a EDUNOVA."
+          </div>
+        </div>
+
+        <!-- Escena 2 -->
+        <div class="scene-card" id="card-1">
+          <div class="scene-badge">Escena 2 · 00:15 - 00:40</div>
+          <div class="scene-title">Arquitectura en 3 Capas & Núcleo 3D</div>
+          <div class="scene-desc">Separación estricta: Frontend React 18 WebGL, Backend Express Node.js 24 y MySQL 8 con 22 tablas.</div>
+          <div class="scene-script">
+            "EDUNOVA unifica datos, procesos pedagógicos e inteligencia artificial en una arquitectura modular de tres capas de alto rendimiento."
+          </div>
+        </div>
+
+        <!-- Escena 3 -->
+        <div class="scene-card" id="card-2">
+          <div class="scene-badge">Escena 3 · 00:40 - 02:00</div>
+          <div class="scene-title">Perfil Aprendiz: Autonomía Total</div>
+          <div class="scene-desc">Dashboard Donut Chart, avance de competencias RAPs, evidencias con versión v1/v2 y tutor EDUNOVA AI.</div>
+          <div class="scene-script">
+            "El perfil Aprendiz brinda autonomía absoluta: consulta de competencias, radicación de evidencias versionadas sin sobreescritura y tutoría inteligente con streaming en vivo."
+          </div>
+        </div>
+
+        <!-- Escena 4 -->
+        <div class="scene-card" id="card-3">
+          <div class="scene-badge">Escena 4 · 02:00 - 03:30</div>
+          <div class="scene-title">Perfil Instructor: Liderazgo Pedagógico</div>
+          <div class="scene-desc">Planilla de asistencia en vivo < 60s, alertas < 85%, planes de mejoramiento con auto-acreditación y dossiers PDF/Excel.</div>
+          <div class="scene-script">
+            "Para el instructor: llamada a lista automatizada, detección de riesgo y recuperación de competencias con acreditación automática al ser superadas."
+          </div>
+        </div>
+
+        <!-- Escena 5 -->
+        <div class="scene-card" id="card-4">
+          <div class="scene-badge">Escena 5 · 03:30 - 04:45</div>
+          <div class="scene-title">Perfil Director: Gobernanza Institucional</div>
+          <div class="scene-desc">Métricas macro de retención escolar, apertura de fichas, matrículas sin duplicados y auditoría forense inmutable.</div>
+          <div class="scene-script">
+            "La cabina de mando del director: indicadores macroinstitucionales en tiempo real, gestión de oferta y pistas de auditoría forense registradas al segundo."
+          </div>
+        </div>
+
+        <!-- Escena 6 -->
+        <div class="scene-card" id="card-5">
+          <div class="scene-badge">Escena 6 · 04:45 - 05:30</div>
+          <div class="scene-title">Cierre Institucional & Créditos</div>
+          <div class="scene-desc">Resumen de beneficios, estándar IEEE 830 y créditos de la desarrolladora Anyely Valeria Bautista.</div>
+          <div class="scene-script">
+            "EDUNOVA: Transformando la formación por competencias en una experiencia visual, tecnológica y humana. ¡Bienvenido al futuro de la educación!"
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      EDUNOVA Academic Management System · Tecnólogo ADSO Ficha 3413988 · SENA Regional Huila<br>
+      Desarrollado por Anyely Valeria Bautista · Rama Git: <code>DEV</code>
+    </footer>
+  </div>
+
+  <script>
+    const scripts = [
+      "¿Alguna vez te has preguntado cuánto tiempo se pierde cuando las calificaciones y asistencias viven dispersas en hojas de cálculo? Bienvenido a EDUNOVA.",
+      "EDUNOVA unifica datos, procesos pedagógicos e inteligencia artificial en una arquitectura modular de tres capas de alto rendimiento.",
+      "El perfil Aprendiz brinda autonomía absoluta: consulta de competencias, radicación de evidencias versionadas sin sobreescritura y tutoría inteligente con streaming en vivo.",
+      "Para el instructor: llamada a lista automatizada, detección de riesgo y recuperación de competencias con acreditación automática al ser superadas.",
+      "La cabina de mando del director: indicadores macroinstitucionales en tiempo real, gestión de oferta y pistas de auditoría forense registradas al segundo.",
+      "EDUNOVA: Transformando la formación por competencias en una experiencia visual, tecnológica y humana. ¡Bienvenido al futuro de la educación!"
+    ];
+
+    let isPlaying = false;
+    let currentScene = 0;
+
+    function highlightCard(index) {
+      document.querySelectorAll('.scene-card').forEach((card, idx) => {
+        if (idx === index) {
+          card.classList.add('active');
+          card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+          card.classList.remove('active');
+        }
+      });
+    }
+
+    function speakScene(index) {
+      if (index >= scripts.length || !isPlaying) {
+        isPlaying = false;
+        document.getElementById('btnNarrate').innerText = "▶ Iniciar Locución con Voz en Off";
+        document.querySelectorAll('.scene-card').forEach(c => c.classList.remove('active'));
+        return;
+      }
+
+      highlightCard(index);
+      const text = scripts[index];
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'es-ES';
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+
+      utterance.onend = () => {
+        if (isPlaying) {
+          setTimeout(() => {
+            speakScene(index + 1);
+          }, 800);
+        }
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function toggleNarration() {
+      if (!('speechSynthesis' in window)) {
+        alert("Tu navegador no soporta síntesis de voz Web Speech API.");
+        return;
+      }
+
+      if (isPlaying) {
+        window.speechSynthesis.cancel();
+        isPlaying = false;
+        document.getElementById('btnNarrate').innerText = "▶ Reanudar Locución";
+        document.querySelectorAll('.scene-card').forEach(c => c.classList.remove('active'));
+      } else {
+        isPlaying = true;
+        document.getElementById('btnNarrate').innerText = "⏸ Pausar Locución";
+        speakScene(0);
+      }
+    }
+  </script>
+</body>
+</html>
+
