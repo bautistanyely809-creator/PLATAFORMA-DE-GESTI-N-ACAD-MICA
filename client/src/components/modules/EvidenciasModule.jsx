@@ -68,6 +68,14 @@ export default function EvidenciasModule({ user }) {
 
   const handleCrear = async (e) => {
     e.preventDefault();
+
+    // HU-15: Validar ponderación entre 1% y 100%
+    const pct = Number(crearForm.porcentaje);
+    if (isNaN(pct) || pct < 1 || pct > 100) {
+      alert('La ponderación debe ubicarse entre 1% y 100%.');
+      return;
+    }
+
     try {
       await api.evidencias.crear({
         id_curso: 1,
@@ -91,6 +99,15 @@ export default function EvidenciasModule({ user }) {
 
   const handleEntregar = async (e) => {
     e.preventDefault();
+
+    // HU-16: Bloqueo de extensiones peligrosas
+    const ext = (entregarForm.archivo_nombre || '').split('.').pop().toLowerCase();
+    const prohibidas = ['exe', 'bat', 'cmd', 'sh', 'php', 'vbs', 'msi', 'ps1'];
+    if (prohibidas.includes(ext)) {
+      alert(`La extensión .${ext} no está permitida por políticas de seguridad institucional.`);
+      return;
+    }
+
     try {
       await api.evidencias.entregar(selectedEvidencia.id_evidencia, {
         id_inscripcion: 1, // Inscripción de Anyely Valeria
@@ -110,6 +127,14 @@ export default function EvidenciasModule({ user }) {
 
   const handleCalificar = async (e) => {
     e.preventDefault();
+
+    // HU-17: Validación de escala institucional 0.0 a 5.0
+    const nota = Number(calificarForm.calificacion);
+    if (isNaN(nota) || nota < 0 || nota > 5.0) {
+      alert('La calificación debe ubicarse en la escala institucional de 0.0 a 5.0.');
+      return;
+    }
+
     try {
       await api.evidencias.calificar(selectedEntrega.id_entrega, {
         calificacion: Number(calificarForm.calificacion),

@@ -123,6 +123,15 @@ exports.registrarAsistenciaSesion = async (req, res) => {
       return res.status(400).json({ message: 'Se requiere id_sesion y arreglo de registros' });
     }
 
+    // HU-21: Validar que todos los aprendices tengan un estado de asistencia válido asignado
+    const validStates = ['ASISTIO', 'AUSENTE', 'RETARDO', 'EXCUSA', 'JUSTIFICADA', 'EXCUSA_PENDIENTE'];
+    const incompleto = registros.some(r => !r.estado || !validStates.includes(r.estado));
+    if (incompleto) {
+      return res.status(400).json({
+        message: 'Planilla incompleta: Todos los aprendices de la sesión deben tener un estado de asistencia asignado.'
+      });
+    }
+
     const operaciones = registros.map(r => 
       prisma.registroAsistencia.upsert({
         where: {
@@ -180,6 +189,26 @@ exports.radicarJustificacion = async (req, res) => {
 
     if (!id_registro || !motivo) {
       return res.status(400).json({ message: 'El registro y el motivo son obligatorios' });
+    }
+
+    // HU-22: Controlar el plazo de cinco días hábiles (aprox. 7 días calendario) desde la sesión
+    const registroPrevio = await prisma.registroAsistencia.findUnique({
+      where: { id_registro: Number(id_registro) },
+      include: { sesion: true }
+    });
+
+    if (!registroPrevio) {
+      return res.status(404).json({ message: 'El registro de inasistencia no existe' });
+    }
+
+    if (registroPrevio.sesion && registroPrevio.sesion.fecha) {
+      const fechaSesion = new Date(registroPrevio.sesion.fecha);
+      const diffDias = (Date.now() - fechaSesion.getTime()) / (1000 * 60 * 60 * 24);
+      if (diffDias > 7.0) {
+        return res.status(400).json({
+          message: 'El plazo reglamentario de 5 días hábiles para justificar esta inasistencia ha vencido.'
+        });
+      }
     }
 
     const justificacion = await prisma.justificacionAsistencia.create({

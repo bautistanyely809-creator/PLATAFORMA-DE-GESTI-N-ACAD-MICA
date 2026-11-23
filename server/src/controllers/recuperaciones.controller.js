@@ -84,6 +84,31 @@ exports.asignarRecuperacion = async (req, res) => {
       return res.status(400).json({ message: 'Todos los campos del plan de refuerzo son obligatorios' });
     }
 
+    // HU-19: Validar que el plazo sea a futuro
+    if (new Date(fecha_limite) <= new Date()) {
+      return res.status(400).json({ message: 'La fecha límite del plan de mejoramiento debe ser posterior a la fecha actual.' });
+    }
+
+    // HU-19: Evitar asignar refuerzo a una competencia que ya se encuentra APROBADA
+    const rapInfo = await prisma.resultadoAprendizaje.findUnique({
+      where: { id_rap: Number(id_rap) }
+    });
+    if (rapInfo) {
+      const seguimiento = await prisma.seguimientoCompetencia.findUnique({
+        where: {
+          uk_inscripcion_competencia: {
+            id_inscripcion: Number(id_inscripcion),
+            id_competencia: rapInfo.id_competencia
+          }
+        }
+      });
+      if (seguimiento && seguimiento.estado === 'APROBADA') {
+        return res.status(400).json({
+          message: 'No es posible asignar plan de mejoramiento a una competencia que ya ha sido APROBADA.'
+        });
+      }
+    }
+
     const nuevaRecuperacion = await prisma.recuperacion.create({
       data: {
         id_inscripcion: Number(id_inscripcion),
@@ -167,16 +192,24 @@ exports.evaluarRecuperacion = async (req, res) => {
     const { calificacion, observacion, estado } = req.body;
     const evaluadorNombre = req.user ? req.user.nombre : 'Instructor Titular';
 
-    if (calificacion === undefined || !estado) {
-      return res.status(400).json({ message: 'Calificación y estado son requeridos' });
+    if (calificacion === undefined) {
+      return res.status(400).json({ message: 'La calificación es requerida' });
     }
+
+    const notaNum = Number(calificacion);
+    if (isNaN(notaNum) || notaNum < 0 || notaNum > 5.0) {
+      return res.status(400).json({ message: 'La calificación debe ubicarse en la escala de 0.0 a 5.0' });
+    }
+
+    // HU-20: Regla matemática estricta: nota >= 3.5 acredita; < 3.5 queda NO_SUPERADO
+    const estadoFinal = estado || (notaNum >= 3.5 ? 'SUPERADA' : 'NO_SUPERADO');
 
     const recuperacion = await prisma.recuperacion.update({
       where: { id_recuperacion: Number(id_recuperacion) },
       data: {
-        calificacion: Number(calificacion),
+        calificacion: notaNum,
         observacion,
-        estado,
+        estado: estadoFinal,
         fecha_evaluacion: new Date()
       },
       include: {
@@ -185,8 +218,8 @@ exports.evaluarRecuperacion = async (req, res) => {
       }
     });
 
-    // Si la recuperación fue SUPERADA, actualizar automáticamente el SeguimientoCompetencia a APROBADA
-    if (estado === 'SUPERADA') {
+    // Si la recuperación fue SUPERADA (nota >= 3.5), actualizar automáticamente el SeguimientoCompetencia a APROBADA
+    if (estadoFinal === 'SUPERADA' || notaNum >= 3.5) {
       const idCompetencia = recuperacion.rap.id_competencia;
       const seguimiento = await prisma.seguimientoCompetencia.findUnique({
         where: {

@@ -45,6 +45,16 @@ exports.crearEvidencia = async (req, res) => {
       return res.status(400).json({ message: 'El curso y el nombre de la evidencia son obligatorios' });
     }
 
+    // HU-15: Validar ponderación entre 1% y 100%
+    if (porcentaje !== undefined && (Number(porcentaje) < 1 || Number(porcentaje) > 100)) {
+      return res.status(400).json({ message: 'La ponderación de la evidencia debe estar comprendida entre 1% y 100%.' });
+    }
+
+    // HU-15: Validar que la fecha límite sea a futuro
+    if (fecha_limite && new Date(fecha_limite) <= new Date()) {
+      return res.status(400).json({ message: 'La fecha límite de entrega debe ser posterior a la fecha y hora actual.' });
+    }
+
     const nuevaEvidencia = await prisma.evidencia.create({
       data: {
         id_curso: Number(id_curso),
@@ -96,6 +106,28 @@ exports.entregarEvidencia = async (req, res) => {
       return res.status(400).json({ message: 'La inscripción del aprendiz es obligatoria' });
     }
 
+    // HU-16: Bloqueo de extensiones peligrosas y validación de seguridad
+    const archivoStr = archivo_nombre || archivo_url || '';
+    const extension = archivoStr.split('.').pop().toLowerCase();
+    const extensionesProhibidas = ['exe', 'bat', 'cmd', 'sh', 'php', 'vbs', 'msi', 'ps1', 'scr'];
+    if (extensionesProhibidas.includes(extension)) {
+      return res.status(400).json({
+        message: 'Archivo rechazado: La extensión .' + extension + ' no está permitida por políticas de seguridad.'
+      });
+    }
+
+    // Obtener evidencia para verificar fecha límite
+    const evidenciaObj = await prisma.evidencia.findUnique({
+      where: { id_evidencia: Number(id_evidencia) }
+    });
+    if (!evidenciaObj) {
+      return res.status(404).json({ message: 'La evidencia solicitada no existe' });
+    }
+
+    // HU-16: Detección automática de ENTREGA_TARDIA
+    const esTardia = evidenciaObj.fecha_limite && new Date() > new Date(evidenciaObj.fecha_limite);
+    const estadoInicial = esTardia ? 'ENTREGA_TARDIA' : 'ENTREGADA';
+
     // Verificar si ya existen entregas previas para calcular la versión
     const entregasPrevias = await prisma.entregaEvidencia.findMany({
       where: {
@@ -125,7 +157,7 @@ exports.entregarEvidencia = async (req, res) => {
         archivo_nombre: archivo_nombre || `Entrega_v${nuevaVersion}_Evidencia_${id_evidencia}.zip`,
         archivo_url: archivo_url || `/uploads/evidencias/evidencia_${id_evidencia}_v${nuevaVersion}.zip`,
         comentario_aprendiz,
-        estado: 'ENTREGADA',
+        estado: estadoInicial,
         fecha_entrega: new Date()
       },
       include: {
@@ -170,6 +202,12 @@ exports.calificarEntrega = async (req, res) => {
 
     if (calificacion === undefined || !estado) {
       return res.status(400).json({ message: 'La calificación y el estado son requeridos' });
+    }
+
+    // HU-17: Validación de escala institucional estricta (0.0 a 5.0)
+    const notaNum = Number(calificacion);
+    if (isNaN(notaNum) || notaNum < 0 || notaNum > 5.0) {
+      return res.status(400).json({ message: 'La calificación debe ubicarse estrictamente en la escala de 0.0 a 5.0.' });
     }
 
     const entregaActualizada = await prisma.entregaEvidencia.update({

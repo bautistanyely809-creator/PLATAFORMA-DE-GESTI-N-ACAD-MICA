@@ -50,6 +50,13 @@ export default function CompetenciasModule({ user }) {
 
   const handleSaveEval = async (e) => {
     e.preventDefault();
+
+    // HU-13: Observación pedagógica obligatoria si requiere refuerzo o no es aprobada
+    if (evalForm.estado === 'REQUIERE_REFUERZO' && (!evalForm.observaciones || !evalForm.observaciones.trim())) {
+      alert('La observación pedagógica es obligatoria cuando la competencia requiere refuerzo.');
+      return;
+    }
+
     try {
       await api.competencias.evaluar({
         id_seguimiento: selectedSeguimiento.id_seguimiento,

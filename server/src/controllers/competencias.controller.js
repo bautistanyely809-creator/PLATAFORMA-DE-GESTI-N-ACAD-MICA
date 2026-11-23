@@ -112,6 +112,13 @@ exports.evaluarCompetencia = async (req, res) => {
       return res.status(404).json({ message: 'Registro de seguimiento no encontrado' });
     }
 
+    // HU-13: Exigir observaciones pedagógicas obligatorias cuando el juicio sea NO_APROBADO o REQUIERE_REFUERZO
+    if ((estado_nuevo === 'NO_APROBADO' || estado_nuevo === 'REQUIERE_REFUERZO') && (!observaciones || !observaciones.trim())) {
+      return res.status(400).json({
+        message: 'La observación pedagógica es obligatoria cuando la competencia no es aprobada o requiere refuerzo.'
+      });
+    }
+
     const estadoAnterior = seguimientoActual.estado;
 
     // Actualización con transacción
