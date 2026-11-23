@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDUNOVA - Gestor de Avatares y Emojis Dinámicos</title>
+  <!-- Tailwind CSS para diseño moderno y responsive -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Estilos personalizados para suavidad y arrastre táctil */
+    .avatar-card {
+      touch-action: none; /* Desactiva scroll nativo durante el arrastre con touch */
+      user-select: none;
+      -webkit-user-select: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .avatar-card.dragging {
+      transition: none; /* Respuesta instantánea durante el arrastre */
+      cursor: grabbing !important;
+      z-index: 1000 !important;
+      transform: scale(1.06);
+      box-shadow: 0 14px 28px -4px rgba(0, 0, 0, 0.18), 0 8px 10px -4px rgba(0, 0, 0, 0.08);
+    }
+    /* Patrón sutil de cuadrícula en el tablero */
+    .board-grid {
+      background-size: 24px 24px;
+      background-image: 
+        linear-gradient(to right, rgba(61, 58, 57, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(61, 58, 57, 0.06) 1px, transparent 1px);
+    }
+  </style>
+</head>
+<body class="bg-[#f5f4ef] text-[#1c1a19] min-h-screen flex flex-col font-sans">
+
+  <!-- CABECERA INSTITUCIONAL -->
+  <header class="bg-[#1c1a19] text-[#fafafa] border-b border-[#3d3a39] px-6 py-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-md bg-[#ee6018] flex items-center justify-center text-white font-bold text-lg shadow-sm">
+        E
+      </div>
+      <div>
+        <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
+          SISTEMA DE AVATARES DINÁMICOS // EDUNOVA
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#ee6018]/20 text-[#ee6018] border border-[#ee6018]/40">
+            DRAG & DROP
+          </span>
+        </h1>
+        <p class="text-xs text-[#a8a29e]">Arrastra, edita e intercambia emojis según rol y género con persistencia local</p>
+      </div>
+    </div>
+
+    <!-- BOTONES DE CONTROL GENERAL -->
+    <div class="flex items-center flex-wrap gap-2 text-xs font-mono">
+      <button 
+        id="btn-add-user" 
+        class="px-3 py-1.5 bg-[#ee6018] hover:bg-[#d85513] text-white rounded transition-colors flex items-center gap-1.5 font-medium shadow-sm"
+      >
+        <span>+ Añadir Usuario</span>
+      </button>
+
+      <button 
+        id="btn-reset-pos" 
+        class="px-3 py-1.5 bg-[#2d2926] hover:bg-[#3d3a39] text-[#e7e5e4] rounded transition-colors flex items-center gap-1.5 border border-[#44403c]"
+        title="Reorganiza todos los avatares en cuadrícula ordenada"
+      >
+        <span>📐 Alinear Cuadrícula</span>
+      </button>
+
+      <button 
+        id="btn-reset-all" 
+        class="px-3 py-1.5 bg-[#2d2926] hover:bg-[#b91c1c] text-[#fca5a5] hover:text-white rounded transition-colors flex items-center gap-1.5 border border-[#44403c]"
+        title="Restaura emojis originales de fábrica y borra posiciones de localStorage"
+      >
+        <span>🔄 Restablecer Todo</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- BARRA DE INFORMACIÓN Y REGLAS DE ROLES -->
+  <div class="bg-[#ebe8df] border-b border-[#3d3a39]/15 px-6 py-2.5 flex flex-wrap items-center justify-between gap-4 text-xs text-[#57534e]">
+    <div class="flex flex-wrap items-center gap-4">
+      <span class="font-semibold text-[#1c1a19] uppercase tracking-wider text-[11px]">Reglas de Emojis:</span>
+      <span class="flex items-center gap-1 bg-white/70 px-2 py-0.5 rounded border border-[#3d3a39]/10">
+        🎓 <strong>Estudiantes:</strong> 👩🏼‍🎓 Femenino · 👨🏻‍🎓 Masculino
+      </span>
+      <span class="flex items-center gap-1 bg-white/70 px-2 py-0.5 rounded border border-[#3d3a39]/10">
+        🏫 <strong>Profesores:</strong> 👩🏻‍🏫 Femenino · 👨🏻‍🏫 Masculino
+      </span>
+      <span class="flex items-center gap-1 bg-white/70 px-2 py-0.5 rounded border border-[#3d3a39]/10">
+        💼 <strong>Admin:</strong> 👨🏻‍💼 Masculino
+      </span>
+    </div>
+    <div class="text-[11px] text-[#78716c] font-mono">
+      💡 Doble clic o clic en ✏️ para editar · Arrastra libremente
+    </div>
+  </div>
+
+  <!-- CONTENEDOR PRINCIPAL: TABLERO INTERACTIVO -->
+  <main class="flex-1 relative overflow-hidden p-6 flex flex-col">
+    <div 
+      id="canvas-board" 
+      class="board-grid flex-1 w-full relative bg-[#fdfcf9] border-2 border-dashed border-[#3d3a39]/25 rounded-xl shadow-inner min-h-[580px] overflow-hidden"
+    >
+      <!-- Los avatares se generan e inyectan aquí dinámicamente -->
+    </div>
+  </main>
+
+  <!-- MODAL FLOTANTE DE EDICIÓN DE EMOJI -->
+  <div id="edit-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-[#3d3a39]/20 rounded-xl max-w-sm w-full p-5 shadow-2xl animate-in fade-in zoom-in duration-150">
+      <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+        <h3 class="text-sm font-bold text-[#1c1a19]">Cambiar Emoji de Avatar</h3>
+        <button id="modal-close" class="text-gray-400 hover:text-gray-700 text-lg leading-none">&times;</button>
+      </div>
+
+      <div class="py-4 space-y-4">
+        <!-- Vista previa actual -->
+        <div class="flex items-center gap-4 bg-[#f8f7f4] p-3 rounded-lg border border-[#e5e2d8]">
+          <div id="modal-preview-emoji" class="text-4xl w-14 h-14 flex items-center justify-center bg-white rounded-full shadow-sm border border-gray-100">
+            👩🏼‍🎓
+          </div>
+          <div>
+            <div id="modal-user-name" class="font-bold text-xs text-[#1c1a19]">Laura Martínez</div>
+            <div id="modal-user-role" class="text-[11px] text-[#78716c]">Estudiante · Femenino</div>
+          </div>
+        </div>
+
+        <!-- Emojis sugeridos según rol y contexto -->
+        <div>
+          <label class="block text-[11px] font-semibold text-[#57534e] mb-1.5 uppercase tracking-wider">
+            Sugerencias Rápidas:
+          </label>
+          <div id="suggested-emojis" class="grid grid-cols-6 gap-2">
+            <!-- Sugerencias inyectadas con JS -->
+          </div>
+        </div>
+
+        <!-- Entrada personalizada (escribir o pegar cualquier emoji) -->
+        <div>
+          <label class="block text-[11px] font-semibold text-[#57534e] mb-1.5 uppercase tracking-wider">
+            O escribe / pega cualquier emoji:
+          </label>
+          <div class="flex gap-2">
+            <input 
+              type="text" 
+              id="custom-emoji-input" 
+              placeholder="Pega un emoji aquí..." 
+              maxlength="10" 
+              class="flex-1 px-3 py-2 text-center text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ee6018]"
+            />
+            <button 
+              id="btn-apply-custom" 
+              class="px-3 py-2 bg-[#2d2926] hover:bg-[#1c1a19] text-white text-xs font-semibold rounded-lg transition-colors"
+            >
+              Aplicar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-gray-100">
+        <button 
+          id="btn-restore-default-emoji" 
+          class="px-3 py-1.5 text-xs text-[#b91c1c] hover:bg-red-50 rounded transition-colors font-medium mr-auto"
+        >
+          Emoji por Defecto
+        </button>
+        <button 
+          id="modal-cancel" 
+          class="px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-100 rounded transition-colors font-medium"
+        >
+          Cancelar
+        </button>
+        <button 
+          id="modal-save" 
+          class="px-4 py-1.5 text-xs bg-[#ee6018] hover:bg-[#d85513] text-white font-semibold rounded-lg shadow-sm transition-colors"
+        >
+          Guardar Cambios
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AÑADIR NUEVO USUARIO -->
+  <div id="add-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-[#3d3a39]/20 rounded-xl max-w-sm w-full p-5 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+        <h3 class="text-sm font-bold text-[#1c1a19]">Añadir Nuevo Usuario</h3>
+        <button id="add-modal-close" class="text-gray-400 hover:text-gray-700 text-lg leading-none">&times;</button>
+      </div>
+
+      <form id="add-user-form" class="py-4 space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Nombre Completo:</label>
+          <input 
+            type="text" 
+            id="new-user-name" 
+            required 
+            placeholder="Ej: Daniel Morales" 
+            class="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ee6018]"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Rol Institucional:</label>
+          <select 
+            id="new-user-role" 
+            class="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ee6018]"
+          >
+            <option value="estudiante">Estudiante</option>
+            <option value="profesor">Profesor / Instructor</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+
+        <div id="gender-group">
+          <label class="block text-xs font-medium text-gray-700 mb-1">Género:</label>
+          <select 
+            id="new-user-gender" 
+            class="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ee6018]"
+          >
+            <option value="femenino">Femenino (Mujer)</option>
+            <option value="masculino">Masculino (Hombre)</option>
+          </select>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2">
+          <button 
+            type="button" 
+            id="add-modal-cancel" 
+            class="px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-100 rounded"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="px-4 py-1.5 text-xs bg-[#ee6018] hover:bg-[#d85513] text-white font-semibold rounded-lg shadow-sm"
+          >
+            Crear Usuario
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT COMPLETO DE LÓGICA Y PERSISTENCIA -->
+  <script>
+    /**
+     * GESTOR DE AVATARES Y EMOJIS DINÁMICOS
+     * Cumple con las reglas institucionales:
+     * - Estudiantes: 👩🏼‍🎓 (femenino) / 👨🏻‍🎓 (masculino)
+     * - Profesores:  👩🏻‍🏫 (femenino) / 👨🏻‍🏫 (masculino)
+     * - Admin:       👨🏻‍💼 (solo masculino)
+     */
+
+    const STORAGE_KEY = 'edunova_interactive_emojis_v2';
+
+    // Reglas de emojis por defecto
+    const DEFAULT_EMOJIS = {
+      estudiante: {
+        femenino: '👩🏼‍🎓',
+        masculino: '👨🏻‍🎓'
+      },
+      profesor: {
+        femenino: '👩🏻‍🏫',
+        masculino: '👨🏻‍🏫'
+      },
+      admin: {
+        masculino: '👨🏻‍💼',
+        femenino: '👨🏻‍💼' // Regla: admin solo hombre
+      }
+    };
+
+    // Paleta de sugerencias rápidas para el modal de edición
+    const SUGGESTED_EMOJIS = [
+      '👩🏼‍🎓', '👨🏻‍🎓', '👩🏻‍🏫', '👨🏻‍🏫', '👨🏻‍💼', '🧑‍🎓',
+      '🧑‍🏫', '🧑‍💼', '👩‍💻', '👨‍💻', '👩‍🔬', '👨‍🔬',
+      '🦉', '📚', '💡', '⭐', '🎯', '🚀'
+    ];
+
+    // Datos iniciales de demostración
+    const INITIAL_USERS = [
+      { id: 'usr-1', name: 'Laura Martínez', role: 'estudiante', gender: 'femenino' },
+      { id: 'usr-2', name: 'Mateo Gómez', role: 'estudiante', gender: 'masculino' },
+      { id: 'usr-3', name: 'Valentina Ríos', role: 'estudiante', gender: 'femenino' },
+      { id: 'usr-4', name: 'Santiago Ruiz', role: 'estudiante', gender: 'masculino' },
+      { id: 'usr-5', name: 'Ing. Carlos Mendoza', role: 'profesor', gender: 'masculino' },
+      { id: 'usr-6', name: 'Prof. Andrea Torres', role: 'profesor', gender: 'femenino' },
+      { id: 'usr-7', name: 'Administrador General', role: 'admin', gender: 'masculino' }
+    ];
+
+    // Estado en memoria
+    let usersData = [];
+    let currentEditingUser = null;
+    let selectedEmojiForEdit = '';
+
+    // Referencias al DOM
+    const canvasBoard = document.getElementById('canvas-board');
+    const editModal = document.getElementById('edit-modal');
+    const modalPreviewEmoji = document.getElementById('modal-preview-emoji');
+    const modalUserName = document.getElementById('modal-user-name');
+    const modalUserRole = document.getElementById('modal-user-role');
+    const customEmojiInput = document.getElementById('custom-emoji-input');
+    const suggestedEmojisContainer = document.getElementById('suggested-emojis');
+
+    // Función auxiliar: obtener el emoji por defecto de un rol y género
+    function getDefaultEmoji(role, gender) {
+      const r = (role || 'estudiante').toLowerCase();
+      const g = (gender || 'masculino').toLowerCase();
+      if (DEFAULT_EMOJIS[r] && DEFAULT_EMOJIS[r][g]) {
+        return DEFAULT_EMOJIS[r][g];
+      }
+      return '🧑‍🎓';
+    }
+
+    // Inicializar o cargar datos desde localStorage
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          usersData = JSON.parse(saved);
+        } catch (e) {
+          console.error("Error al cargar localStorage, reiniciando:", e);
+          usersData = initializeDefaultUsers();
+        }
+      } else {
+        usersData = initializeDefaultUsers();
+      }
+    }
+
+    // Crea la estructura inicial con posiciones ordenadas en cuadrícula
+    function initializeDefaultUsers() {
+      return INITIAL_USERS.map((u, idx) => {
+        const col = idx % 4;
+        const row = Math.floor(idx / 4);
+        return {
+          ...u,
+          currentEmoji: getDefaultEmoji(u.role, u.gender),
+          x: 40 + col * 240,
+          y: 40 + row * 160
+        };
+      });
+    }
+
+    // Guardar estado completo en localStorage
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(usersData));
+    }
+
+    // Renderizar todos los avatares en el tablero
+    function renderBoard() {
+      canvasBoard.innerHTML = '';
+
+      usersData.forEach(user => {
+        const card = createAvatarElement(user);
+        canvasBoard.appendChild(card);
+      });
+    }
+
+    // Crear el elemento DOM interactivo de cada tarjeta de avatar
+    function createAvatarElement(user) {
+      const el = document.createElement('div');
+      el.id = `card-${user.id}`;
+      el.className = 'avatar-card absolute w-52 bg-white border border-[#3d3a39]/20 rounded-xl p-3 shadow-md cursor-grab flex items-center gap-3 select-none';
+      
+      // Aplicar posición guardada
+      el.style.left = `${user.x}px`;
+      el.style.top = `${user.y}px`;
+
+      // Badge de estilo según rol
+      let roleBadgeColor = 'bg-blue-100 text-blue-800 border-blue-200';
+      let roleLabel = 'Estudiante';
+      if (user.role === 'profesor') {
+        roleBadgeColor = 'bg-amber-100 text-amber-800 border-amber-200';
+        roleLabel = 'Profesor';
+      } else if (user.role === 'admin') {
+        roleBadgeColor = 'bg-rose-100 text-rose-800 border-rose-200';
+        roleLabel = 'Administrador';
+      }
+
+      el.innerHTML = `
+        <div class="relative group/emoji">
+          <div class="emoji-display text-3xl w-12 h-12 flex items-center justify-center bg-[#faf9f5] rounded-full border border-[#e7e5e4] shadow-inner transition-transform group-hover/emoji:scale-110">
+            ${user.currentEmoji || getDefaultEmoji(user.role, user.gender)}
+          </div>
+          <button 
+            class="btn-edit-avatar absolute -top-1 -right-1 w-5 h-5 bg-[#ee6018] text-white rounded-full flex items-center justify-center text-[10px] shadow hover:bg-[#d85513] transition-colors"
+            title="Cambiar emoji"
+          >
+            ✏️
+          </button>
+        </div>
+
+        <div class="flex-1 min-w-0 pointer-events-none">
+          <div class="font-bold text-xs text-[#1c1a19] truncate">${user.name}</div>
+          <div class="flex items-center gap-1 mt-0.5">
+            <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded border ${roleBadgeColor}">
+              ${roleLabel}
+            </span>
+            <span class="text-[9px] text-[#78716c] capitalize">
+              · ${user.gender}
+            </span>
+          </div>
+        </div>
+      `;
+
+      // Evento: Clic en botón editar o doble clic en la tarjeta
+      const btnEdit = el.querySelector('.btn-edit-avatar');
+      btnEdit.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openEditModal(user);
+      });
+
+      el.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        openEditModal(user);
+      });
+
+      // Habilitar Drag & Drop con Pointer Events para soporte Mouse + Táctil
+      enablePointerDrag(el, user);
+
+      return el;
+    }
+
+    // Motor de arrastre Pointer Events (Mouse y Touch unificados)
+    function enablePointerDrag(element, userObj) {
+      let isDragging = false;
+      let startPointerX = 0;
+      let startPointerY = 0;
+      let initialLeft = 0;
+      let initialTop = 0;
+
+      element.addEventListener('pointerdown', (e) => {
+        // Evitar que el clic en el botón de edición inicie el arrastre
+        if (e.target.closest('.btn-edit-avatar')) return;
+
+        isDragging = true;
+        element.classList.add('dragging');
+        element.setPointerCapture(e.pointerId);
+
+        startPointerX = e.clientX;
+        startPointerY = e.clientY;
+        initialLeft = parseFloat(element.style.left) || 0;
+        initialTop = parseFloat(element.style.top) || 0;
+      });
+
+      element.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+
+        const deltaX = e.clientX - startPointerX;
+        const deltaY = e.clientY - startPointerY;
+
+        let newX = initialLeft + deltaX;
+        let newY = initialTop + deltaY;
+
+        // Limitar dentro de los bordes visibles del contenedor
+        const boardRect = canvasBoard.getBoundingClientRect();
+        const elemRect = element.getBoundingClientRect();
+
+        const minX = 0;
+        const maxX = boardRect.width - elemRect.width;
+        const minY = 0;
+        const maxY = boardRect.height - elemRect.height;
+
+        newX = Math.max(minX, Math.min(newX, maxX));
+        newY = Math.max(minY, Math.min(newY, maxY));
+
+        element.style.left = `${newX}px`;
+        element.style.top = `${newY}px`;
+
+        userObj.x = Math.round(newX);
+        userObj.y = Math.round(newY);
+      });
+
+      const endDrag = (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        element.classList.remove('dragging');
+        try {
+          element.releasePointerCapture(e.pointerId);
+        } catch (_) {}
+
+        // Persistir la nueva posición en localStorage
+        saveState();
+      };
+
+      element.addEventListener('pointerup', endDrag);
+      element.addEventListener('pointercancel', endDrag);
+    }
+
+    // Abrir Modal de Edición
+    function openEditModal(user) {
+      currentEditingUser = user;
+      selectedEmojiForEdit = user.currentEmoji || getDefaultEmoji(user.role, user.gender);
+
+      modalUserName.textContent = user.name;
+      modalUserRole.textContent = `${user.role.toUpperCase()} · ${user.gender.toUpperCase()}`;
+      modalPreviewEmoji.textContent = selectedEmojiForEdit;
+      customEmojiInput.value = '';
+
+      // Cargar grilla de emojis sugeridos
+      suggestedEmojisContainer.innerHTML = '';
+      SUGGESTED_EMOJIS.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'w-9 h-9 text-xl flex items-center justify-center bg-gray-50 hover:bg-[#ee6018]/10 hover:border-[#ee6018] border border-gray-200 rounded-lg transition-transform active:scale-95';
+        btn.textContent = emoji;
+        btn.addEventListener('click', () => {
+          selectedEmojiForEdit = emoji;
+          modalPreviewEmoji.textContent = emoji;
+        });
+        suggestedEmojisContainer.appendChild(btn);
+      });
+
+      editModal.classList.remove('hidden');
+    }
+
+    // Cerrar Modal de Edición
+    function closeEditModal() {
+      editModal.classList.add('hidden');
+      currentEditingUser = null;
+    }
+
+    // Eventos del Modal
+    document.getElementById('modal-close').addEventListener('click', closeEditModal);
+    document.getElementById('modal-cancel').addEventListener('click', closeEditModal);
+
+    // Aplicar emoji personalizado desde el input
+    document.getElementById('btn-apply-custom').addEventListener('click', () => {
+      const val = customEmojiInput.value.trim();
+      if (val) {
+        selectedEmojiForEdit = val;
+        modalPreviewEmoji.textContent = val;
+      }
+    });
+
+    customEmojiInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('btn-apply-custom').click();
+      }
+    });
+
+    // Restaurar emoji por defecto del rol/género del usuario
+    document.getElementById('btn-restore-default-emoji').addEventListener('click', () => {
+      if (currentEditingUser) {
+        const def = getDefaultEmoji(currentEditingUser.role, currentEditingUser.gender);
+        selectedEmojiForEdit = def;
+        modalPreviewEmoji.textContent = def;
+      }
+    });
+
+    // Guardar cambios del modal
+    document.getElementById('modal-save').addEventListener('click', () => {
+      if (currentEditingUser && selectedEmojiForEdit) {
+        currentEditingUser.currentEmoji = selectedEmojiForEdit;
+        saveState();
+
+        // Actualizar el emoji en el DOM
+        const card = document.getElementById(`card-${currentEditingUser.id}`);
+        if (card) {
+          const display = card.querySelector('.emoji-display');
+          if (display) display.textContent = selectedEmojiForEdit;
+        }
+      }
+      closeEditModal();
+    });
+
+    // BOTÓN: Alinear / Resetear Posiciones en Cuadrícula
+    document.getElementById('btn-reset-pos').addEventListener('click', () => {
+      usersData.forEach((u, idx) => {
+        const col = idx % 4;
+        const row = Math.floor(idx / 4);
+        u.x = 40 + col * 240;
+        u.y = 40 + row * 160;
+
+        const card = document.getElementById(`card-${u.id}`);
+        if (card) {
+          card.style.left = `${u.x}px`;
+          card.style.top = `${u.y}px`;
+        }
+      });
+      saveState();
+    });
+
+    // BOTÓN: Restablecer Todo (emojis de fábrica y posiciones)
+    document.getElementById('btn-reset-all').addEventListener('click', () => {
+      if (confirm('¿Deseas restablecer todos los emojis a sus valores por defecto y reordenar las posiciones?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        usersData = initializeDefaultUsers();
+        saveState();
+        renderBoard();
+      }
+    });
+
+    // MODAL: Añadir Nuevo Usuario
+    const addModal = document.getElementById('add-modal');
+    const roleSelect = document.getElementById('new-user-role');
+    const genderGroup = document.getElementById('gender-group');
+    const genderSelect = document.getElementById('new-user-gender');
+
+    document.getElementById('btn-add-user').addEventListener('click', () => {
+      document.getElementById('new-user-name').value = '';
+      roleSelect.value = 'estudiante';
+      genderSelect.value = 'femenino';
+      genderGroup.style.display = 'block';
+      addModal.classList.remove('hidden');
+    });
+
+    document.getElementById('add-modal-close').addEventListener('click', () => addModal.classList.add('hidden'));
+    document.getElementById('add-modal-cancel').addEventListener('click', () => addModal.classList.add('hidden'));
+
+    // Si el rol es admin, forzar género masculino
+    roleSelect.addEventListener('change', () => {
+      if (roleSelect.value === 'admin') {
+        genderGroup.style.display = 'none';
+        genderSelect.value = 'masculino';
+      } else {
+        genderGroup.style.display = 'block';
+      }
+    });
+
+    document.getElementById('add-user-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('new-user-name').value.trim();
+      const role = roleSelect.value;
+      const gender = role === 'admin' ? 'masculino' : genderSelect.value;
+
+      if (!name) return;
+
+      const newUser = {
+        id: `usr-${Date.now()}`,
+        name,
+        role,
+        gender,
+        currentEmoji: getDefaultEmoji(role, gender),
+        x: 60 + Math.floor(Math.random() * 200),
+        y: 60 + Math.floor(Math.random() * 200)
+      };
+
+      usersData.push(newUser);
+      saveState();
+
+      const el = createAvatarElement(newUser);
+      canvasBoard.appendChild(el);
+
+      addModal.classList.add('hidden');
+    });
+
+    // Iniciar la aplicación
+    loadState();
+    renderBoard();
+  </script>
+</body>
+</html>
