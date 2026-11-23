@@ -43,10 +43,10 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
   const rendererRef = useRef(null);
   const animFrameIdRef = useRef(null);
   const objectsRef = useRef({});
-  const isDraggingBookRef = useRef(false);
+  const isDraggingMeshRef = useRef(false);
   const prevMousePosRef = useRef({ x: 0, y: 0 });
 
-  // 1. Estados de animación de Three.js
+  // 1. Estados de animación Three.js
   const speeds = [0.5, 1, 1.5, 2];
   const [speedIndex, setSpeedIndex] = useState(1);
   const speedIndexRef = useRef(1);
@@ -62,14 +62,13 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
 
   const floatingTimeRef = useRef(0);
 
-  // 2. Estados del Avatar / Emoji Interactivo y Movible
-  // Detectar rol y género inicial
+  // 2. Estados del Avatar / Emoji Interactivo
   const userRole = (user?.rol || localStorage.getItem('edunova_user_role') || 'estudiante').toLowerCase();
   const initialGender = localStorage.getItem('edunova_user_gender') || 'femenino';
 
   const getDefaultEmoji = (r, g) => {
-    const roleKey = r.toLowerCase();
-    const genderKey = g.toLowerCase();
+    const roleKey = (r || 'estudiante').toLowerCase();
+    const genderKey = (g || 'femenino').toLowerCase();
     return DEFAULT_ROLE_EMOJIS[roleKey]?.[genderKey] || '👩🏼‍🎓';
   };
 
@@ -80,24 +79,69 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
   const [selectedRole, setSelectedRole] = useState(userRole);
   const [selectedGender, setSelectedGender] = useState(initialGender);
 
-  // Posición del avatar en el contenedor (x, y) con persistencia
+  // Posición del badge de usuario (x, y) con persistencia
   const [avatarPos, setAvatarPos] = useState(() => {
     const saved = localStorage.getItem('edunova_hero_avatar_pos');
     if (saved) {
       try { return JSON.parse(saved); } catch (_) {}
     }
-    return { x: 16, y: 16 }; // Esquina superior izquierda por defecto
+    return { x: 16, y: 16 };
   });
 
   const isDraggingAvatarRef = useRef(false);
   const dragAvatarStartRef = useRef({ x: 0, y: 0, startX: 0, startY: 0 });
 
-  // Modal / Popover de edición de avatar
+  // Modal / Popover de edición
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [customInputEmoji, setCustomInputEmoji] = useState('');
   const [tempPreviewEmoji, setTempPreviewEmoji] = useState(currentEmoji);
 
-  // Inicialización de la Escena Three.js con libro 3D corregido
+  // Función para generar la textura del emoji en alta resolución
+  const drawEmojiCanvas = (emojiChar, canvas) => {
+    if (!canvas) canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+
+    ctx.clearRect(0, 0, 512, 512);
+
+    // Fondo degradado circular marfil suave
+    const grad = ctx.createRadialGradient(256, 256, 50, 256, 256, 256);
+    grad.addColorStop(0, '#ffffff');
+    grad.addColorStop(0.75, '#fcfaf6');
+    grad.addColorStop(1, '#f2ece0');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(256, 256, 256, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Aro interior institucional naranja suave
+    ctx.strokeStyle = 'rgba(238, 96, 24, 0.4)';
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.arc(256, 256, 244, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Aro decorativo verde métrico
+    ctx.strokeStyle = 'rgba(160, 202, 146, 0.5)';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(256, 256, 230, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Dibujo del Emoji central
+    ctx.font = '270px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.16)';
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetY = 14;
+    ctx.fillText(emojiChar, 256, 274);
+
+    return canvas;
+  };
+
+  // Inicialización de la escena Three.js con el Emoji 3D
   useEffect(() => {
     const currentMount = mountRef.current;
     if (!currentMount) return;
@@ -109,12 +153,12 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    // Cámara con encuadre suave
-    const camera = new THREE.PerspectiveCamera(34, width / height, 0.1, 100);
-    camera.position.set(0, 1.35, 6.8);
+    // Cámara con encuadre óptimo
+    const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
+    camera.position.set(0, 0.15, 6.2);
     camera.lookAt(0, 0, 0);
 
-    // Renderizador WebGL con antialiasing y color ACESFilmic
+    // Renderizador WebGL con soporte ACESFilmic
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -134,218 +178,121 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
     currentMount.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Luces de Estudio Suave
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    // Iluminación de Estudio
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xfffaf0, 1.5);
-    keyLight.position.set(4, 8, 6);
+    const keyLight = new THREE.DirectionalLight(0xfffaf0, 1.4);
+    keyLight.position.set(4, 7, 5);
     keyLight.castShadow = true;
-    keyLight.shadow.mapSize.width = 1024;
-    keyLight.shadow.mapSize.height = 1024;
-    keyLight.shadow.bias = -0.001;
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0xffe2d0, 0.75);
-    fillLight.position.set(-5, 2.5, 4);
+    const fillLight = new THREE.DirectionalLight(0xffe8dc, 0.7);
+    fillLight.position.set(-5, 2, 4);
     scene.add(fillLight);
 
-    const rimLight = new THREE.DirectionalLight(0xffffff, 0.85);
-    rimLight.position.set(0, 5, -6);
+    const rimLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    rimLight.position.set(0, 4, -5);
     scene.add(rimLight);
 
-    const spotLight = new THREE.PointLight(0xfff5e6, 0.65, 10);
-    spotLight.position.set(0, 3, 2.5);
+    const spotLight = new THREE.PointLight(0xfff6ea, 0.6, 8);
+    spotLight.position.set(0, 0, 2.5);
     scene.add(spotLight);
 
-    // Grupo Raíz con inclinación frontal para ver páginas desde arriba/frente
+    // Grupo Raíz del Emoji 3D
     const rootGroup = new THREE.Group();
-    const defaultTiltX = 0.45;
-    rootGroup.rotation.x = defaultTiltX;
+    // Inclinación inicial suave para apreciarlo en 3D
+    rootGroup.rotation.set(0.18, -0.22, 0.04);
     scene.add(rootGroup);
 
-    // Grupo de rotación continua 360° en Y
-    const bookGroup = new THREE.Group();
-    rootGroup.add(bookGroup);
+    // Grupo giratorio continuo
+    const emojiGroup = new THREE.Group();
+    rootGroup.add(emojiGroup);
 
-    // --- MATERIALES PBR SUAVES (SOFT 3D CLAY) ---
-    const coverMaterial = new THREE.MeshStandardMaterial({
-      color: 0xee3b2b,
-      roughness: 0.35,
+    // --- CONSTRUCCIÓN DEL MEDALLÓN / TOKEN EMOJI 3D ---
+    const radius = 1.45;
+    const thickness = 0.24;
+
+    // Crear textura del emoji
+    const emojiCanvas = drawEmojiCanvas(currentEmoji);
+    const emojiTexture = new THREE.CanvasTexture(emojiCanvas);
+    emojiTexture.needsUpdate = true;
+
+    // Material de la cara frontal y trasera con el emoji
+    const faceMaterial = new THREE.MeshStandardMaterial({
+      map: emojiTexture,
+      roughness: 0.28,
       metalness: 0.05,
-      flatShading: false,
       side: THREE.DoubleSide
     });
 
-    const pageMaterial = new THREE.MeshStandardMaterial({
-      color: 0xf4efe4,
-      roughness: 0.38,
-      metalness: 0.02,
-      flatShading: false,
-      side: THREE.DoubleSide
+    // Material del borde perimetral en rojo coral / naranja cálido satinado (#EE3B2B)
+    const rimMaterial = new THREE.MeshStandardMaterial({
+      color: 0xee3b2b,
+      roughness: 0.3,
+      metalness: 0.2
     });
 
-    const textMaterial = new THREE.MeshStandardMaterial({
-      color: 0x3a3a3a,
-      roughness: 0.32,
-      metalness: 0.06,
-      flatShading: false
+    // Material de los aros dorados decorativos
+    const goldAccentMaterial = new THREE.MeshStandardMaterial({
+      color: 0xf07830,
+      roughness: 0.25,
+      metalness: 0.75
     });
 
-    const registeredMaterials = [coverMaterial, pageMaterial, textMaterial];
+    const registeredMaterials = [faceMaterial, rimMaterial, goldAccentMaterial];
 
-    // Función de curvatura convexa en arco de las hojas
-    const getPageHeight = (x, maxW, peakH) => {
-      const u = Math.max(0, Math.min(1, Math.abs(x) / maxW));
-      return Math.sin(u * Math.PI * 0.82 + 0.14) * peakH - Math.sin(0.14) * peakH;
-    };
+    // 1. Cilindro base del medallón (Cuerpo 3D)
+    const cylinderGeo = new THREE.CylinderGeometry(radius, radius, thickness, 64);
+    cylinderGeo.rotateX(Math.PI / 2); // Orientar la cara hacia el frente (eje Z)
 
-    const pageHalfW = 1.35;
-    const pageDepth = 2.05;
-    const archH = 0.38;
+    // Crear disco compuesto: tapas con el emoji, borde con el color institucional
+    const discMesh = new THREE.Mesh(cylinderGeo, [
+      rimMaterial,  // Perímetro exterior
+      faceMaterial, // Cara frontal
+      faceMaterial  // Cara trasera
+    ]);
+    discMesh.castShadow = true;
+    discMesh.receiveShadow = true;
+    emojiGroup.add(discMesh);
 
-    // --- 1. BASE: TAPA ROJA/CORAL GRUESA Y REDONDEADA (#EE3B2B) ---
-    // Ubicada estrictamente en la base inferior (Y = -0.16)
-    const coverHalfW = pageHalfW + 0.12;
-    const coverDepth = pageDepth + 0.18;
-    const coverThick = 0.10;
-    const coverBaseY = -0.16;
+    // 2. Bisel redondeado perimetral frontal y trasero (Aro Torus satinado)
+    const torusGeo = new THREE.TorusGeometry(radius, 0.045, 16, 64);
 
-    const coverShape = new THREE.Shape();
-    const cSteps = 32;
+    const frontTorus = new THREE.Mesh(torusGeo, goldAccentMaterial);
+    frontTorus.position.z = thickness / 2;
+    emojiGroup.add(frontTorus);
 
-    coverShape.moveTo(-coverHalfW, coverBaseY + getPageHeight(-coverHalfW, coverHalfW, archH));
-    for (let i = 0; i <= cSteps; i++) {
-      const x = -coverHalfW + (i / cSteps) * (2 * coverHalfW);
-      const y = coverBaseY + getPageHeight(x, coverHalfW, archH);
-      coverShape.lineTo(x, y);
-    }
-    const cRightY = coverBaseY + getPageHeight(coverHalfW, coverHalfW, archH);
-    coverShape.lineTo(coverHalfW, cRightY - coverThick);
+    const backTorus = new THREE.Mesh(torusGeo, goldAccentMaterial);
+    backTorus.position.z = -thickness / 2;
+    emojiGroup.add(backTorus);
 
-    for (let i = cSteps; i >= 0; i--) {
-      const x = -coverHalfW + (i / cSteps) * (2 * coverHalfW);
-      const y = coverBaseY + getPageHeight(x, coverHalfW, archH) - coverThick;
-      coverShape.lineTo(x, y);
-    }
-    coverShape.closePath();
-
-    const coverGeo = new THREE.ExtrudeGeometry(coverShape, {
-      steps: 1,
-      depth: coverDepth,
-      bevelEnabled: true,
-      bevelThickness: 0.045,
-      bevelSize: 0.045,
-      bevelSegments: 6
+    // 3. Anillo Orbital Inclinado decorativo que acompaña al emoji
+    const orbitGeo = new THREE.TorusGeometry(2.15, 0.02, 16, 80);
+    const orbitMat = new THREE.MeshBasicMaterial({
+      color: 0xee6018,
+      transparent: true,
+      opacity: 0.55
     });
-    // Trasladar Z para centrar la profundidad
-    coverGeo.translate(0, 0, -coverDepth / 2);
-    coverGeo.computeVertexNormals();
+    const orbitMesh = new THREE.Mesh(orbitGeo, orbitMat);
+    orbitMesh.rotation.x = Math.PI / 3;
+    orbitMesh.rotation.y = Math.PI / 6;
+    emojiGroup.add(orbitMesh);
 
-    const coverMesh = new THREE.Mesh(coverGeo, coverMaterial);
-    coverMesh.castShadow = true;
-    coverMesh.receiveShadow = true;
-    bookGroup.add(coverMesh);
-
-    // --- 2. MEDIO: DOS BLOQUES DE HOJAS COLOR CREMA EN 2 CAPAS ESCALONADAS (#F4EFE4) ---
-    // Colocados estrictamente encima de la tapa roja (Capa 1 en Y=-0.05, Capa 2 en Y=0.03)
-    const layers = [
-      { w: pageHalfW + 0.03, d: pageDepth + 0.05, thick: 0.07, yBase: -0.05 },
-      { w: pageHalfW,        d: pageDepth,        thick: 0.07, yBase: 0.03 }
-    ];
-
-    layers.forEach((layer) => {
-      const layerShape = new THREE.Shape();
-      const pSteps = 28;
-
-      layerShape.moveTo(-layer.w, layer.yBase + getPageHeight(-layer.w, layer.w, archH));
-      for (let i = 0; i <= pSteps; i++) {
-        const x = -layer.w + (i / pSteps) * (2 * layer.w);
-        const y = layer.yBase + getPageHeight(x, layer.w, archH);
-        layerShape.lineTo(x, y);
-      }
-
-      const rY = layer.yBase + getPageHeight(layer.w, layer.w, archH);
-      layerShape.lineTo(layer.w, rY - layer.thick);
-
-      for (let i = pSteps; i >= 0; i--) {
-        const x = -layer.w + (i / pSteps) * (2 * layer.w);
-        const y = layer.yBase + getPageHeight(x, layer.w, archH) - layer.thick;
-        layerShape.lineTo(x, y);
-      }
-      layerShape.closePath();
-
-      const layerGeo = new THREE.ExtrudeGeometry(layerShape, {
-        steps: 1,
-        depth: layer.d,
-        bevelEnabled: true,
-        bevelThickness: 0.03,
-        bevelSize: 0.03,
-        bevelSegments: 5
-      });
-      layerGeo.translate(0, 0, -layer.d / 2);
-      layerGeo.computeVertexNormals();
-
-      const layerMesh = new THREE.Mesh(layerGeo, pageMaterial);
-      layerMesh.castShadow = true;
-      layerMesh.receiveShadow = true;
-      bookGroup.add(layerMesh);
+    // 4. Satélite / Esfera de luz en órbita verde métrica (#A0CA92)
+    const satGeo = new THREE.SphereGeometry(0.08, 16, 16);
+    const satMat = new THREE.MeshStandardMaterial({
+      color: 0xa0ca92,
+      roughness: 0.2,
+      metalness: 0.6,
+      emissive: 0xa0ca92,
+      emissiveIntensity: 0.3
     });
+    const satMesh = new THREE.Mesh(satGeo, satMat);
+    emojiGroup.add(satMesh);
 
-    // --- 3. ARRIBA: 5 LÍNEAS DE TEXTO OSCURAS POR PÁGINA (ESTRICTAMENTE CONTENIDAS) ---
-    // Ubicadas sobre la superficie superior de la capa crema 2 + 0.012 de relieve
-    const textGroup = new THREE.Group();
-    bookGroup.add(textGroup);
-
-    const topLayer = layers[1];
-    const numLines = 5;
-    const zStart = -topLayer.d * 0.34;
-    const zEnd = topLayer.d * 0.34;
-    const zStep = (zEnd - zStart) / (numLines - 1);
-
-    for (let side = -1; side <= 1; side += 2) {
-      for (let i = 0; i < numLines; i++) {
-        const lineZ = zStart + i * zStep;
-        const lengthFactor = (i === numLines - 1) ? 0.72 : 1.0;
-        
-        const innerX = 0.28;
-        const outerX = 0.28 + (1.12 - 0.28) * lengthFactor;
-        
-        const startX = side === 1 ? innerX : -outerX;
-        const endX = side === 1 ? outerX : -innerX;
-
-        const linePoints = [];
-        const samples = 14;
-
-        for (let s = 0; s <= samples; s++) {
-          const t = s / samples;
-          const px = startX + t * (endX - startX);
-          const py = topLayer.yBase + getPageHeight(px, topLayer.w, archH) + 0.012;
-          linePoints.push(new THREE.Vector3(px, py, lineZ));
-        }
-
-        const curve = new THREE.CatmullRomCurve3(linePoints);
-        const tubeRadius = 0.022;
-        const tubeGeo = new THREE.TubeGeometry(curve, 14, tubeRadius, 8, false);
-        tubeGeo.computeVertexNormals();
-
-        const tubeMesh = new THREE.Mesh(tubeGeo, textMaterial);
-        tubeMesh.castShadow = true;
-        textGroup.add(tubeMesh);
-
-        const sphereGeo = new THREE.SphereGeometry(tubeRadius, 8, 8);
-        const startCap = new THREE.Mesh(sphereGeo, textMaterial);
-        startCap.position.copy(linePoints[0]);
-        textGroup.add(startCap);
-
-        const endCap = new THREE.Mesh(sphereGeo, textMaterial);
-        endCap.position.copy(linePoints[samples]);
-        textGroup.add(endCap);
-      }
-    }
-
-    // Micro-partículas de ambiente
-    const particleCount = 60;
+    // 5. Micro-partículas flotantes tenues
+    const particleCount = 55;
     const particlePositions = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
 
@@ -355,7 +302,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
 
     for (let i = 0; i < particleCount; i++) {
       const idx = i * 3;
-      const r = 2.2 + Math.random() * 2.0;
+      const r = 2.0 + Math.random() * 2.0;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
 
@@ -384,16 +331,21 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
     const particleCloud = new THREE.Points(particleGeo, particleMat);
     rootGroup.add(particleCloud);
 
-    // Referencias
+    // Referencias de control
     objectsRef.current = {
       rootGroup,
-      bookGroup,
+      emojiGroup,
+      orbitMesh,
+      satMesh,
+      discMesh,
+      emojiCanvas,
+      emojiTexture,
       particleCloud,
       registeredMaterials,
       camera,
       renderer,
       targetTilt: { x: 0, y: 0 },
-      defaultTiltX
+      baseRotationY: 0
     };
 
     // Bucle de Animación
@@ -405,19 +357,27 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
       const delta = clock.getDelta();
       const currentSpeed = speeds[speedIndexRef.current];
 
-      if (!isPausedRef.current && bookGroup) {
-        // Giro continuo 360° en Y
-        bookGroup.rotation.y += 0.015 * currentSpeed;
+      if (!isPausedRef.current && emojiGroup) {
+        // Giro continuo 360° en el eje Y
+        objectsRef.current.baseRotationY += 0.018 * currentSpeed;
+        emojiGroup.rotation.y = objectsRef.current.baseRotationY;
 
-        // Flotación senoidal
+        // Flotación senoidal suave
         floatingTimeRef.current += delta * currentSpeed;
-        bookGroup.position.y = Math.sin(floatingTimeRef.current * 1.8) * 0.06;
+        emojiGroup.position.y = Math.sin(floatingTimeRef.current * 1.8) * 0.08;
+
+        // Movimiento del satélite a lo largo de la órbita
+        const orbAngle = floatingTimeRef.current * 1.5 * currentSpeed;
+        satMesh.position.x = Math.cos(orbAngle) * 2.15 * Math.cos(Math.PI / 6);
+        satMesh.position.y = Math.sin(orbAngle) * 2.15 * Math.sin(Math.PI / 3);
+        satMesh.position.z = Math.sin(orbAngle) * 2.15 * Math.cos(Math.PI / 3);
 
         // Parallax hacia el cursor
         const { targetTilt } = objectsRef.current;
-        rootGroup.rotation.x += (defaultTiltX + targetTilt.x - rootGroup.rotation.x) * 0.05;
+        rootGroup.rotation.x += (0.18 + targetTilt.x - rootGroup.rotation.x) * 0.05;
         rootGroup.rotation.z += (targetTilt.y * 0.4 - rootGroup.rotation.z) * 0.05;
 
+        // Rotación de partículas
         particleCloud.rotation.y += 0.04 * delta * currentSpeed;
       }
 
@@ -445,31 +405,43 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
         currentMount.removeChild(renderer.domElement);
       }
 
-      coverGeo.dispose();
+      cylinderGeo.dispose();
+      torusGeo.dispose();
+      orbitGeo.dispose();
+      satGeo.dispose();
       particleGeo.dispose();
       particleMat.dispose();
+      emojiTexture.dispose();
       registeredMaterials.forEach(m => m.dispose());
       renderer.dispose();
     };
   }, [variant]);
 
-  // Arrastre 360° del libro 3D con el puntero
+  // Actualizar la textura del Emoji 3D en tiempo real cuando cambia
+  const update3DEmojiTexture = useCallback((newEmoji) => {
+    if (objectsRef.current.emojiCanvas && objectsRef.current.emojiTexture) {
+      drawEmojiCanvas(newEmoji, objectsRef.current.emojiCanvas);
+      objectsRef.current.emojiTexture.needsUpdate = true;
+    }
+  }, []);
+
+  // Arrastre 360° del Emoji 3D con el puntero
   const handlePointerDown = (e) => {
-    // Si se hace clic sobre el avatar flotante, no arrastrar el libro
     if (e.target.closest('.interactive-avatar-pill') || e.target.closest('.avatar-editor-popover')) return;
 
-    isDraggingBookRef.current = true;
+    isDraggingMeshRef.current = true;
     prevMousePosRef.current = { x: e.clientX, y: e.clientY };
   };
 
   const handlePointerMove = (e) => {
-    if (!objectsRef.current.bookGroup) return;
+    if (!objectsRef.current.emojiGroup) return;
 
-    if (isDraggingBookRef.current) {
+    if (isDraggingMeshRef.current) {
       const deltaX = e.clientX - prevMousePosRef.current.x;
       const deltaY = e.clientY - prevMousePosRef.current.y;
 
-      objectsRef.current.bookGroup.rotation.y += deltaX * 0.01;
+      objectsRef.current.baseRotationY += deltaX * 0.01;
+      objectsRef.current.emojiGroup.rotation.y = objectsRef.current.baseRotationY;
       objectsRef.current.rootGroup.rotation.x += deltaY * 0.006;
 
       prevMousePosRef.current = { x: e.clientX, y: e.clientY };
@@ -487,10 +459,10 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
   };
 
   const handlePointerUp = () => {
-    isDraggingBookRef.current = false;
+    isDraggingMeshRef.current = false;
   };
 
-  // --- MOTOR DE ARRASTRE DEL AVATAR (DRAG & DROP CON POINTER EVENTS) ---
+  // --- ARRASTRE DEL BADGE DE AVATAR (DRAG & DROP) ---
   const handleAvatarPointerDown = (e) => {
     e.stopPropagation();
     isDraggingAvatarRef.current = true;
@@ -513,9 +485,8 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
     let newX = dragAvatarStartRef.current.startX + deltaX;
     let newY = dragAvatarStartRef.current.startY + deltaY;
 
-    // Confinar dentro del contenedor visual del Hero Card
     const rect = containerRef.current.getBoundingClientRect();
-    const maxX = rect.width - 150;
+    const maxX = rect.width - 160;
     const maxY = rect.height - 56;
 
     newX = Math.max(8, Math.min(newX, maxX));
@@ -528,11 +499,10 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
     if (!isDraggingAvatarRef.current) return;
     isDraggingAvatarRef.current = false;
     try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (_) {}
-    // Guardar posición en localStorage
     localStorage.setItem('edunova_hero_avatar_pos', JSON.stringify(avatarPos));
   };
 
-  // Guardar nuevo emoji seleccionado
+  // Guardar nuevo emoji seleccionado y actualizar escena 3D
   const handleSaveAvatar = (newEmoji, newRole, newGender) => {
     const emojiToSave = newEmoji || tempPreviewEmoji;
     setCurrentEmoji(emojiToSave);
@@ -543,12 +513,14 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
     if (newGender) localStorage.setItem('edunova_user_gender', newGender);
     if (newRole) localStorage.setItem('edunova_user_role', newRole);
 
-    // Emitir evento para sincronizar con Header u otros componentes
+    // Actualizar textura en tiempo real en la escena 3D
+    update3DEmojiTexture(emojiToSave);
+
     window.dispatchEvent(new CustomEvent('edunova_avatar_updated', { detail: { emoji: emojiToSave } }));
     setIsEditorOpen(false);
   };
 
-  // Controles de Animación Three.js
+  // Controles Three.js
   const togglePlayPause = useCallback(() => {
     const nextState = !isPausedRef.current;
     isPausedRef.current = nextState;
@@ -573,30 +545,30 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
   }, []);
 
   const triggerPulse = useCallback(() => {
-    if (pulseActiveRef.current || !objectsRef.current.bookGroup) return;
+    if (pulseActiveRef.current || !objectsRef.current.emojiGroup) return;
     pulseActiveRef.current = true;
     setPulseActive(true);
 
-    const { bookGroup } = objectsRef.current;
+    const { emojiGroup } = objectsRef.current;
     let progress = 0;
-    const initialRotY = bookGroup.rotation.y;
+    const initialRotY = objectsRef.current.baseRotationY;
 
     const pulseInterval = setInterval(() => {
       progress += 0.05;
       const peak = Math.sin(progress * Math.PI);
 
-      const s = 1 + peak * 0.2;
-      if (bookGroup) {
-        bookGroup.scale.set(s, s, s);
-        bookGroup.rotation.y = initialRotY + progress * Math.PI * 2;
+      const s = 1 + peak * 0.22;
+      if (emojiGroup) {
+        emojiGroup.scale.set(s, s, s);
       }
+      objectsRef.current.baseRotationY = initialRotY + progress * Math.PI * 2;
 
       if (progress >= 1) {
         clearInterval(pulseInterval);
-        if (bookGroup) {
-          bookGroup.scale.set(1, 1, 1);
-          bookGroup.rotation.y = initialRotY;
+        if (emojiGroup) {
+          emojiGroup.scale.set(1, 1, 1);
         }
+        objectsRef.current.baseRotationY = initialRotY;
         pulseActiveRef.current = false;
         setPulseActive(false);
       }
@@ -604,17 +576,17 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
   }, []);
 
   const resetOrientation = useCallback(() => {
-    if (objectsRef.current.rootGroup && objectsRef.current.bookGroup) {
-      const { defaultTiltX, rootGroup, bookGroup } = objectsRef.current;
+    if (objectsRef.current.rootGroup && objectsRef.current.emojiGroup) {
+      const { rootGroup, emojiGroup } = objectsRef.current;
+      objectsRef.current.baseRotationY = 0;
       objectsRef.current.targetTilt = { x: 0, y: 0 };
-      rootGroup.rotation.set(defaultTiltX, 0, 0);
-      bookGroup.rotation.set(0, 0, 0);
-      bookGroup.scale.set(1, 1, 1);
-      bookGroup.position.set(0, 0, 0);
+      rootGroup.rotation.set(0.18, -0.22, 0.04);
+      emojiGroup.rotation.set(0, 0, 0);
+      emojiGroup.scale.set(1, 1, 1);
+      emojiGroup.position.set(0, 0, 0);
     }
   }, []);
 
-  // Resetear la posición del avatar flotante a la esquina superior izquierda
   const resetAvatarPosition = (e) => {
     e.stopPropagation();
     const defaultPos = { x: 16, y: 16 };
@@ -630,22 +602,22 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
         <div className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-[#ee6018] animate-pulse"></span>
           <span className="uppercase tracking-wider font-medium text-[#101010]">
-            BIBLIOTECA VIRTUAL // LIBRO 3D INTERACTIVO
+            AVATAR INSTITUCIONAL // EMOJI 3D INTERACTIVO
           </span>
         </div>
         
-        {/* Acceso rápido a modificar avatar desde el encabezado */}
+        {/* Acceso rápido a modificar emoji */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => {
               setTempPreviewEmoji(currentEmoji);
               setIsEditorOpen(true);
             }}
-            className="flex items-center gap-1 px-1.5 py-0.5 bg-white/80 hover:bg-white text-[#101010] border border-[#3d3a39]/20 rounded text-[9px] font-sans font-medium transition-colors"
+            className="flex items-center gap-1 px-1.5 py-0.5 bg-white/80 hover:bg-white text-[#101010] border border-[#3d3a39]/20 rounded text-[9px] font-sans font-medium transition-colors shadow-xs"
             title="Modificar avatar / emoji"
           >
             <span>{currentEmoji}</span>
-            <span className="hidden sm:inline">Modificar</span>
+            <span>Modificar</span>
             <Edit3 size={9} className="text-[#ee6018]" />
           </button>
           <span className="text-[#8c8682] tracking-wider font-medium">THREE.JS WEBGL</span>
@@ -660,11 +632,9 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
         className="w-full h-48 sm:h-56 cursor-grab active:cursor-grabbing relative flex items-center justify-center overflow-hidden"
-        title="Arrastra con el ratón para rotar el libro 360°"
+        title="Arrastra con el ratón para rotar el emoji 3D en 360°"
       >
-        {/* ======================================================================== */}
-        {/* AVATAR / EMOJI MOVIBLE (DRAGGABLE) Y EDITABLE SOBRE LA ESCENA */}
-        {/* ======================================================================== */}
+        {/* BADGE MOVIBLE (DRAGGABLE) DEL AVATAR */}
         <div
           onPointerDown={handleAvatarPointerDown}
           onPointerMove={handleAvatarPointerMove}
@@ -672,9 +642,8 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
           onPointerCancel={handleAvatarPointerUp}
           style={{ left: `${avatarPos.x}px`, top: `${avatarPos.y}px` }}
           className="interactive-avatar-pill absolute z-20 flex items-center gap-2 bg-white/95 backdrop-blur-md border border-[#3d3a39]/20 rounded-full px-2.5 py-1.5 shadow-md cursor-grab active:cursor-grabbing hover:shadow-lg transition-shadow group"
-          title="Arrastra para mover este avatar · Clic en ✏️ para editar emoji"
+          title="Arrastra para mover este badge · Clic en ✏️ para editar"
         >
-          {/* Círculo con el Emoji */}
           <div 
             onClick={() => {
               setTempPreviewEmoji(currentEmoji);
@@ -685,17 +654,15 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
             {currentEmoji}
           </div>
 
-          {/* Información y Rol del Usuario */}
           <div className="flex flex-col text-left pointer-events-none">
             <span className="text-[10px] font-bold text-[#1c1a19] leading-tight">
-              {user?.nombre || 'Laura Martínez'}
+              {user?.nombre || 'Anyely'}
             </span>
             <span className="text-[8px] font-mono uppercase tracking-wider text-[#ee6018] font-semibold leading-tight">
               {selectedRole} · {selectedGender}
             </span>
           </div>
 
-          {/* Botón de editar emoji rápido */}
           <button
             type="button"
             onClick={(e) => {
@@ -710,23 +677,20 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
           </button>
         </div>
 
-        {/* Leyenda Inferior Sutil */}
+        {/* Leyenda Inferior */}
         <div className="absolute bottom-1.5 left-2 pointer-events-none text-[9px] font-mono text-[#4d4947]/70">
           Arrastrar para rotar · 360°
         </div>
       </div>
 
-      {/* ======================================================================== */}
-      {/* MODAL / POPOVER FLOTANTE: MODIFICAR AVATAR / EMOJI DIRECTAMENTE AQUÍ */}
-      {/* ======================================================================== */}
+      {/* POPOVER EDITOR DE AVATAR Y EMOJI */}
       {isEditorOpen && (
         <div className="avatar-editor-popover absolute inset-x-2 top-8 bottom-2 bg-white/95 backdrop-blur-md border border-[#3d3a39]/25 rounded-lg shadow-2xl z-30 p-3.5 flex flex-col justify-between animate-in fade-in zoom-in-95 duration-150">
           
-          {/* Cabecera del Editor */}
           <div className="flex items-center justify-between pb-2 border-b border-gray-100">
             <div className="flex items-center gap-1.5">
-              <span className="text-base">{tempPreviewEmoji}</span>
-              <span className="text-xs font-bold text-[#1c1a19]">Personalizar Avatar / Emoji</span>
+              <span className="text-xl">{tempPreviewEmoji}</span>
+              <span className="text-xs font-bold text-[#1c1a19]">Personalizar Emoji 3D</span>
             </div>
             <button
               onClick={() => setIsEditorOpen(false)}
@@ -736,7 +700,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
             </button>
           </div>
 
-          {/* Selector de Rol y Género para aplicar las reglas institucionales */}
+          {/* Selector de Rol y Género */}
           <div className="grid grid-cols-2 gap-2 text-left pt-1">
             <div>
               <label className="block text-[9px] font-mono text-[#78716c] uppercase font-semibold mb-0.5">
@@ -752,7 +716,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
                 }}
                 className="w-full text-xs p-1 border border-gray-200 rounded bg-[#faf9f5] focus:outline-none focus:ring-1 focus:ring-[#ee6018]"
               >
-                <option value="estudiante">Estudiante</option>
+                <option value="estudiante">Estudiante / Aprendiz</option>
                 <option value="profesor">Profesor / Instructor</option>
                 <option value="admin">Administrador</option>
               </select>
@@ -800,7 +764,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
             </div>
           </div>
 
-          {/* Escribir o pegar cualquier otro emoji */}
+          {/* Entrada de Emoji Personalizado */}
           <div className="text-left">
             <div className="flex gap-1.5 items-center">
               <input
@@ -882,7 +846,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
             <span>{isPaused ? 'PLAY' : 'PAUSE'}</span>
           </button>
 
-          {/* Botón: Selector de Velocidad (0.5x, 1x, 1.5x, 2x) */}
+          {/* Botón: Selector de Velocidad */}
           <button
             onClick={cycleSpeed}
             className="px-2 py-1 bg-[#ffffff]/60 hover:bg-[#ffffff] text-[#101010] rounded-[3px] text-[10px] font-mono flex items-center gap-1 transition-colors border border-[#3d3a39]/30"
@@ -900,7 +864,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
                 ? 'bg-[#ee6018] text-white border-[#ee6018]' 
                 : 'bg-[#ffffff]/60 hover:bg-[#ffffff] text-[#101010] border-[#3d3a39]/30'
             }`}
-            title="Alternar entre acabado soft-3D sólido y vista wireframe"
+            title="Alternar entre acabado 3D sólido y vista wireframe"
           >
             <Eye size={10} />
             <span>{isWireframe ? 'ALAMBRE' : 'SÓLIDO'}</span>
@@ -919,11 +883,11 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
             <span>PULSO</span>
           </button>
 
-          {/* Botón: Resetear Posición del Avatar */}
+          {/* Botón: Centrar Badge */}
           <button
             onClick={resetAvatarPosition}
             className="px-1.5 py-1 bg-transparent hover:bg-[#101010]/10 text-[#4d4947] rounded-[3px] text-[10px] font-mono transition-colors"
-            title="Centrar/Restablecer posición del avatar"
+            title="Restablecer posición del badge del avatar"
           >
             <User size={10} />
           </button>
@@ -932,7 +896,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone', user = 
           <button
             onClick={resetOrientation}
             className="px-1.5 py-1 bg-transparent hover:bg-[#101010]/10 text-[#4d4947] rounded-[3px] text-[10px] font-mono transition-colors"
-            title="Restablecer posición inicial frontal-inclinada del libro"
+            title="Restablecer posición inicial del emoji 3D"
           >
             <RefreshCw size={10} />
           </button>
