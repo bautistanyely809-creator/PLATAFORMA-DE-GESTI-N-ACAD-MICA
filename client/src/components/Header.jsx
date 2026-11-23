@@ -18,6 +18,17 @@ export default function Header({ user, onLogout, onToggleMobileSidebar, onNaviga
   const [showPerfilModal, setShowPerfilModal] = useState(false);
   const [rawQuery, setRawQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [headerAvatar, setHeaderAvatar] = useState(() => localStorage.getItem('edunova_user_avatar') || '');
+
+  useEffect(() => {
+    const handleAvatarUpdate = (e) => {
+      if (e.detail?.emoji) {
+        setHeaderAvatar(e.detail.emoji);
+      }
+    };
+    window.addEventListener('edunova_avatar_updated', handleAvatarUpdate);
+    return () => window.removeEventListener('edunova_avatar_updated', handleAvatarUpdate);
+  }, []);
 
   // Búsqueda con retardo (Debounce de 300ms)
   const debouncedQuery = useDebounce(rawQuery, 300);
@@ -205,8 +216,8 @@ export default function Header({ user, onLogout, onToggleMobileSidebar, onNaviga
             title="Ver y editar perfil (HU-04)"
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            <div className="w-7 h-7 rounded-[3px] bg-[#1d1a18] border border-[#3d3a39] text-[#eeeeee] flex items-center justify-center font-mono text-xs font-normal">
-              {user?.nombre?.charAt(0) || 'U'}{user?.apellido?.charAt(0) || ''}
+            <div className="w-7 h-7 rounded-[3px] bg-[#1d1a18] border border-[#3d3a39] text-[#eeeeee] flex items-center justify-center font-mono text-sm font-normal">
+              {headerAvatar || `${user?.nombre?.charAt(0) || 'U'}${user?.apellido?.charAt(0) || ''}`}
             </div>
             
             <div className="hidden lg:block text-left">

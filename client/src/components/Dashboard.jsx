@@ -154,7 +154,7 @@ export default function Dashboard({ currentUser, onLogout }) {
                     </div>
 
                     <div className="lg:col-span-5 bg-[#ffffff]/60 border border-[#3d3a39]/20 rounded-[8px] p-2.5 shadow-sm">
-                      <Hero3DCanvas variant="bone" />
+                      <Hero3DCanvas variant="bone" user={user} />
                     </div>
 
                   </div>

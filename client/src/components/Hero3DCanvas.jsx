@@ -1,22 +1,56 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import * as THREE from 'three';
-import { RotateCw, Eye, Zap, RefreshCw, Play, Pause } from 'lucide-react';
+import { RotateCw, Eye, Zap, RefreshCw, Play, Pause, Edit3, X, Check, RotateCcw, User } from 'lucide-react';
 
-export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
+// Reglas institucionales de emojis por defecto según Rol y Género
+const DEFAULT_ROLE_EMOJIS = {
+  estudiante: {
+    femenino: '👩🏼‍🎓',
+    masculino: '👨🏻‍🎓'
+  },
+  aprendiz: {
+    femenino: '👩🏼‍🎓',
+    masculino: '👨🏻‍🎓'
+  },
+  profesor: {
+    femenino: '👩🏻‍🏫',
+    masculino: '👨🏻‍🏫'
+  },
+  instructor: {
+    femenino: '👩🏻‍🏫',
+    masculino: '👨🏻‍🏫'
+  },
+  admin: {
+    masculino: '👨🏻‍💼',
+    femenino: '👨🏻‍💼' // Regla: admin solo hombre
+  },
+  administrador: {
+    masculino: '👨🏻‍💼',
+    femenino: '👨🏻‍💼'
+  }
+};
+
+const SUGGESTED_EMOJIS = [
+  '👩🏼‍🎓', '👨🏻‍🎓', '👩🏻‍🏫', '👨🏻‍🏫', '👨🏻‍💼', '🧑‍🎓',
+  '🧑‍🏫', '🧑‍💼', '👩‍💻', '👨‍💻', '👩‍🔬', '👨‍🔬',
+  '🦉', '📚', '💡', '⭐', '🚀', '🎯'
+];
+
+export default function Hero3DCanvas({ className = '', variant = 'bone', user = null }) {
   const mountRef = useRef(null);
+  const containerRef = useRef(null);
   const sceneRef = useRef(null);
   const rendererRef = useRef(null);
   const animFrameIdRef = useRef(null);
   const objectsRef = useRef({});
-  const isDraggingRef = useRef(false);
+  const isDraggingBookRef = useRef(false);
   const prevMousePosRef = useRef({ x: 0, y: 0 });
 
-  // Lista de velocidades requeridas: [0.5, 1, 1.5, 2] con inicio en 1x (índice 1)
+  // 1. Estados de animación de Three.js
   const speeds = [0.5, 1, 1.5, 2];
   const [speedIndex, setSpeedIndex] = useState(1);
   const speedIndexRef = useRef(1);
 
-  // Estados de control interactivo con Refs para evitar closures obsoletos en requestAnimationFrame
   const [isPaused, setIsPaused] = useState(false);
   const isPausedRef = useRef(false);
 
@@ -28,6 +62,42 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
 
   const floatingTimeRef = useRef(0);
 
+  // 2. Estados del Avatar / Emoji Interactivo y Movible
+  // Detectar rol y género inicial
+  const userRole = (user?.rol || localStorage.getItem('edunova_user_role') || 'estudiante').toLowerCase();
+  const initialGender = localStorage.getItem('edunova_user_gender') || 'femenino';
+
+  const getDefaultEmoji = (r, g) => {
+    const roleKey = r.toLowerCase();
+    const genderKey = g.toLowerCase();
+    return DEFAULT_ROLE_EMOJIS[roleKey]?.[genderKey] || '👩🏼‍🎓';
+  };
+
+  const [currentEmoji, setCurrentEmoji] = useState(() => {
+    return localStorage.getItem('edunova_user_avatar') || getDefaultEmoji(userRole, initialGender);
+  });
+
+  const [selectedRole, setSelectedRole] = useState(userRole);
+  const [selectedGender, setSelectedGender] = useState(initialGender);
+
+  // Posición del avatar en el contenedor (x, y) con persistencia
+  const [avatarPos, setAvatarPos] = useState(() => {
+    const saved = localStorage.getItem('edunova_hero_avatar_pos');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (_) {}
+    }
+    return { x: 16, y: 16 }; // Esquina superior izquierda por defecto
+  });
+
+  const isDraggingAvatarRef = useRef(false);
+  const dragAvatarStartRef = useRef({ x: 0, y: 0, startX: 0, startY: 0 });
+
+  // Modal / Popover de edición de avatar
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [customInputEmoji, setCustomInputEmoji] = useState('');
+  const [tempPreviewEmoji, setTempPreviewEmoji] = useState(currentEmoji);
+
+  // Inicialización de la Escena Three.js con libro 3D corregido
   useEffect(() => {
     const currentMount = mountRef.current;
     if (!currentMount) return;
@@ -35,16 +105,16 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     const width = currentMount.clientWidth || 340;
     const height = currentMount.clientHeight || 240;
 
-    // 1. Escena
+    // Escena
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    // 2. Cámara con encuadre suave
-    const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 100);
-    camera.position.set(0, 1.3, 6.8);
+    // Cámara con encuadre suave
+    const camera = new THREE.PerspectiveCamera(34, width / height, 0.1, 100);
+    camera.position.set(0, 1.35, 6.8);
     camera.lookAt(0, 0, 0);
 
-    // 3. Renderizador WebGL con antialiasing y renderizado suave
+    // Renderizador WebGL con antialiasing y color ACESFilmic
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -64,11 +134,10 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     currentMount.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // 4. Sistema de Iluminación de Estudio Suave
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.88);
+    // Luces de Estudio Suave
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     scene.add(ambientLight);
 
-    // Luz principal cenital con sombra suave
     const keyLight = new THREE.DirectionalLight(0xfffaf0, 1.5);
     keyLight.position.set(4, 8, 6);
     keyLight.castShadow = true;
@@ -77,24 +146,20 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     keyLight.shadow.bias = -0.001;
     scene.add(keyLight);
 
-    // Luz de relleno cálida frontal-lateral
     const fillLight = new THREE.DirectionalLight(0xffe2d0, 0.75);
     fillLight.position.set(-5, 2.5, 4);
     scene.add(fillLight);
 
-    // Rim light trasero suave
     const rimLight = new THREE.DirectionalLight(0xffffff, 0.85);
     rimLight.position.set(0, 5, -6);
     scene.add(rimLight);
 
-    // Luz focal cenital sobre las páginas
     const spotLight = new THREE.PointLight(0xfff5e6, 0.65, 10);
     spotLight.position.set(0, 3, 2.5);
     scene.add(spotLight);
 
-    // 5. Grupo Raíz del Libro con inclinación frontal para ver páginas desde arriba/frente
+    // Grupo Raíz con inclinación frontal para ver páginas desde arriba/frente
     const rootGroup = new THREE.Group();
-    // Inclinación en X (0.45 rad = ~26°)
     const defaultTiltX = 0.45;
     rootGroup.rotation.x = defaultTiltX;
     scene.add(rootGroup);
@@ -103,8 +168,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     const bookGroup = new THREE.Group();
     rootGroup.add(bookGroup);
 
-    // --- MATERIALES DEL LIBRO ---
-    // Tapa roja/coral satinada con sombreado suave
+    // --- MATERIALES PBR SUAVES (SOFT 3D CLAY) ---
     const coverMaterial = new THREE.MeshStandardMaterial({
       color: 0xee3b2b,
       roughness: 0.35,
@@ -113,7 +177,6 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
       side: THREE.DoubleSide
     });
 
-    // Páginas crema/marfil suave
     const pageMaterial = new THREE.MeshStandardMaterial({
       color: 0xf4efe4,
       roughness: 0.38,
@@ -122,7 +185,6 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
       side: THREE.DoubleSide
     });
 
-    // Renglones de texto oscuro en relieve (#3A3A3A)
     const textMaterial = new THREE.MeshStandardMaterial({
       color: 0x3a3a3a,
       roughness: 0.32,
@@ -132,40 +194,35 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
 
     const registeredMaterials = [coverMaterial, pageMaterial, textMaterial];
 
-    // --- FUNCIÓN MATEMÁTICA DE LA CURVA CONVEXA DE CADA PÁGINA ---
-    // Sube suavemente en arco desde el centro x=0 hacia afuera y desciende en el borde exterior
+    // Función de curvatura convexa en arco de las hojas
     const getPageHeight = (x, maxW, peakH) => {
       const u = Math.max(0, Math.min(1, Math.abs(x) / maxW));
       return Math.sin(u * Math.PI * 0.82 + 0.14) * peakH - Math.sin(0.14) * peakH;
     };
 
-    // Parámetros de escala del libro
     const pageHalfW = 1.35;
     const pageDepth = 2.05;
     const archH = 0.38;
 
     // --- 1. BASE: TAPA ROJA/CORAL GRUESA Y REDONDEADA (#EE3B2B) ---
-    // Forma en "V" muy abierta (casi plana ~150°) que envuelve por debajo a las hojas
-    const coverHalfW = pageHalfW + 0.12; // 1.47
-    const coverDepth = pageDepth + 0.18; // 2.23
-    const coverThick = 0.12;
+    // Ubicada estrictamente en la base inferior (Y = -0.16)
+    const coverHalfW = pageHalfW + 0.12;
+    const coverDepth = pageDepth + 0.18;
+    const coverThick = 0.10;
     const coverBaseY = -0.16;
 
     const coverShape = new THREE.Shape();
     const cSteps = 32;
 
-    // Contorno superior de la tapa (de -coverHalfW a +coverHalfW)
     coverShape.moveTo(-coverHalfW, coverBaseY + getPageHeight(-coverHalfW, coverHalfW, archH));
     for (let i = 0; i <= cSteps; i++) {
       const x = -coverHalfW + (i / cSteps) * (2 * coverHalfW);
       const y = coverBaseY + getPageHeight(x, coverHalfW, archH);
       coverShape.lineTo(x, y);
     }
-    // Lado derecho hacia abajo
     const cRightY = coverBaseY + getPageHeight(coverHalfW, coverHalfW, archH);
     coverShape.lineTo(coverHalfW, cRightY - coverThick);
 
-    // Contorno inferior de la tapa (de +coverHalfW a -coverHalfW)
     for (let i = cSteps; i >= 0; i--) {
       const x = -coverHalfW + (i / cSteps) * (2 * coverHalfW);
       const y = coverBaseY + getPageHeight(x, coverHalfW, archH) - coverThick;
@@ -177,11 +234,12 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
       steps: 1,
       depth: coverDepth,
       bevelEnabled: true,
-      bevelThickness: 0.05,
-      bevelSize: 0.05,
+      bevelThickness: 0.045,
+      bevelSize: 0.045,
       bevelSegments: 6
     });
-    coverGeo.center();
+    // Trasladar Z para centrar la profundidad
+    coverGeo.translate(0, 0, -coverDepth / 2);
     coverGeo.computeVertexNormals();
 
     const coverMesh = new THREE.Mesh(coverGeo, coverMaterial);
@@ -190,33 +248,29 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     bookGroup.add(coverMesh);
 
     // --- 2. MEDIO: DOS BLOQUES DE HOJAS COLOR CREMA EN 2 CAPAS ESCALONADAS (#F4EFE4) ---
-    // Capa 1: Capa inferior de hojas crema
-    // Capa 2: Capa superior visible de hojas crema
+    // Colocados estrictamente encima de la tapa roja (Capa 1 en Y=-0.05, Capa 2 en Y=0.03)
     const layers = [
-      { w: pageHalfW + 0.03, d: pageDepth + 0.05, thick: 0.075, yOffset: -0.06 },
-      { w: pageHalfW,        d: pageDepth,        thick: 0.080, yOffset: 0.00 }
+      { w: pageHalfW + 0.03, d: pageDepth + 0.05, thick: 0.07, yBase: -0.05 },
+      { w: pageHalfW,        d: pageDepth,        thick: 0.07, yBase: 0.03 }
     ];
 
     layers.forEach((layer) => {
       const layerShape = new THREE.Shape();
       const pSteps = 28;
 
-      // Superficie superior curvada de la capa
-      layerShape.moveTo(-layer.w, layer.yOffset + getPageHeight(-layer.w, layer.w, archH));
+      layerShape.moveTo(-layer.w, layer.yBase + getPageHeight(-layer.w, layer.w, archH));
       for (let i = 0; i <= pSteps; i++) {
         const x = -layer.w + (i / pSteps) * (2 * layer.w);
-        const y = layer.yOffset + getPageHeight(x, layer.w, archH);
+        const y = layer.yBase + getPageHeight(x, layer.w, archH);
         layerShape.lineTo(x, y);
       }
 
-      // Lateral derecho
-      const rY = layer.yOffset + getPageHeight(layer.w, layer.w, archH);
+      const rY = layer.yBase + getPageHeight(layer.w, layer.w, archH);
       layerShape.lineTo(layer.w, rY - layer.thick);
 
-      // Base inferior de la capa
       for (let i = pSteps; i >= 0; i--) {
         const x = -layer.w + (i / pSteps) * (2 * layer.w);
-        const y = layer.yOffset + getPageHeight(x, layer.w, archH) - layer.thick;
+        const y = layer.yBase + getPageHeight(x, layer.w, archH) - layer.thick;
         layerShape.lineTo(x, y);
       }
       layerShape.closePath();
@@ -229,19 +283,17 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
         bevelSize: 0.03,
         bevelSegments: 5
       });
-      layerGeo.center();
+      layerGeo.translate(0, 0, -layer.d / 2);
       layerGeo.computeVertexNormals();
 
       const layerMesh = new THREE.Mesh(layerGeo, pageMaterial);
-      layerMesh.position.y = layer.yOffset * 0.5;
       layerMesh.castShadow = true;
       layerMesh.receiveShadow = true;
       bookGroup.add(layerMesh);
     });
 
-    // --- 3. ARRIBA: 5 BARRAS/LÍNEAS DE TEXTO OSCURAS POR PÁGINA (ESTRICTAMENTE CONTENIDAS) ---
-    // 5 líneas en la página izquierda, 5 líneas en la derecha (10 líneas en total)
-    // Apoyadas exactamente sobre la superficie superior de la capa crema + offset mínimo de 0.012
+    // --- 3. ARRIBA: 5 LÍNEAS DE TEXTO OSCURAS POR PÁGINA (ESTRICTAMENTE CONTENIDAS) ---
+    // Ubicadas sobre la superficie superior de la capa crema 2 + 0.012 de relieve
     const textGroup = new THREE.Group();
     bookGroup.add(textGroup);
 
@@ -251,18 +303,13 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     const zEnd = topLayer.d * 0.34;
     const zStep = (zEnd - zStart) / (numLines - 1);
 
-    // Márgenes estrictos dentro de cada página:
-    // Página izquierda: x de -1.14 a -0.26
-    // Página derecha: x de 0.26 a 1.14
     for (let side = -1; side <= 1; side += 2) {
       for (let i = 0; i < numLines; i++) {
         const lineZ = zStart + i * zStep;
-        
-        // La última línea de cada bloque es un poco más corta para simular un párrafo editorial natural
         const lengthFactor = (i === numLines - 1) ? 0.72 : 1.0;
         
-        const innerX = 0.26;
-        const outerX = 0.26 + (1.14 - 0.26) * lengthFactor;
+        const innerX = 0.28;
+        const outerX = 0.28 + (1.12 - 0.28) * lengthFactor;
         
         const startX = side === 1 ? innerX : -outerX;
         const endX = side === 1 ? outerX : -innerX;
@@ -273,8 +320,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
         for (let s = 0; s <= samples; s++) {
           const t = s / samples;
           const px = startX + t * (endX - startX);
-          // Altura calculada con la misma función matemática de la superficie + offset mínimo 0.012
-          const py = topLayer.yOffset + getPageHeight(px, topLayer.w, archH) + 0.012;
+          const py = topLayer.yBase + getPageHeight(px, topLayer.w, archH) + 0.012;
           linePoints.push(new THREE.Vector3(px, py, lineZ));
         }
 
@@ -287,7 +333,6 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
         tubeMesh.castShadow = true;
         textGroup.add(tubeMesh);
 
-        // Tapas redondeadas en los extremos de cada línea
         const sphereGeo = new THREE.SphereGeometry(tubeRadius, 8, 8);
         const startCap = new THREE.Mesh(sphereGeo, textMaterial);
         startCap.position.copy(linePoints[0]);
@@ -299,7 +344,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
       }
     }
 
-    // --- 4. MICRO-PARTÍCULAS FLOTANTES DE FONDO ---
+    // Micro-partículas de ambiente
     const particleCount = 60;
     const particlePositions = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
@@ -339,7 +384,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     const particleCloud = new THREE.Points(particleGeo, particleMat);
     rootGroup.add(particleCloud);
 
-    // Guardar referencias
+    // Referencias
     objectsRef.current = {
       rootGroup,
       bookGroup,
@@ -351,7 +396,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
       defaultTiltX
     };
 
-    // 6. Bucle de Animación con soporte estricto de isPaused y velocidad
+    // Bucle de Animación
     const clock = new THREE.Clock();
 
     const animate = () => {
@@ -360,12 +405,11 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
       const delta = clock.getDelta();
       const currentSpeed = speeds[speedIndexRef.current];
 
-      // Verificación directa en ref: si está en pausa, se detiene completamente el giro y la flotación
       if (!isPausedRef.current && bookGroup) {
-        // Giro continuo de 360° en el eje vertical Y
+        // Giro continuo 360° en Y
         bookGroup.rotation.y += 0.015 * currentSpeed;
 
-        // Levitación flotante suave
+        // Flotación senoidal
         floatingTimeRef.current += delta * currentSpeed;
         bookGroup.position.y = Math.sin(floatingTimeRef.current * 1.8) * 0.06;
 
@@ -374,7 +418,6 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
         rootGroup.rotation.x += (defaultTiltX + targetTilt.x - rootGroup.rotation.x) * 0.05;
         rootGroup.rotation.z += (targetTilt.y * 0.4 - rootGroup.rotation.z) * 0.05;
 
-        // Giro lento de las partículas
         particleCloud.rotation.y += 0.04 * delta * currentSpeed;
       }
 
@@ -383,7 +426,6 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
 
     animate();
 
-    // 7. Redimensionamiento Responsive
     const handleResize = () => {
       if (!currentMount || !renderer || !camera) return;
       const newWidth = currentMount.clientWidth;
@@ -396,7 +438,6 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     const resizeObserver = new ResizeObserver(() => handleResize());
     resizeObserver.observe(currentMount);
 
-    // 8. Limpieza en desmontaje
     return () => {
       if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
       resizeObserver.disconnect();
@@ -412,16 +453,19 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     };
   }, [variant]);
 
-  // Manejo de Interacción con Arrastre 360° y Hover Parallax
+  // Arrastre 360° del libro 3D con el puntero
   const handlePointerDown = (e) => {
-    isDraggingRef.current = true;
+    // Si se hace clic sobre el avatar flotante, no arrastrar el libro
+    if (e.target.closest('.interactive-avatar-pill') || e.target.closest('.avatar-editor-popover')) return;
+
+    isDraggingBookRef.current = true;
     prevMousePosRef.current = { x: e.clientX, y: e.clientY };
   };
 
   const handlePointerMove = (e) => {
     if (!objectsRef.current.bookGroup) return;
 
-    if (isDraggingRef.current) {
+    if (isDraggingBookRef.current) {
       const deltaX = e.clientX - prevMousePosRef.current.x;
       const deltaY = e.clientY - prevMousePosRef.current.y;
 
@@ -443,32 +487,80 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
   };
 
   const handlePointerUp = () => {
-    isDraggingRef.current = false;
+    isDraggingBookRef.current = false;
   };
 
-  const handlePointerLeave = () => {
-    isDraggingRef.current = false;
-    if (objectsRef.current.targetTilt) {
-      objectsRef.current.targetTilt.x = 0;
-      objectsRef.current.targetTilt.y = 0;
-    }
+  // --- MOTOR DE ARRASTRE DEL AVATAR (DRAG & DROP CON POINTER EVENTS) ---
+  const handleAvatarPointerDown = (e) => {
+    e.stopPropagation();
+    isDraggingAvatarRef.current = true;
+    dragAvatarStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      startX: avatarPos.x,
+      startY: avatarPos.y
+    };
+    e.currentTarget.setPointerCapture(e.pointerId);
   };
 
-  // CONTROL 1: PAUSE / PLAY
+  const handleAvatarPointerMove = (e) => {
+    if (!isDraggingAvatarRef.current || !containerRef.current) return;
+    e.stopPropagation();
+
+    const deltaX = e.clientX - dragAvatarStartRef.current.x;
+    const deltaY = e.clientY - dragAvatarStartRef.current.y;
+
+    let newX = dragAvatarStartRef.current.startX + deltaX;
+    let newY = dragAvatarStartRef.current.startY + deltaY;
+
+    // Confinar dentro del contenedor visual del Hero Card
+    const rect = containerRef.current.getBoundingClientRect();
+    const maxX = rect.width - 150;
+    const maxY = rect.height - 56;
+
+    newX = Math.max(8, Math.min(newX, maxX));
+    newY = Math.max(34, Math.min(newY, maxY));
+
+    setAvatarPos({ x: newX, y: newY });
+  };
+
+  const handleAvatarPointerUp = (e) => {
+    if (!isDraggingAvatarRef.current) return;
+    isDraggingAvatarRef.current = false;
+    try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (_) {}
+    // Guardar posición en localStorage
+    localStorage.setItem('edunova_hero_avatar_pos', JSON.stringify(avatarPos));
+  };
+
+  // Guardar nuevo emoji seleccionado
+  const handleSaveAvatar = (newEmoji, newRole, newGender) => {
+    const emojiToSave = newEmoji || tempPreviewEmoji;
+    setCurrentEmoji(emojiToSave);
+    if (newRole) setSelectedRole(newRole);
+    if (newGender) setSelectedGender(newGender);
+
+    localStorage.setItem('edunova_user_avatar', emojiToSave);
+    if (newGender) localStorage.setItem('edunova_user_gender', newGender);
+    if (newRole) localStorage.setItem('edunova_user_role', newRole);
+
+    // Emitir evento para sincronizar con Header u otros componentes
+    window.dispatchEvent(new CustomEvent('edunova_avatar_updated', { detail: { emoji: emojiToSave } }));
+    setIsEditorOpen(false);
+  };
+
+  // Controles de Animación Three.js
   const togglePlayPause = useCallback(() => {
     const nextState = !isPausedRef.current;
     isPausedRef.current = nextState;
     setIsPaused(nextState);
   }, []);
 
-  // CONTROL 2: Selector de Velocidad Circular ([0.5, 1, 1.5, 2])
   const cycleSpeed = useCallback(() => {
     const nextIndex = (speedIndexRef.current + 1) % speeds.length;
     speedIndexRef.current = nextIndex;
     setSpeedIndex(nextIndex);
   }, [speeds.length]);
 
-  // CONTROL 3: Alternar Modo Sólido / Alambre
   const toggleWireframe = useCallback(() => {
     const nextState = !isWireframeRef.current;
     isWireframeRef.current = nextState;
@@ -480,7 +572,6 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     }
   }, []);
 
-  // CONTROL 4: Disparo de PULSO (Giro rápido 360° con rebote elástico de escala)
   const triggerPulse = useCallback(() => {
     if (pulseActiveRef.current || !objectsRef.current.bookGroup) return;
     pulseActiveRef.current = true;
@@ -494,7 +585,6 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
       progress += 0.05;
       const peak = Math.sin(progress * Math.PI);
 
-      // Rebote elástico de escala
       const s = 1 + peak * 0.2;
       if (bookGroup) {
         bookGroup.scale.set(s, s, s);
@@ -513,7 +603,6 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     }, 20);
   }, []);
 
-  // CONTROL 5: Reiniciar Orientación al Ángulo Inicial Frontal-Inclinado
   const resetOrientation = useCallback(() => {
     if (objectsRef.current.rootGroup && objectsRef.current.bookGroup) {
       const { defaultTiltX, rootGroup, bookGroup } = objectsRef.current;
@@ -525,38 +614,262 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     }
   }, []);
 
+  // Resetear la posición del avatar flotante a la esquina superior izquierda
+  const resetAvatarPosition = (e) => {
+    e.stopPropagation();
+    const defaultPos = { x: 16, y: 16 };
+    setAvatarPos(defaultPos);
+    localStorage.setItem('edunova_hero_avatar_pos', JSON.stringify(defaultPos));
+  };
+
   return (
-    <div className={`relative flex flex-col items-center select-none ${className}`}>
+    <div ref={containerRef} className={`relative flex flex-col items-center select-none ${className}`}>
       
-      {/* Encabezado Superior Limpio */}
-      <div className="w-full flex items-center justify-between px-2 pb-1.5 text-[10px] font-mono text-[#4d4947] border-b border-[#3d3a39]/20">
+      {/* Encabezado Superior */}
+      <div className="w-full flex items-center justify-between px-2 pb-1.5 text-[10px] font-mono text-[#4d4947] border-b border-[#3d3a39]/20 z-10">
         <div className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-[#ee6018] animate-pulse"></span>
           <span className="uppercase tracking-wider font-medium text-[#101010]">
             BIBLIOTECA VIRTUAL // LIBRO 3D INTERACTIVO
           </span>
         </div>
-        <span className="text-[#8c8682] tracking-wider font-medium">THREE.JS WEBGL</span>
+        
+        {/* Acceso rápido a modificar avatar desde el encabezado */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              setTempPreviewEmoji(currentEmoji);
+              setIsEditorOpen(true);
+            }}
+            className="flex items-center gap-1 px-1.5 py-0.5 bg-white/80 hover:bg-white text-[#101010] border border-[#3d3a39]/20 rounded text-[9px] font-sans font-medium transition-colors"
+            title="Modificar avatar / emoji"
+          >
+            <span>{currentEmoji}</span>
+            <span className="hidden sm:inline">Modificar</span>
+            <Edit3 size={9} className="text-[#ee6018]" />
+          </button>
+          <span className="text-[#8c8682] tracking-wider font-medium">THREE.JS WEBGL</span>
+        </div>
       </div>
 
-      {/* Contenedor del Canvas Interactivo con Arrastre 360° */}
+      {/* Contenedor del Canvas Interactivo Three.js */}
       <div 
         ref={mountRef}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerLeave}
+        onPointerLeave={handlePointerUp}
         className="w-full h-48 sm:h-56 cursor-grab active:cursor-grabbing relative flex items-center justify-center overflow-hidden"
         title="Arrastra con el ratón para rotar el libro 360°"
       >
+        {/* ======================================================================== */}
+        {/* AVATAR / EMOJI MOVIBLE (DRAGGABLE) Y EDITABLE SOBRE LA ESCENA */}
+        {/* ======================================================================== */}
+        <div
+          onPointerDown={handleAvatarPointerDown}
+          onPointerMove={handleAvatarPointerMove}
+          onPointerUp={handleAvatarPointerUp}
+          onPointerCancel={handleAvatarPointerUp}
+          style={{ left: `${avatarPos.x}px`, top: `${avatarPos.y}px` }}
+          className="interactive-avatar-pill absolute z-20 flex items-center gap-2 bg-white/95 backdrop-blur-md border border-[#3d3a39]/20 rounded-full px-2.5 py-1.5 shadow-md cursor-grab active:cursor-grabbing hover:shadow-lg transition-shadow group"
+          title="Arrastra para mover este avatar · Clic en ✏️ para editar emoji"
+        >
+          {/* Círculo con el Emoji */}
+          <div 
+            onClick={() => {
+              setTempPreviewEmoji(currentEmoji);
+              setIsEditorOpen(true);
+            }}
+            className="text-2xl leading-none w-8 h-8 flex items-center justify-center bg-[#faf9f5] rounded-full border border-gray-200 cursor-pointer hover:scale-110 transition-transform"
+          >
+            {currentEmoji}
+          </div>
+
+          {/* Información y Rol del Usuario */}
+          <div className="flex flex-col text-left pointer-events-none">
+            <span className="text-[10px] font-bold text-[#1c1a19] leading-tight">
+              {user?.nombre || 'Laura Martínez'}
+            </span>
+            <span className="text-[8px] font-mono uppercase tracking-wider text-[#ee6018] font-semibold leading-tight">
+              {selectedRole} · {selectedGender}
+            </span>
+          </div>
+
+          {/* Botón de editar emoji rápido */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setTempPreviewEmoji(currentEmoji);
+              setIsEditorOpen(true);
+            }}
+            className="w-5 h-5 bg-[#ee6018] hover:bg-[#d85513] text-white rounded-full flex items-center justify-center text-[10px] shadow transition-colors ml-0.5"
+            title="Cambiar emoji"
+          >
+            <Edit3 size={10} />
+          </button>
+        </div>
+
         {/* Leyenda Inferior Sutil */}
         <div className="absolute bottom-1.5 left-2 pointer-events-none text-[9px] font-mono text-[#4d4947]/70">
           Arrastrar para rotar · 360°
         </div>
       </div>
 
+      {/* ======================================================================== */}
+      {/* MODAL / POPOVER FLOTANTE: MODIFICAR AVATAR / EMOJI DIRECTAMENTE AQUÍ */}
+      {/* ======================================================================== */}
+      {isEditorOpen && (
+        <div className="avatar-editor-popover absolute inset-x-2 top-8 bottom-2 bg-white/95 backdrop-blur-md border border-[#3d3a39]/25 rounded-lg shadow-2xl z-30 p-3.5 flex flex-col justify-between animate-in fade-in zoom-in-95 duration-150">
+          
+          {/* Cabecera del Editor */}
+          <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+            <div className="flex items-center gap-1.5">
+              <span className="text-base">{tempPreviewEmoji}</span>
+              <span className="text-xs font-bold text-[#1c1a19]">Personalizar Avatar / Emoji</span>
+            </div>
+            <button
+              onClick={() => setIsEditorOpen(false)}
+              className="text-gray-400 hover:text-gray-700 p-1 rounded"
+            >
+              <X size={14} />
+            </button>
+          </div>
+
+          {/* Selector de Rol y Género para aplicar las reglas institucionales */}
+          <div className="grid grid-cols-2 gap-2 text-left pt-1">
+            <div>
+              <label className="block text-[9px] font-mono text-[#78716c] uppercase font-semibold mb-0.5">
+                Rol Institucional:
+              </label>
+              <select
+                value={selectedRole}
+                onChange={(e) => {
+                  const newR = e.target.value;
+                  setSelectedRole(newR);
+                  const newDef = getDefaultEmoji(newR, selectedGender);
+                  setTempPreviewEmoji(newDef);
+                }}
+                className="w-full text-xs p-1 border border-gray-200 rounded bg-[#faf9f5] focus:outline-none focus:ring-1 focus:ring-[#ee6018]"
+              >
+                <option value="estudiante">Estudiante</option>
+                <option value="profesor">Profesor / Instructor</option>
+                <option value="admin">Administrador</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[9px] font-mono text-[#78716c] uppercase font-semibold mb-0.5">
+                Género:
+              </label>
+              <select
+                value={selectedGender}
+                disabled={selectedRole === 'admin'}
+                onChange={(e) => {
+                  const newG = e.target.value;
+                  setSelectedGender(newG);
+                  const newDef = getDefaultEmoji(selectedRole, newG);
+                  setTempPreviewEmoji(newDef);
+                }}
+                className="w-full text-xs p-1 border border-gray-200 rounded bg-[#faf9f5] focus:outline-none focus:ring-1 focus:ring-[#ee6018] disabled:opacity-50"
+              >
+                <option value="femenino">Femenino (Mujer)</option>
+                <option value="masculino">Masculino (Hombre)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Grilla de Emojis Sugeridos */}
+          <div className="text-left py-1">
+            <span className="block text-[9px] font-mono text-[#78716c] uppercase font-semibold mb-1">
+              Sugerencias Rápidas:
+            </span>
+            <div className="grid grid-cols-6 gap-1">
+              {SUGGESTED_EMOJIS.map((emoji) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  onClick={() => setTempPreviewEmoji(emoji)}
+                  className={`text-lg p-1 rounded border transition-transform hover:scale-110 active:scale-95 flex items-center justify-center ${
+                    tempPreviewEmoji === emoji ? 'bg-[#ee6018]/15 border-[#ee6018]' : 'bg-[#faf9f5] border-gray-100 hover:border-gray-300'
+                  }`}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Escribir o pegar cualquier otro emoji */}
+          <div className="text-left">
+            <div className="flex gap-1.5 items-center">
+              <input
+                type="text"
+                placeholder="Escribe o pega cualquier emoji..."
+                value={customInputEmoji}
+                onChange={(e) => setCustomInputEmoji(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && customInputEmoji.trim()) {
+                    e.preventDefault();
+                    setTempPreviewEmoji(customInputEmoji.trim());
+                    setCustomInputEmoji('');
+                  }
+                }}
+                className="flex-1 text-xs px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-[#ee6018]"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (customInputEmoji.trim()) {
+                    setTempPreviewEmoji(customInputEmoji.trim());
+                    setCustomInputEmoji('');
+                  }
+                }}
+                className="px-2 py-1 bg-[#101010] text-white text-[10px] font-mono rounded hover:bg-[#2d2926]"
+              >
+                Aplicar
+              </button>
+            </div>
+          </div>
+
+          {/* Botones de Acción */}
+          <div className="flex items-center justify-between pt-1.5 border-t border-gray-100">
+            <button
+              type="button"
+              onClick={() => {
+                const def = getDefaultEmoji(selectedRole, selectedGender);
+                setTempPreviewEmoji(def);
+              }}
+              className="text-[10px] font-mono text-[#ee6018] hover:underline flex items-center gap-1"
+            >
+              <RotateCcw size={10} />
+              <span>Por Defecto</span>
+            </button>
+
+            <div className="flex gap-1.5">
+              <button
+                type="button"
+                onClick={() => setIsEditorOpen(false)}
+                className="px-2 py-1 text-[10px] text-gray-600 hover:bg-gray-100 rounded"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSaveAvatar(tempPreviewEmoji, selectedRole, selectedGender)}
+                className="px-3 py-1 bg-[#ee6018] hover:bg-[#d85513] text-white text-[10px] font-mono font-medium rounded flex items-center gap-1 shadow-sm"
+              >
+                <Check size={11} />
+                <span>Guardar</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      )}
+
       {/* Barra de Controles Inferiores */}
-      <div className="w-full flex flex-wrap items-center justify-between gap-1.5 pt-1.5 border-t border-[#3d3a39]/20">
+      <div className="w-full flex flex-wrap items-center justify-between gap-1.5 pt-1.5 border-t border-[#3d3a39]/20 z-10">
         
         <div className="flex items-center gap-1">
           {/* Botón: PAUSE / PLAY */}
@@ -606,11 +919,20 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
             <span>PULSO</span>
           </button>
 
-          {/* Botón: Reiniciar Orientación */}
+          {/* Botón: Resetear Posición del Avatar */}
+          <button
+            onClick={resetAvatarPosition}
+            className="px-1.5 py-1 bg-transparent hover:bg-[#101010]/10 text-[#4d4947] rounded-[3px] text-[10px] font-mono transition-colors"
+            title="Centrar/Restablecer posición del avatar"
+          >
+            <User size={10} />
+          </button>
+
+          {/* Botón: Reiniciar Orientación 3D */}
           <button
             onClick={resetOrientation}
             className="px-1.5 py-1 bg-transparent hover:bg-[#101010]/10 text-[#4d4947] rounded-[3px] text-[10px] font-mono transition-colors"
-            title="Restablecer posición inicial frontal-inclinada"
+            title="Restablecer posición inicial frontal-inclinada del libro"
           >
             <RefreshCw size={10} />
           </button>
