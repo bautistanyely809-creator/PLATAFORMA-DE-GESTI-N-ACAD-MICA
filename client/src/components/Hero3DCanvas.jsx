@@ -11,11 +11,22 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
   const isDraggingRef = useRef(false);
   const prevMousePosRef = useRef({ x: 0, y: 0 });
 
-  // Controles de estado interactivo
-  const [isWireframe, setIsWireframe] = useState(false);
-  const [speedMultiplier, setSpeedMultiplier] = useState(1);
+  // Lista de velocidades requeridas: [0.5, 1, 1.5, 2] con inicio en 1x (índice 1)
+  const speeds = [0.5, 1, 1.5, 2];
+  const [speedIndex, setSpeedIndex] = useState(1);
+  const speedIndexRef = useRef(1);
+
+  // Estados de control interactivo con Refs para evitar closures obsoletos en requestAnimationFrame
   const [isPaused, setIsPaused] = useState(false);
+  const isPausedRef = useRef(false);
+
+  const [isWireframe, setIsWireframe] = useState(false);
+  const isWireframeRef = useRef(false);
+
   const [pulseActive, setPulseActive] = useState(false);
+  const pulseActiveRef = useRef(false);
+
+  const floatingTimeRef = useRef(0);
 
   useEffect(() => {
     const currentMount = mountRef.current;
@@ -29,11 +40,11 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     sceneRef.current = scene;
 
     // 2. Cámara con encuadre suave
-    const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
-    camera.position.set(0, 1.2, 7.2);
-    camera.lookAt(0, -0.05, 0);
+    const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 100);
+    camera.position.set(0, 1.3, 6.8);
+    camera.lookAt(0, 0, 0);
 
-    // 3. Renderizador WebGL de alta precisión cromática
+    // 3. Renderizador WebGL con antialiasing y renderizado suave
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -44,9 +55,8 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    // Ajuste de color y tono ACESFilmic para estética 3D clay / soft icon
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.18;
+    renderer.toneMappingExposure = 1.15;
     if (renderer.outputColorSpace !== undefined) {
       renderer.outputColorSpace = THREE.SRGBColorSpace;
     }
@@ -54,259 +64,243 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     currentMount.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // 4. Sistema de Iluminación de Estudio Suave (Soft Studio Lighting)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+    // 4. Sistema de Iluminación de Estudio Suave
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.88);
     scene.add(ambientLight);
 
     // Luz principal cenital con sombra suave
-    const keyLight = new THREE.DirectionalLight(0xfffdfa, 1.4);
+    const keyLight = new THREE.DirectionalLight(0xfffaf0, 1.5);
     keyLight.position.set(4, 8, 6);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 1024;
     keyLight.shadow.mapSize.height = 1024;
-    keyLight.shadow.camera.near = 0.5;
-    keyLight.shadow.camera.far = 20;
     keyLight.shadow.bias = -0.001;
     scene.add(keyLight);
 
-    // Luz de relleno cálida frontal
-    const fillLight = new THREE.DirectionalLight(0xffe8dc, 0.75);
-    fillLight.position.set(-5, 3, 4);
+    // Luz de relleno cálida frontal-lateral
+    const fillLight = new THREE.DirectionalLight(0xffe2d0, 0.75);
+    fillLight.position.set(-5, 2.5, 4);
     scene.add(fillLight);
 
-    // Rim light trasero suave para destacar los contornos redondeados
-    const rimLight = new THREE.DirectionalLight(0xffffff, 0.95);
+    // Rim light trasero suave
+    const rimLight = new THREE.DirectionalLight(0xffffff, 0.85);
     rimLight.position.set(0, 5, -6);
     scene.add(rimLight);
 
-    // Luz focal sutil sobre las páginas abiertas
-    const spotLight = new THREE.PointLight(0xfff6ea, 0.6, 10);
-    spotLight.position.set(0, 2.5, 3);
+    // Luz focal cenital sobre las páginas
+    const spotLight = new THREE.PointLight(0xfff5e6, 0.65, 10);
+    spotLight.position.set(0, 3, 2.5);
     scene.add(spotLight);
 
-    // 5. Grupo Raíz del Libro 3D
+    // 5. Grupo Raíz del Libro con inclinación frontal para ver páginas desde arriba/frente
     const rootGroup = new THREE.Group();
-    // Inclinación inicial en X (~28°) para apreciar el interior abierto y las líneas 3D
-    const defaultTiltX = 0.48;
+    // Inclinación en X (0.45 rad = ~26°)
+    const defaultTiltX = 0.45;
     rootGroup.rotation.x = defaultTiltX;
     scene.add(rootGroup);
 
+    // Grupo de rotación continua 360° en Y
     const bookGroup = new THREE.Group();
     rootGroup.add(bookGroup);
 
-    // --- MATERIALES ESTILO "SOFT 3D / CLAY RENDER" ---
-    // Tapa roja coral / naranja vibrante satinada
+    // --- MATERIALES DEL LIBRO ---
+    // Tapa roja/coral satinada con sombreado suave
     const coverMaterial = new THREE.MeshStandardMaterial({
       color: 0xee3b2b,
-      roughness: 0.32,
-      metalness: 0.04,
+      roughness: 0.35,
+      metalness: 0.05,
+      flatShading: false,
       side: THREE.DoubleSide
     });
 
-    // Páginas crema/marfil cálido suaves
+    // Páginas crema/marfil suave
     const pageMaterial = new THREE.MeshStandardMaterial({
-      color: 0xf5f1e6,
+      color: 0xf4efe4,
       roughness: 0.38,
       metalness: 0.02,
+      flatShading: false,
       side: THREE.DoubleSide
     });
 
-    // Líneas de texto 3D en relieve (carbón suave)
-    const textBarMaterial = new THREE.MeshStandardMaterial({
-      color: 0x333333,
-      roughness: 0.35,
-      metalness: 0.05
+    // Renglones de texto oscuro en relieve (#3A3A3A)
+    const textMaterial = new THREE.MeshStandardMaterial({
+      color: 0x3a3a3a,
+      roughness: 0.32,
+      metalness: 0.06,
+      flatShading: false
     });
 
-    const registeredMaterials = [coverMaterial, pageMaterial, textBarMaterial];
+    const registeredMaterials = [coverMaterial, pageMaterial, textMaterial];
 
-    // --- FUNCIONES MATEMÁTICAS PARA EL ARCO ORGÁNICO EN "M" ---
-    // Curva convexa de la página derecha: x desde 0 hasta w
-    const getPageY = (x, w, hArch) => {
-      const u = Math.max(0, Math.min(1, x / w));
-      // Forma de arco suave: nace en el pliegue central (x=0), sube y desciende suavemente hacia el borde
-      return Math.sin(u * Math.PI * 0.88 + 0.12) * hArch - Math.sin(0.12) * hArch;
+    // --- FUNCIÓN MATEMÁTICA DE LA CURVA CONVEXA DE CADA PÁGINA ---
+    // Sube suavemente en arco desde el centro x=0 hacia afuera y desciende en el borde exterior
+    const getPageHeight = (x, maxW, peakH) => {
+      const u = Math.max(0, Math.min(1, Math.abs(x) / maxW));
+      return Math.sin(u * Math.PI * 0.82 + 0.14) * peakH - Math.sin(0.14) * peakH;
     };
 
-    // --- 1. TAPA EXTERIOR GRUESA Y REDONDEADA (ROJO CORAL #EE3B2B) ---
-    const coverHalfW = 1.62;
-    const coverDepth = 2.45;
-    const coverArchH = 0.52;
-    const coverThickness = 0.14;
+    // Parámetros de escala del libro
+    const pageHalfW = 1.35;
+    const pageDepth = 2.05;
+    const archH = 0.38;
 
-    // Crear silueta 2D de la cubierta con suave forma en "M" abierta
+    // --- 1. BASE: TAPA ROJA/CORAL GRUESA Y REDONDEADA (#EE3B2B) ---
+    // Forma en "V" muy abierta (casi plana ~150°) que envuelve por debajo a las hojas
+    const coverHalfW = pageHalfW + 0.12; // 1.47
+    const coverDepth = pageDepth + 0.18; // 2.23
+    const coverThick = 0.12;
+    const coverBaseY = -0.16;
+
     const coverShape = new THREE.Shape();
-    const steps = 30;
+    const cSteps = 32;
 
-    // Borde superior interior de la cubierta
-    // Lado derecho (de 0 a coverHalfW)
-    coverShape.moveTo(0, 0.02);
-    for (let i = 1; i <= steps; i++) {
-      const x = (i / steps) * coverHalfW;
-      const y = getPageY(x, coverHalfW, coverArchH);
+    // Contorno superior de la tapa (de -coverHalfW a +coverHalfW)
+    coverShape.moveTo(-coverHalfW, coverBaseY + getPageHeight(-coverHalfW, coverHalfW, archH));
+    for (let i = 0; i <= cSteps; i++) {
+      const x = -coverHalfW + (i / cSteps) * (2 * coverHalfW);
+      const y = coverBaseY + getPageHeight(x, coverHalfW, archH);
       coverShape.lineTo(x, y);
     }
-    // Cierre del borde exterior derecho redondeado hacia abajo
-    const rightEdgeY = getPageY(coverHalfW, coverHalfW, coverArchH);
-    coverShape.lineTo(coverHalfW, rightEdgeY - coverThickness);
+    // Lado derecho hacia abajo
+    const cRightY = coverBaseY + getPageHeight(coverHalfW, coverHalfW, archH);
+    coverShape.lineTo(coverHalfW, cRightY - coverThick);
 
-    // Borde inferior exterior de la cubierta (de coverHalfW a -coverHalfW)
-    for (let i = steps; i >= 0; i--) {
-      const x = (i / steps) * coverHalfW;
-      const y = getPageY(x, coverHalfW, coverArchH) - coverThickness;
+    // Contorno inferior de la tapa (de +coverHalfW a -coverHalfW)
+    for (let i = cSteps; i >= 0; i--) {
+      const x = -coverHalfW + (i / cSteps) * (2 * coverHalfW);
+      const y = coverBaseY + getPageHeight(x, coverHalfW, archH) - coverThick;
       coverShape.lineTo(x, y);
     }
-    for (let i = 1; i <= steps; i++) {
-      const x = -(i / steps) * coverHalfW;
-      const y = getPageY(Math.abs(x), coverHalfW, coverArchH) - coverThickness;
-      coverShape.lineTo(x, y);
-    }
-    // Lado izquierdo exterior hacia arriba
-    const leftEdgeY = getPageY(coverHalfW, coverHalfW, coverArchH);
-    coverShape.lineTo(-coverHalfW, leftEdgeY);
+    coverShape.closePath();
 
-    // Borde superior interior lado izquierdo (de -coverHalfW a 0)
-    for (let i = steps - 1; i >= 0; i--) {
-      const x = -(i / steps) * coverHalfW;
-      const y = getPageY(Math.abs(x), coverHalfW, coverArchH);
-      coverShape.lineTo(x, y);
-    }
-
-    const coverExtrudeSettings = {
+    const coverGeo = new THREE.ExtrudeGeometry(coverShape, {
       steps: 1,
       depth: coverDepth,
       bevelEnabled: true,
-      bevelThickness: 0.065,
-      bevelSize: 0.065,
-      bevelSegments: 8
-    };
+      bevelThickness: 0.05,
+      bevelSize: 0.05,
+      bevelSegments: 6
+    });
+    coverGeo.center();
+    coverGeo.computeVertexNormals();
 
-    const coverGeo = new THREE.ExtrudeGeometry(coverShape, coverExtrudeSettings);
-    coverGeo.center(); // Centrar en el origen
     const coverMesh = new THREE.Mesh(coverGeo, coverMaterial);
     coverMesh.castShadow = true;
     coverMesh.receiveShadow = true;
     bookGroup.add(coverMesh);
 
-    // --- 2. BLOQUE DE PÁGINAS CURVAS ESCALONADAS EN 3 CAPAS (#F5F1E6) ---
-    // Creamos 3 niveles escalonados de páginas (inferior, media y superior)
-    const pageLayersConfig = [
-      { halfW: 1.50, depth: 2.32, archH: 0.50, baseThick: 0.11, yOffset: 0.01 },
-      { halfW: 1.45, depth: 2.22, archH: 0.50, baseThick: 0.13, yOffset: 0.05 },
-      { halfW: 1.40, depth: 2.12, archH: 0.50, baseThick: 0.15, yOffset: 0.09 }
+    // --- 2. MEDIO: DOS BLOQUES DE HOJAS COLOR CREMA EN 2 CAPAS ESCALONADAS (#F4EFE4) ---
+    // Capa 1: Capa inferior de hojas crema
+    // Capa 2: Capa superior visible de hojas crema
+    const layers = [
+      { w: pageHalfW + 0.03, d: pageDepth + 0.05, thick: 0.075, yOffset: -0.06 },
+      { w: pageHalfW,        d: pageDepth,        thick: 0.080, yOffset: 0.00 }
     ];
 
-    const pageMeshes = [];
-
-    pageLayersConfig.forEach((cfg) => {
-      const pageShape = new THREE.Shape();
+    layers.forEach((layer) => {
+      const layerShape = new THREE.Shape();
       const pSteps = 28;
 
-      // Superficie superior arqueada (lado derecho)
-      pageShape.moveTo(0, cfg.yOffset);
-      for (let i = 1; i <= pSteps; i++) {
-        const x = (i / pSteps) * cfg.halfW;
-        const y = getPageY(x, cfg.halfW, cfg.archH) + cfg.yOffset;
-        pageShape.lineTo(x, y);
+      // Superficie superior curvada de la capa
+      layerShape.moveTo(-layer.w, layer.yOffset + getPageHeight(-layer.w, layer.w, archH));
+      for (let i = 0; i <= pSteps; i++) {
+        const x = -layer.w + (i / pSteps) * (2 * layer.w);
+        const y = layer.yOffset + getPageHeight(x, layer.w, archH);
+        layerShape.lineTo(x, y);
       }
 
-      // Borde lateral derecho
-      const rY = getPageY(cfg.halfW, cfg.halfW, cfg.archH) + cfg.yOffset;
-      pageShape.lineTo(cfg.halfW, rY - cfg.baseThick);
+      // Lateral derecho
+      const rY = layer.yOffset + getPageHeight(layer.w, layer.w, archH);
+      layerShape.lineTo(layer.w, rY - layer.thick);
 
-      // Base inferior (lado derecho)
+      // Base inferior de la capa
       for (let i = pSteps; i >= 0; i--) {
-        const x = (i / pSteps) * cfg.halfW;
-        const y = getPageY(x, cfg.halfW, cfg.archH) + cfg.yOffset - cfg.baseThick;
-        pageShape.lineTo(x, y);
+        const x = -layer.w + (i / pSteps) * (2 * layer.w);
+        const y = layer.yOffset + getPageHeight(x, layer.w, archH) - layer.thick;
+        layerShape.lineTo(x, y);
       }
+      layerShape.closePath();
 
-      // Base inferior (lado izquierdo)
-      for (let i = 1; i <= pSteps; i++) {
-        const x = -(i / pSteps) * cfg.halfW;
-        const y = getPageY(Math.abs(x), cfg.halfW, cfg.archH) + cfg.yOffset - cfg.baseThick;
-        pageShape.lineTo(x, y);
-      }
-
-      // Borde lateral izquierdo
-      const lY = getPageY(cfg.halfW, cfg.halfW, cfg.archH) + cfg.yOffset;
-      pageShape.lineTo(-cfg.halfW, lY);
-
-      // Superficie superior arqueada (lado izquierdo)
-      for (let i = pSteps - 1; i >= 0; i--) {
-        const x = -(i / pSteps) * cfg.halfW;
-        const y = getPageY(Math.abs(x), cfg.halfW, cfg.archH) + cfg.yOffset;
-        pageShape.lineTo(x, y);
-      }
-
-      const pageExtrudeSettings = {
+      const layerGeo = new THREE.ExtrudeGeometry(layerShape, {
         steps: 1,
-        depth: cfg.depth,
+        depth: layer.d,
         bevelEnabled: true,
-        bevelThickness: 0.045,
-        bevelSize: 0.045,
-        bevelSegments: 6
-      };
+        bevelThickness: 0.03,
+        bevelSize: 0.03,
+        bevelSegments: 5
+      });
+      layerGeo.center();
+      layerGeo.computeVertexNormals();
 
-      const pageGeo = new THREE.ExtrudeGeometry(pageShape, pageExtrudeSettings);
-      pageGeo.center();
-      const pageMesh = new THREE.Mesh(pageGeo, pageMaterial);
-      pageMesh.position.y = cfg.yOffset * 0.5;
-      pageMesh.castShadow = true;
-      pageMesh.receiveShadow = true;
-      bookGroup.add(pageMesh);
-      pageMeshes.push(pageMesh);
+      const layerMesh = new THREE.Mesh(layerGeo, pageMaterial);
+      layerMesh.position.y = layer.yOffset * 0.5;
+      layerMesh.castShadow = true;
+      layerMesh.receiveShadow = true;
+      bookGroup.add(layerMesh);
     });
 
-    // --- 3. LÍNEAS DE TEXTO 3D EN RELIEVE (CÁPSULAS CURVAS #333333) ---
-    // 6 líneas curvadas en cada cara abierta que siguen el arco de la página superior
-    const topConfig = pageLayersConfig[2];
-    const numLines = 6;
+    // --- 3. ARRIBA: 5 BARRAS/LÍNEAS DE TEXTO OSCURAS POR PÁGINA (ESTRICTAMENTE CONTENIDAS) ---
+    // 5 líneas en la página izquierda, 5 líneas en la derecha (10 líneas en total)
+    // Apoyadas exactamente sobre la superficie superior de la capa crema + offset mínimo de 0.012
     const textGroup = new THREE.Group();
     bookGroup.add(textGroup);
 
-    const startZ = -topConfig.depth * 0.38;
-    const endZ = topConfig.depth * 0.38;
-    const zStep = (endZ - startZ) / (numLines - 1);
+    const topLayer = layers[1];
+    const numLines = 5;
+    const zStart = -topLayer.d * 0.34;
+    const zEnd = topLayer.d * 0.34;
+    const zStep = (zEnd - zStart) / (numLines - 1);
 
+    // Márgenes estrictos dentro de cada página:
+    // Página izquierda: x de -1.14 a -0.26
+    // Página derecha: x de 0.26 a 1.14
     for (let side = -1; side <= 1; side += 2) {
-      for (let row = 0; row < numLines; row++) {
-        const lineZ = startZ + row * zStep;
+      for (let i = 0; i < numLines; i++) {
+        const lineZ = zStart + i * zStep;
         
-        // Coordenadas X de inicio y fin de la línea en la página
-        const startX = side === 1 ? 0.30 : -1.22;
-        const endX = side === 1 ? 1.22 : -0.30;
+        // La última línea de cada bloque es un poco más corta para simular un párrafo editorial natural
+        const lengthFactor = (i === numLines - 1) ? 0.72 : 1.0;
+        
+        const innerX = 0.26;
+        const outerX = 0.26 + (1.14 - 0.26) * lengthFactor;
+        
+        const startX = side === 1 ? innerX : -outerX;
+        const endX = side === 1 ? outerX : -innerX;
+
         const linePoints = [];
         const samples = 14;
 
         for (let s = 0; s <= samples; s++) {
           const t = s / samples;
           const px = startX + t * (endX - startX);
-          const py = getPageY(Math.abs(px), topConfig.halfW, topConfig.archH) + topConfig.yOffset + 0.045;
+          // Altura calculada con la misma función matemática de la superficie + offset mínimo 0.012
+          const py = topLayer.yOffset + getPageHeight(px, topLayer.w, archH) + 0.012;
           linePoints.push(new THREE.Vector3(px, py, lineZ));
         }
 
         const curve = new THREE.CatmullRomCurve3(linePoints);
-        // Barra tubular con extremos redondeados (cápsula 3D)
-        const tubeGeo = new THREE.TubeGeometry(curve, 20, 0.026, 10, false);
-        const tubeMesh = new THREE.Mesh(tubeGeo, textBarMaterial);
+        const tubeRadius = 0.022;
+        const tubeGeo = new THREE.TubeGeometry(curve, 14, tubeRadius, 8, false);
+        tubeGeo.computeVertexNormals();
+
+        const tubeMesh = new THREE.Mesh(tubeGeo, textMaterial);
         tubeMesh.castShadow = true;
         textGroup.add(tubeMesh);
 
         // Tapas redondeadas en los extremos de cada línea
-        const sphereCapGeo = new THREE.SphereGeometry(0.026, 10, 10);
-        const capStart = new THREE.Mesh(sphereCapGeo, textBarMaterial);
-        capStart.position.copy(linePoints[0]);
-        textGroup.add(capStart);
+        const sphereGeo = new THREE.SphereGeometry(tubeRadius, 8, 8);
+        const startCap = new THREE.Mesh(sphereGeo, textMaterial);
+        startCap.position.copy(linePoints[0]);
+        textGroup.add(startCap);
 
-        const capEnd = new THREE.Mesh(sphereCapGeo, textBarMaterial);
-        capEnd.position.copy(linePoints[samples]);
-        textGroup.add(capEnd);
+        const endCap = new THREE.Mesh(sphereGeo, textMaterial);
+        endCap.position.copy(linePoints[samples]);
+        textGroup.add(endCap);
       }
     }
 
-    // --- 4. MICRO-PARTÍCULAS FLOTANTES TENUES DE AMBIENTE ---
-    const particleCount = 65;
+    // --- 4. MICRO-PARTÍCULAS FLOTANTES DE FONDO ---
+    const particleCount = 60;
     const particlePositions = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
 
@@ -316,7 +310,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
 
     for (let i = 0; i < particleCount; i++) {
       const idx = i * 3;
-      const r = 2.2 + Math.random() * 2.2;
+      const r = 2.2 + Math.random() * 2.0;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
 
@@ -349,45 +343,39 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     objectsRef.current = {
       rootGroup,
       bookGroup,
-      coverMesh,
-      pageMeshes,
-      textGroup,
       particleCloud,
       registeredMaterials,
       camera,
       renderer,
       targetTilt: { x: 0, y: 0 },
-      baseRotationY: 0,
       defaultTiltX
     };
 
-    // 6. Bucle de Animación Continuo
-    let clock = new THREE.Clock();
-    let currentAnimSpeed = 1;
+    // 6. Bucle de Animación con soporte estricto de isPaused y velocidad
+    const clock = new THREE.Clock();
 
     const animate = () => {
       animFrameIdRef.current = requestAnimationFrame(animate);
 
       const delta = clock.getDelta();
-      const elapsedTime = clock.getElapsedTime();
+      const currentSpeed = speeds[speedIndexRef.current];
 
-      currentAnimSpeed += (speedMultiplier - currentAnimSpeed) * 0.1;
+      // Verificación directa en ref: si está en pausa, se detiene completamente el giro y la flotación
+      if (!isPausedRef.current && bookGroup) {
+        // Giro continuo de 360° en el eje vertical Y
+        bookGroup.rotation.y += 0.015 * currentSpeed;
 
-      if (!isPaused && bookGroup) {
-        // Giro continuo suave en el eje vertical Y
-        objectsRef.current.baseRotationY += 0.55 * delta * currentAnimSpeed;
-        bookGroup.rotation.y = objectsRef.current.baseRotationY;
-
-        // Levitación senoidal suave
-        bookGroup.position.y = Math.sin(elapsedTime * 1.6) * 0.08;
+        // Levitación flotante suave
+        floatingTimeRef.current += delta * currentSpeed;
+        bookGroup.position.y = Math.sin(floatingTimeRef.current * 1.8) * 0.06;
 
         // Parallax hacia el cursor
         const { targetTilt } = objectsRef.current;
         rootGroup.rotation.x += (defaultTiltX + targetTilt.x - rootGroup.rotation.x) * 0.05;
         rootGroup.rotation.z += (targetTilt.y * 0.4 - rootGroup.rotation.z) * 0.05;
 
-        // Giro de micro-partículas
-        particleCloud.rotation.y += 0.06 * delta * currentAnimSpeed;
+        // Giro lento de las partículas
+        particleCloud.rotation.y += 0.04 * delta * currentSpeed;
       }
 
       renderer.render(scene, camera);
@@ -437,9 +425,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
       const deltaX = e.clientX - prevMousePosRef.current.x;
       const deltaY = e.clientY - prevMousePosRef.current.y;
 
-      objectsRef.current.baseRotationY += deltaX * 0.01;
-      objectsRef.current.bookGroup.rotation.y = objectsRef.current.baseRotationY;
-
+      objectsRef.current.bookGroup.rotation.y += deltaX * 0.01;
       objectsRef.current.rootGroup.rotation.x += deltaY * 0.006;
 
       prevMousePosRef.current = { x: e.clientX, y: e.clientY };
@@ -468,34 +454,41 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
     }
   };
 
-  // Control 1: Alternar Modo Sólido / Alambre
+  // CONTROL 1: PAUSE / PLAY
+  const togglePlayPause = useCallback(() => {
+    const nextState = !isPausedRef.current;
+    isPausedRef.current = nextState;
+    setIsPaused(nextState);
+  }, []);
+
+  // CONTROL 2: Selector de Velocidad Circular ([0.5, 1, 1.5, 2])
+  const cycleSpeed = useCallback(() => {
+    const nextIndex = (speedIndexRef.current + 1) % speeds.length;
+    speedIndexRef.current = nextIndex;
+    setSpeedIndex(nextIndex);
+  }, [speeds.length]);
+
+  // CONTROL 3: Alternar Modo Sólido / Alambre
   const toggleWireframe = useCallback(() => {
-    const nextState = !isWireframe;
+    const nextState = !isWireframeRef.current;
+    isWireframeRef.current = nextState;
     setIsWireframe(nextState);
     if (objectsRef.current.registeredMaterials) {
       objectsRef.current.registeredMaterials.forEach(mat => {
         mat.wireframe = nextState;
       });
     }
-  }, [isWireframe]);
-
-  // Control 2: Ciclar Velocidad (1x -> 2x -> 0.5x -> 1x)
-  const cycleSpeed = useCallback(() => {
-    setSpeedMultiplier(prev => {
-      if (prev === 1) return 2;
-      if (prev === 2) return 0.5;
-      return 1;
-    });
   }, []);
 
-  // Control 3: Disparo de PULSO (Giro rápido 360° con rebote elástico de escala)
+  // CONTROL 4: Disparo de PULSO (Giro rápido 360° con rebote elástico de escala)
   const triggerPulse = useCallback(() => {
-    if (pulseActive || !objectsRef.current.bookGroup) return;
+    if (pulseActiveRef.current || !objectsRef.current.bookGroup) return;
+    pulseActiveRef.current = true;
     setPulseActive(true);
 
     const { bookGroup } = objectsRef.current;
     let progress = 0;
-    const initialRotY = objectsRef.current.baseRotationY;
+    const initialRotY = bookGroup.rotation.y;
 
     const pulseInterval = setInterval(() => {
       progress += 0.05;
@@ -505,30 +498,25 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
       const s = 1 + peak * 0.2;
       if (bookGroup) {
         bookGroup.scale.set(s, s, s);
-      }
-
-      // Impulso de giro completo dinámico
-      objectsRef.current.baseRotationY = initialRotY + progress * Math.PI * 2;
-      if (bookGroup) {
-        bookGroup.rotation.y = objectsRef.current.baseRotationY;
+        bookGroup.rotation.y = initialRotY + progress * Math.PI * 2;
       }
 
       if (progress >= 1) {
         clearInterval(pulseInterval);
         if (bookGroup) {
           bookGroup.scale.set(1, 1, 1);
+          bookGroup.rotation.y = initialRotY;
         }
-        objectsRef.current.baseRotationY = initialRotY;
+        pulseActiveRef.current = false;
         setPulseActive(false);
       }
     }, 20);
-  }, [pulseActive]);
+  }, []);
 
-  // Control 4: Reiniciar Orientación al Ángulo Inicial Frontal-Inclinado
+  // CONTROL 5: Reiniciar Orientación al Ángulo Inicial Frontal-Inclinado
   const resetOrientation = useCallback(() => {
     if (objectsRef.current.rootGroup && objectsRef.current.bookGroup) {
       const { defaultTiltX, rootGroup, bookGroup } = objectsRef.current;
-      objectsRef.current.baseRotationY = 0;
       objectsRef.current.targetTilt = { x: 0, y: 0 };
       rootGroup.rotation.set(defaultTiltX, 0, 0);
       bookGroup.rotation.set(0, 0, 0);
@@ -573,7 +561,7 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
         <div className="flex items-center gap-1">
           {/* Botón: PAUSE / PLAY */}
           <button
-            onClick={() => setIsPaused(!isPaused)}
+            onClick={togglePlayPause}
             className="px-2 py-1 bg-[#101010] hover:bg-[#1d1a18] text-[#fafafa] rounded-[3px] text-[10px] font-mono flex items-center gap-1 transition-colors border border-[#3d3a39]"
             title={isPaused ? "Reanudar giro continuo" : "Pausar giro y flotación"}
           >
@@ -581,14 +569,14 @@ export default function Hero3DCanvas({ className = '', variant = 'bone' }) {
             <span>{isPaused ? 'PLAY' : 'PAUSE'}</span>
           </button>
 
-          {/* Botón: Selector de Velocidad */}
+          {/* Botón: Selector de Velocidad (0.5x, 1x, 1.5x, 2x) */}
           <button
             onClick={cycleSpeed}
             className="px-2 py-1 bg-[#ffffff]/60 hover:bg-[#ffffff] text-[#101010] rounded-[3px] text-[10px] font-mono flex items-center gap-1 transition-colors border border-[#3d3a39]/30"
             title="Ajustar velocidad de rotación"
           >
             <RotateCw size={10} />
-            <span>{speedMultiplier}x</span>
+            <span>{speeds[speedIndex]}x</span>
           </button>
 
           {/* Botón: Modo de Vista SÓLIDO / ALAMBRE */}
