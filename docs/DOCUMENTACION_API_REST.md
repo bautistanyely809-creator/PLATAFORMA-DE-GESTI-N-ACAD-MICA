@@ -23,6 +23,8 @@
 12. [Módulo de Notificaciones (`/api/notificaciones`)](#12-módulo-de-notificaciones-apinotificaciones)
 13. [Módulo de Métricas y Dashboard (`/api/dashboard`)](#13-módulo-de-métricas-y-dashboard-apidashboard)
 14. [Módulo de Reportes Oficiales (`/api/reportes`)](#14-módulo-de-reportes-oficiales-apireportes)
+15. [Módulo de Directorio de Usuarios (`/api/usuarios`)](#15-módulo-de-directorio-de-usuarios-apiusuarios)
+16. [Módulo de Gestión Académica y Fichas (`/api/academico`)](#16-módulo-de-gestión-académica-y-fichas-apiacademico)
 
 ---
 
@@ -438,3 +440,81 @@
 
 * `GET /reportes/ficha/:id_curso/csv`: Genera descarga directa en streaming de la sábana de notas y asistencias en formato CSV con cabeceras UTF-8.
 * `GET /reportes/aprendiz/:id_aprendiz/pdf`: Genera expediente individual formateado con membrete SENA para impresión o guardado en PDF.
+
+---
+
+## 15. MÓDULO DE DIRECTORIO DE USUARIOS (`/api/usuarios`)
+
+* **Base:** `/usuarios`
+* **Permisos Generales:** Requiere rol `ADMIN` con autenticación Bearer JWT.
+
+### 15.1. Listar Directorio de Usuarios
+* **Método:** `GET`
+* **Ruta:** `/usuarios`
+* **Parámetros de Consulta (Opcionales):** `?rol=INSTRUCTOR&estado=ACTIVO&busqueda=Carlos`
+* **Respuesta (`200 OK`):**
+```json
+{
+  "total": 35,
+  "usuarios": [
+    {
+      "id_usuario": 1,
+      "nombre": "Carlos",
+      "apellido": "Mendoza",
+      "correo": "carlos.mendoza@edunova.edu.co",
+      "rol": "INSTRUCTOR",
+      "estado": "ACTIVO",
+      "fecha_creacion": "2026-11-23T11:32:00.000Z"
+    }
+  ]
+}
+```
+
+### 15.2. Crear Usuario Institucional (HU-06)
+* **Método:** `POST`
+* **Ruta:** `/usuarios`
+* **Cuerpo (JSON):**
+```json
+{
+  "nombre": "Andrés",
+  "apellido": "Rojas",
+  "correo": "andres.rojas@edunova.edu.co",
+  "password": "PasswordSeguro2026*",
+  "rol": "INSTRUCTOR",
+  "documento": "1085203040",
+  "telefono": "3119876543"
+}
+```
+* **Respuesta (`201 Created`):** Retorna `{ message: "Usuario creado exitosamente", usuario: { id_usuario, nombre, rol, estado } }`.
+
+### 15.3. Suspender o Reactivar Cuenta (HU-07)
+* **Método:** `PATCH`
+* **Ruta:** `/usuarios/:id/estado`
+* **Cuerpo (JSON):**
+```json
+{
+  "estado": "INACTIVO"
+}
+```
+* **Respuesta (`200 OK`):** Retorna `{ message: "Estado de usuario actualizado", usuario: { ... } }`.
+* **Regla de Seguridad:** Bloquea la auto-suspensión de la cuenta de administrador activa (`400 Bad Request`).
+
+---
+
+## 16. MÓDULO DE GESTIÓN ACADÉMICA Y FICHAS (`/api/academico`)
+
+### 16.1. Programas de Formación (HU-08)
+* `GET /academico/programas`: Consulta catálogo de programas técnicos y tecnológicos.
+* `POST /academico/programas`: Crea un nuevo programa formativo con validación de código único.
+
+### 16.2. Apertura de Fichas de Caracterización (HU-09)
+* `GET /academico/fichas`: Consulta fichas activas con cupos y programa asociado.
+* `POST /academico/fichas`: Crea ficha de caracterización con validación de fechas (`fecha_fin > fecha_inicio`) y código único.
+
+### 16.3. Asignación de Instructores (HU-10)
+* `GET /academico/instructores-fichas`: Lista asignaciones vigentes.
+* `POST /academico/asignar-instructor`: Asigna un instructor a una cohorte con control de asignación previa no duplicada.
+
+### 16.4. Matrícula de Aprendices (HU-11)
+* `GET /academico/aprendices-matriculados/:fichaId`: Consulta aprendices enrolados en la ficha.
+* `POST /academico/matricular-aprendiz`: Matricula un aprendiz con control de cupo máximo institucional (hasta 35 aprendices).
