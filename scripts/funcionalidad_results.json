@@ -1,0 +1,192 @@
+{
+  "total": 23,
+  "passed": 23,
+  "failed": 0,
+  "cannotRun": 0,
+  "tests": [
+    {
+      "id": "FUNC-01",
+      "flow": "Autenticación",
+      "description": "Inicio de sesión exitoso como ADMINISTRADOR con token JWT",
+      "status": "PASS",
+      "details": "Token JWT recibido",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-02",
+      "flow": "Autenticación",
+      "description": "Inicio de sesión exitoso como INSTRUCTOR con token JWT",
+      "status": "PASS",
+      "details": "Token JWT recibido",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-03",
+      "flow": "Autenticación",
+      "description": "Inicio de sesión exitoso como APRENDIZ con token JWT",
+      "status": "PASS",
+      "details": "Token JWT recibido",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-04",
+      "flow": "Competencias",
+      "description": "Consulta de catálogo de competencias por programa ADSO",
+      "status": "PASS",
+      "details": "3 competencias recuperadas",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-05",
+      "flow": "Competencias",
+      "description": "Consulta de matriz de seguimiento de competencias para la ficha 3413988",
+      "status": "PASS",
+      "details": "2 registros de seguimiento",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-06",
+      "flow": "Evidencias",
+      "description": "Consulta de evidencias académicas programadas para la ficha 3413988",
+      "status": "PASS",
+      "details": "3 evidencias activas",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-07",
+      "flow": "Asistencia",
+      "description": "Consulta de sesiones de formación registradas para la ficha 3413988",
+      "status": "PASS",
+      "details": "3 sesiones listadas",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-08",
+      "flow": "Asistencia",
+      "description": "Cálculo de estadísticas e indicadores globales de asistencia grupal e individual",
+      "status": "PASS",
+      "details": "Promedio grupal: 75% en 3 sesiones",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-09",
+      "flow": "Dashboard",
+      "description": "Consulta de KPIs analíticos de rendimiento institucional",
+      "status": "PASS",
+      "details": "KPIs: 250 aprendices, 85% asistencia",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-10",
+      "flow": "Notificaciones",
+      "description": "Bandeja de notificaciones y alertas personales del aprendiz",
+      "status": "PASS",
+      "details": "7 notificaciones (No leídas: 7)",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-11",
+      "flow": "Calendario",
+      "description": "Consulta de eventos y sesiones formativas del calendario",
+      "status": "PASS",
+      "details": "6 eventos recuperados",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-12",
+      "flow": "Calendario",
+      "description": "Programación de evento/evaluación por el Instructor",
+      "status": "PASS",
+      "details": "Evento creado ID: 7",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-13",
+      "flow": "Calendario",
+      "description": "Cancelación de evento con registro de motivo y trazabilidad de estado",
+      "status": "PASS",
+      "details": "Estado: CANCELADO",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-14",
+      "flow": "Perfil 360°",
+      "description": "Consulta consolidada 360° del aprendiz con indicadores y secciones",
+      "status": "PASS",
+      "details": "Perfil ID 1 con 3 competencias vinculadas",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-15",
+      "flow": "Perfil 360°",
+      "description": "Registro de acción de acompañamiento formativo con compromiso",
+      "status": "PASS",
+      "details": "Status: 201",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-16",
+      "flow": "Alertas Tempranas",
+      "description": "Consulta de alertas tempranas activas y preventivas",
+      "status": "PASS",
+      "details": "3 alertas registradas",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-17",
+      "flow": "Alertas Tempranas",
+      "description": "Ejecución del motor automático de reglas predictivas y preventivas",
+      "status": "PASS",
+      "details": "Motor de reglas ejecutado exitosamente. 0 nuevas alertas preventivas generadas.",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-18",
+      "flow": "Aula Virtual",
+      "description": "Consulta del aula virtual asignada a la ficha 3413988 (ADSO)",
+      "status": "PASS",
+      "details": "1 aula(s) con 2 unidades temáticas",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-19",
+      "flow": "Ambientes",
+      "description": "Consulta de catálogo de ambientes y laboratorios físicos/virtuales",
+      "status": "PASS",
+      "details": "3 ambientes listados",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-20",
+      "flow": "Ambientes",
+      "description": "Control de concurrencia y detección de solapamiento de reservas de ambientes",
+      "status": "PASS",
+      "details": "Respuesta HTTP 409 (201 creada / 409 conflicto controlado)",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-21",
+      "flow": "Solicitudes",
+      "description": "Radicación formal de trámite con generación de número de radicado consecutivo único",
+      "status": "PASS",
+      "details": "Radicado: SOL-2026-0005",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-22",
+      "flow": "Solicitudes",
+      "description": "Respuesta institucional con cierre de trámite y trazabilidad en historial",
+      "status": "PASS",
+      "details": "Status: 200",
+      "errorInfo": null
+    },
+    {
+      "id": "FUNC-23",
+      "flow": "Recuperaciones",
+      "description": "Consulta de planes de nivelación y mejoramiento por ficha",
+      "status": "PASS",
+      "details": "1 planes activos (0 casos críticos)",
+      "errorInfo": null
+    }
+  ]
+}

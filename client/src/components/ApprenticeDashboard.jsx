@@ -33,6 +33,7 @@ import {
 import { useDebounce } from '../hooks/useDebounce';
 import { BannerSkeleton, StatCardSkeleton, ChartSkeleton, TableSkeleton } from './Skeletons';
 import Hero3DCanvas from './Hero3DCanvas';
+import { api } from '../services/api';
 
 export default function ApprenticeDashboard({ user, onNavigate }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -54,11 +55,11 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
 
   const fichaInfo = {
     codigo: '3413988',
-    programa: 'Technologist in Software Analysis & Development (ADSO)',
-    centro: 'Center for Industrial Training – SENA Huila',
+    programa: 'Tecnólogo en Análisis y Desarrollo de Software (ADSO)',
+    centro: 'Centro de Formación Industrial – SENA Huila (Neiva)',
     aprendicesCount: 32,
-    asistenciaPorcentaje: 92,
-    asistenciasCount: 23,
+    asistenciaPorcentaje: 94.2,
+    asistenciasCount: 24,
     sesionesTotales: 25,
     evidenciasAprobadas: 8,
     evidenciasTotales: 10
@@ -67,49 +68,49 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
   const [cursosList, setCursosList] = useState([
     {
       id: 1,
-      nombre: 'Modern Frontend Engineering (React & Tailwind)',
+      nombre: 'Ingeniería Frontend Moderna (React y Tailwind)',
       codigo: 'ADSO-2026-A',
       instructor: 'Carlos Mendoza',
-      especialidad: 'Frontend & UI Architecture',
-      fechaFin: '15 APR 2026',
+      especialidad: 'Arquitectura Frontend & UI',
+      fechaFin: '15 ABR 2026',
       progreso: 85,
       notaActual: 4.8,
-      status: 'VERIFIED',
+      status: 'VERIFICADO',
       evidencias: [
-        { nombre: 'Figma UI Prototype Dispatch', nota: 4.8, estado: 'PASSED', fecha: '10 MAR 2026' },
-        { nombre: 'React Scaffold & Tailwind Layout', nota: 4.6, estado: 'PASSED', fecha: '25 MAR 2026' },
-        { nombre: 'REST Consumer with Axios & JWT', nota: null, estado: 'PENDING', fecha: '10 APR 2026' }
+        { nombre: 'Despacho de Prototipo UI en Figma', nota: 4.8, estado: 'APROBADO', fecha: '10 MAR 2026' },
+        { nombre: 'Estructura React y Tailwind CSS', nota: 4.6, estado: 'APROBADO', fecha: '25 MAR 2026' },
+        { nombre: 'Consumidor REST con Axios y JWT', nota: null, estado: 'PENDIENTE', fecha: '10 ABR 2026' }
       ]
     },
     {
       id: 2,
-      nombre: 'Backend Systems & RESTful APIs (Node & Express)',
+      nombre: 'Sistemas Backend y APIs RESTful (Node y Express)',
       codigo: 'ADSO-2026-B',
       instructor: 'Laura Gómez',
-      especialidad: 'Backend & Relational DBs',
-      fechaFin: '30 APR 2026',
+      especialidad: 'Backend & Bases de Datos Relacionales',
+      fechaFin: '30 ABR 2026',
       progreso: 70,
       notaActual: 4.5,
-      status: 'VERIFIED',
+      status: 'VERIFICADO',
       evidencias: [
-        { nombre: 'MySQL 8 Relational Schema Script', nota: 4.7, estado: 'PASSED', fecha: '18 MAR 2026' },
-        { nombre: 'Express Server Routes & JWT Middleware', nota: 4.4, estado: 'PASSED', fecha: '02 APR 2026' },
-        { nombre: 'Integration Test Suite with Postman', nota: null, estado: 'PENDING', fecha: '20 APR 2026' }
+        { nombre: 'Esquema Relacional en MySQL 8', nota: 4.7, estado: 'APROBADO', fecha: '18 MAR 2026' },
+        { nombre: 'Rutas Express y Middleware JWT', nota: 4.4, estado: 'APROBADO', fecha: '02 ABR 2026' },
+        { nombre: 'Suite de Pruebas con Postman', nota: null, estado: 'PENDIENTE', fecha: '20 ABR 2026' }
       ]
     },
     {
       id: 3,
-      nombre: 'Agile Methodologies & Scrum Architecture',
+      nombre: 'Metodologías Ágiles y Arquitectura Scrum',
       codigo: 'ADSO-2026-C',
       instructor: 'Andrés Morales',
-      especialidad: 'Agile Delivery Systems',
+      especialidad: 'Sistemas de Entrega Continua',
       fechaFin: '20 MAY 2026',
       progreso: 90,
       notaActual: 4.9,
-      status: 'VERIFIED',
+      status: 'VERIFICADO',
       evidencias: [
-        { nombre: 'Product Backlog & Sprint Planning', nota: 4.9, estado: 'PASSED', fecha: '15 MAR 2026' },
-        { nombre: 'Requirements Traceability Matrix', nota: 5.0, estado: 'PASSED', fecha: '28 MAR 2026' }
+        { nombre: 'Product Backlog y Planificación de Sprint', nota: 4.9, estado: 'APROBADO', fecha: '15 MAR 2026' },
+        { nombre: 'Matriz de Trazabilidad de Requisitos', nota: 5.0, estado: 'APROBADO', fecha: '28 MAR 2026' }
       ]
     }
   ]);
@@ -127,40 +128,70 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
     }));
   };
 
-  // Factory Chart Colors: Metric Green #a0ca92 & Ash Stroke #4d4947
   const pieData = [
-    { name: 'Completed & Passed', value: 8, color: '#a0ca92' },
-    { name: 'Pending Deliverables', value: 2, color: '#4d4947' },
+    { name: 'Completadas y Aprobadas', value: 8, color: '#a0ca92' },
+    { name: 'Evidencias Pendientes', value: 2, color: '#4d4947' },
   ];
 
   const streamIntervalRef = useRef(null);
 
-  const handleAiPromptClick = (promptKey) => {
+  // HU-26: Consulta inteligente con datos reales y fallback
+  const handleAiPromptClick = async (promptKey) => {
     setActivePrompt(promptKey);
     setIsStreaming(true);
     setAiStreamedText('');
 
     if (streamIntervalRef.current) clearInterval(streamIntervalRef.current);
 
-    let fullText = '';
-    if (promptKey === 'analisis') {
-      fullText = 'FACTORY // DISPATCH: Operator Anyely Valeria reports 4.65 / 5.0 weighted GPA. Competency telemetry shows superior proficiency in UI engineering and relational MySQL models. Attendance stands verified at 92% with 0 unauthorized absences.';
-    } else if (promptKey === 'pendientes') {
-      fullText = 'FACTORY // CRITICAL PATH: Next priority target is "REST Consumer with Axios & JWT" due 10 APR 2026. Verify token interceptor error handling and environment variable decoupling before PR submission.';
-    } else if (promptKey === 'ruta') {
-      fullText = 'FACTORY // DIRECTIVE: Allocate sprint capacity to custom React hooks (useDebounce, useAuth) and indexed Prisma queries to guarantee sub-50ms latency for the upcoming SENA panel review.';
-    }
+    const promptsMap = {
+      analisis: '¿Cuál es mi rendimiento general y diagnóstico de competencias?',
+      pendientes: '¿Cuáles son mis evidencias y actividades pendientes más urgentes?',
+      ruta: '¿Cuál es la recomendación formativa para el próximo sprint del SENA?'
+    };
 
-    let index = 0;
-    streamIntervalRef.current = setInterval(() => {
-      if (index < fullText.length) {
-        setAiStreamedText(prev => prev + fullText.charAt(index));
-        index++;
-      } else {
-        clearInterval(streamIntervalRef.current);
-        setIsStreaming(false);
+    const pregunta = promptsMap[promptKey] || '¿Cuál es mi estado académico?';
+
+    try {
+      const res = await api.ai.consultar({
+        pregunta,
+        id_usuario: user?.id_usuario || user?.id,
+        rol: 'APRENDIZ',
+        nombre: user?.nombre
+      });
+
+      const fullText = res.respuesta || 'Diagnóstico completado con éxito.';
+      let index = 0;
+      streamIntervalRef.current = setInterval(() => {
+        if (index < fullText.length) {
+          setAiStreamedText(prev => prev + fullText.charAt(index));
+          index++;
+        } else {
+          clearInterval(streamIntervalRef.current);
+          setIsStreaming(false);
+        }
+      }, 12);
+    } catch (err) {
+      // Fallback heurístico en español oficial si el endpoint no responde
+      let fullText = '';
+      if (promptKey === 'analisis') {
+        fullText = `DIAGNÓSTICO // EDUNOVA AI: Aprendiz ${user?.nombre || 'Anyely Valeria'} presenta promedio ponderado de 4.73 / 5.0. La telemetría de competencias certifica desempeño sobresaliente en arquitectura React y modelo relacional MySQL 8. Asistencia verificada en 94.2% sin novedades disciplinarias.`;
+      } else if (promptKey === 'pendientes') {
+        fullText = 'RUTA CRÍTICA // PRIORIDAD: La próxima entrega prioritaria es "Consumidor REST con Axios y JWT" para el 10 de abril. Verifique el manejo de interceptores de token y el desacople de variables de entorno antes de la radicación.';
+      } else if (promptKey === 'ruta') {
+        fullText = 'DIRECTIVA PEDAGÓGICA: Dedique capacidad del sprint a los hooks personalizados (useDebounce, useAuth) y consultas indexadas en Prisma para asegurar latencia inferior a 50ms en la sustentación del panel SENA.';
       }
-    }, 15);
+
+      let index = 0;
+      streamIntervalRef.current = setInterval(() => {
+        if (index < fullText.length) {
+          setAiStreamedText(prev => prev + fullText.charAt(index));
+          index++;
+        } else {
+          clearInterval(streamIntervalRef.current);
+          setIsStreaming(false);
+        }
+      }, 12);
+    }
   };
 
   useEffect(() => {
@@ -207,42 +238,39 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12 font-sans">
       
-      {/* ============================================================ */}
-      {/* 1. FACTORY SIGNATURE MOVE: BONE CARD HERO CON NÚCLEO 3D THREE.JS */}
-      {/* ============================================================ */}
-      <div className="bone-card p-6 sm:p-7 relative overflow-hidden">
+      {/* 1. FACTORY BONE CARD HERO CON NÚCLEO 3D */}
+      <div className="bg-[#eeeeee] text-[#101010] p-6 sm:p-7 rounded-[10px] border border-[#3d3a39] relative overflow-hidden">
         
-        {/* Eyebrow in Factory Mono */}
         <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-[#101010] mb-3">
-          <span className="status-pulse-orange"></span>
-          <span>OPERATOR TERMINAL // COHORT 3413988</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#ee6018] animate-pulse"></span>
+          <span>TERMINAL DEL APRENDIZ // FICHA 3413988</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
           
           <div className="lg:col-span-7 space-y-3.5">
             <h1 className="text-3xl sm:text-4xl font-normal tracking-tight text-[#101010] leading-none">
-              Control Surface // Anyely Valeria
+              Consola de Seguimiento // {user?.nombre || 'Anyely Valeria'}
             </h1>
             <p className="text-sm text-[#4d4947] leading-relaxed max-w-xl font-sans">
-              Software engineering training telemetry in real time. Cumulative curriculum completion stands at <strong className="text-[#101010] font-medium">92% verified</strong> across the <strong className="text-[#101010] font-medium">{fichaInfo.programa}</strong>.
+              Telemetría formativa en tiempo real. El avance curricular acumulado se sitúa en un <strong className="text-[#101010] font-medium">92% verificado</strong> en el programa de <strong className="text-[#101010] font-medium">{fichaInfo.programa}</strong>.
             </p>
 
             <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-[#101010]">
               <span className="px-2.5 py-1 rounded-[3px] bg-[#101010]/5 border border-[#101010]/15">
-                COHORT #{fichaInfo.codigo}
+                FICHA #{fichaInfo.codigo}
               </span>
               <span className="px-2.5 py-1 rounded-[3px] bg-[#101010]/5 border border-[#101010]/15">
-                CENTER FOR INDUSTRIAL TRAINING · NEIVA
+                CENTRO DE FORMACIÓN INDUSTRIAL · NEIVA
               </span>
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5 pt-1">
               <button
-                onClick={() => onNavigate && onNavigate('calificaciones')}
+                onClick={() => onNavigate && onNavigate('competencias')}
                 className="px-4 h-9 bg-[#101010] hover:bg-[#1d1a18] text-[#eeeeee] font-normal text-xs rounded-[3px] flex items-center justify-center gap-2 transition-colors border border-[#3d3a39]"
               >
-                <span>View Gradebook</span>
+                <span>Ver Calificaciones</span>
                 <ArrowRight size={13} />
               </button>
               <button
@@ -264,12 +292,12 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                 className="px-4 h-9 bg-transparent hover:bg-[#101010]/10 text-[#101010] border border-[#101010]/20 font-normal text-xs rounded-[3px] flex items-center justify-center gap-2 transition-colors"
               >
                 <FileText size={13} />
-                <span>Telemetry Dossier</span>
+                <span>Expediente Formativo</span>
               </button>
             </div>
           </div>
 
-          {/* Módulo 3D Animable Three.js integrado en el HERO */}
+          {/* Módulo 3D Three.js */}
           <div className="lg:col-span-5 bg-[#ffffff]/60 border border-[#3d3a39]/20 rounded-[8px] p-2.5 shadow-sm">
             <Hero3DCanvas variant="bone" />
           </div>
@@ -278,16 +306,14 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
 
       </div>
 
-      {/* ============================================================ */}
-      {/* 2. FACTORY METRIC TILES: 1PX HAIRLINE DIVIDERS & SPARKLINES   */}
-      {/* ============================================================ */}
+      {/* 2. TARJETAS DE MÉTRICAS FACTORY */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        {/* Metric 1: Peers */}
-        <div className="metric-tile">
+        {/* Métrica 1: Compañeros */}
+        <div className="bg-[#1d1a18] rounded-[10px] p-5 border border-[#3d3a39]">
           <div className="flex items-center justify-between">
             <span className="font-mono text-[11px] uppercase tracking-wider text-[#b8b3b0]">
-              PEER OPERATORS
+              COMPAÑEROS DE FICHA
             </span>
             <Users size={15} className="text-[#8a8380]" />
           </div>
@@ -296,20 +322,19 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
               <span className="text-3xl font-normal text-[#eeeeee] tracking-tight">
                 {fichaInfo.aprendicesCount}
               </span>
-              <span className="font-mono text-xs text-[#8a8380]">ACTIVE</span>
+              <span className="font-mono text-xs text-[#8a8380]">ACTIVOS</span>
             </div>
-            {/* Flat Sparkline Trace */}
-            <div className="mt-3 h-1 w-full bg-[#1d1a18] rounded-[2px] overflow-hidden">
+            <div className="mt-3 h-1 w-full bg-[#101010] rounded-[2px] overflow-hidden">
               <div className="h-full bg-[#eeeeee] w-full"></div>
             </div>
           </div>
         </div>
 
-        {/* Metric 2: Active Modules */}
-        <div className="metric-tile">
+        {/* Métrica 2: Cursos Activos */}
+        <div className="bg-[#1d1a18] rounded-[10px] p-5 border border-[#3d3a39]">
           <div className="flex items-center justify-between">
             <span className="font-mono text-[11px] uppercase tracking-wider text-[#b8b3b0]">
-              ACTIVE MODULES
+              CURSOS ACTIVOS
             </span>
             <BookOpen size={15} className="text-[#8a8380]" />
           </div>
@@ -318,19 +343,19 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
               <span className="text-3xl font-normal text-[#eeeeee] tracking-tight">
                 {cursosList.length}
               </span>
-              <span className="font-mono text-xs text-[#a0ca92]">ALL CURRENT</span>
+              <span className="font-mono text-xs text-[#a0ca92]">AL DÍA</span>
             </div>
-            <div className="mt-3 h-1 w-full bg-[#1d1a18] rounded-[2px] overflow-hidden">
+            <div className="mt-3 h-1 w-full bg-[#101010] rounded-[2px] overflow-hidden">
               <div className="h-full bg-[#a0ca92] w-full"></div>
             </div>
           </div>
         </div>
 
-        {/* Metric 3: Verified Deliverables */}
-        <div className="metric-tile">
+        {/* Métrica 3: Evidencias Aprobadas */}
+        <div className="bg-[#1d1a18] rounded-[10px] p-5 border border-[#3d3a39]">
           <div className="flex items-center justify-between">
             <span className="font-mono text-[11px] uppercase tracking-wider text-[#b8b3b0]">
-              VERIFIED WORK
+              EVIDENCIAS APROBADAS
             </span>
             <CheckCircle2 size={15} className="text-[#a0ca92]" />
           </div>
@@ -341,17 +366,17 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
               </span>
               <span className="font-mono text-xs text-[#8a8380]">/ {fichaInfo.evidenciasTotales} (80%)</span>
             </div>
-            <div className="mt-3 h-1 w-full bg-[#1d1a18] rounded-[2px] overflow-hidden">
+            <div className="mt-3 h-1 w-full bg-[#101010] rounded-[2px] overflow-hidden">
               <div className="h-full bg-[#a0ca92]" style={{ width: '80%' }}></div>
             </div>
           </div>
         </div>
 
-        {/* Metric 4: Attendance Log */}
-        <div className="metric-tile">
+        {/* Métrica 4: Asistencia a Sesiones */}
+        <div className="bg-[#1d1a18] rounded-[10px] p-5 border border-[#3d3a39]">
           <div className="flex items-center justify-between">
             <span className="font-mono text-[11px] uppercase tracking-wider text-[#b8b3b0]">
-              SESSION ATTENDANCE
+              ASISTENCIA A SESIONES
             </span>
             <CalendarCheck size={15} className="text-[#ee6018]" />
           </div>
@@ -362,7 +387,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
               </span>
               <span className="font-mono text-xs text-[#8a8380]">({fichaInfo.asistenciasCount}/{fichaInfo.sesionesTotales})</span>
             </div>
-            <div className="mt-3 h-1 w-full bg-[#1d1a18] rounded-[2px] overflow-hidden">
+            <div className="mt-3 h-1 w-full bg-[#101010] rounded-[2px] overflow-hidden">
               <div className="h-full bg-[#ee6018]" style={{ width: `${fichaInfo.asistenciaPorcentaje}%` }}></div>
             </div>
           </div>
@@ -370,34 +395,29 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
 
       </div>
 
-      {/* ============================================================ */}
-      {/* 3. PERFORMANCE FRAME + MACHINE DISPATCH TERMINAL              */}
-      {/* ============================================================ */}
+      {/* 3. GRÁFICA DE DESEMPEÑO + TERMINAL EDUNOVA AI */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Performance Chart Frame */}
-        <div className="lg:col-span-7 carbon-panel p-6 space-y-6">
-          
+        {/* Gráfica Circular de Rendimiento */}
+        <div className="lg:col-span-7 bg-[#1d1a18] border border-[#3d3a39] rounded-[10px] p-6 space-y-6">
           <div className="flex items-center justify-between pb-4 border-b border-[#3d3a39]">
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs uppercase tracking-wider text-[#eeeeee]">
-                  Curricular Performance Spectrum
+                  Desempeño Curricular General
                 </span>
               </div>
               <p className="font-mono text-[11px] text-[#8a8380] mt-0.5">
-                Evaluation distribution and competency index
+                Distribución evaluativa e índice de competencias
               </p>
             </div>
             
             <span className="px-2 py-0.5 rounded-[3px] bg-[#a0ca92]/10 border border-[#a0ca92]/30 font-mono text-[10px] text-[#a0ca92] uppercase">
-              STATE // SUPERIOR (A)
+              NIVEL // SUPERIOR (A)
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
-            
-            {/* Recharts Donut in Factory monochrome + metric green */}
             <div className="sm:col-span-5 h-48 relative flex items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -408,7 +428,7 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                       border: '1px solid #3d3a39', 
                       color: '#eeeeee', 
                       fontSize: '11px',
-                      fontFamily: 'Geist Mono',
+                      fontFamily: 'monospace',
                       boxShadow: 'none' 
                     }}
                   />
@@ -432,18 +452,17 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
 
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                 <span className="text-2xl font-normal text-[#eeeeee] tracking-tight">80%</span>
-                <span className="font-mono text-[9px] text-[#8a8380] uppercase">VERIFIED</span>
+                <span className="font-mono text-[9px] text-[#8a8380] uppercase">APROBADO</span>
               </div>
             </div>
 
-            {/* Split breakdown tiles */}
             <div className="sm:col-span-7 space-y-2">
               <div className="p-3 bg-[#101010] border border-[#3d3a39] rounded-[3px] flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <span className="status-pulse-green"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#a0ca92]"></span>
                   <div>
-                    <p className="text-xs text-[#eeeeee]">8 Work Deliverables Passed</p>
-                    <p className="font-mono text-[10px] text-[#8a8380]">Average: 4.65 / 5.0</p>
+                    <p className="text-xs text-[#eeeeee]">8 Evidencias Aprobadas</p>
+                    <p className="font-mono text-[10px] text-[#8a8380]">Promedio: 4.65 / 5.0</p>
                   </div>
                 </div>
                 <span className="font-mono text-xs text-[#a0ca92]">80%</span>
@@ -453,20 +472,18 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                 <div className="flex items-center gap-2.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#4d4947]"></span>
                   <div>
-                    <p className="text-xs text-[#eeeeee]">2 Deliverables Pending</p>
-                    <p className="font-mono text-[10px] text-[#8a8380]">Target completion April 2026</p>
+                    <p className="text-xs text-[#eeeeee]">2 Evidencias Pendientes</p>
+                    <p className="font-mono text-[10px] text-[#8a8380]">Entrega prevista Abril 2026</p>
                   </div>
                 </div>
                 <span className="font-mono text-xs text-[#8a8380]">20%</span>
               </div>
             </div>
-
           </div>
 
-          {/* Module Bars */}
           <div className="pt-4 border-t border-[#3d3a39] space-y-3">
             <p className="font-mono text-[11px] uppercase tracking-wider text-[#8a8380]">
-              Performance by Technical Track
+              Rendimiento por Área Técnica
             </p>
 
             <div className="space-y-2">
@@ -486,44 +503,40 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
               ))}
             </div>
           </div>
-
         </div>
 
-        {/* Machine Dispatch Terminal (EDUNOVA AI) */}
-        <div className="lg:col-span-5 carbon-panel p-6 flex flex-col justify-between space-y-4">
-          
+        {/* Terminal EDUNOVA AI (HU-26) */}
+        <div className="lg:col-span-5 bg-[#1d1a18] border border-[#3d3a39] rounded-[10px] p-6 flex flex-col justify-between space-y-4">
           <div className="space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-[#3d3a39]">
               <div className="flex items-center gap-2">
                 <Terminal size={15} className="text-[#ee6018]" />
                 <span className="font-mono text-xs uppercase tracking-wider text-[#eeeeee]">
-                  EDUNOVA AI // ADVISORY DISPATCH
+                  ASESOR PEDAGÓGICO // EDUNOVA AI
                 </span>
               </div>
               <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded-[3px] bg-[#ee6018]/10 text-[#ee6018] border border-[#ee6018]/30">
-                {isStreaming ? 'STREAMING' : 'ONLINE'}
+                {isStreaming ? 'TRANSMITIENDO' : 'EN LÍNEA'}
               </span>
             </div>
 
             <p className="text-xs text-[#8a8380] leading-relaxed">
-              Real-time heuristic evaluation of curriculum progression, code scaffolds, and attendance telemetry.
+              Diagnóstico pedagógico en tiempo real sobre avance curricular, código fuente y asistencia.
             </p>
 
-            {/* Daily Memo Tile */}
             <div className="p-3 bg-[#101010] border border-[#3d3a39] rounded-[3px] space-y-1.5">
               <div className="flex items-center gap-1.5 font-mono text-[10px] text-[#eeeeee] uppercase">
                 <Lightbulb size={12} className="text-[#a0ca92]" />
-                <span>Heuristic Recommendation</span>
+                <span>Recomendación Pedagógica</span>
               </div>
               <p className="text-xs text-[#8a8380] leading-relaxed">
-                "Robust understanding of component isolation. Recommend testing <strong className="text-[#eeeeee]">Axios error interceptors</strong> prior to end-of-week sprint review."
+                "Excelente dominio del aislamiento de componentes. Se sugiere probar <strong className="text-[#eeeeee]">interceptores de error en Axios</strong> antes del cierre del sprint semanal."
               </p>
             </div>
 
-            {/* Quick Dispatch Triggers */}
             <div className="space-y-2">
               <p className="font-mono text-[10px] text-[#8a8380] uppercase tracking-wider">
-                Run Diagnostics:
+                Ejecutar Diagnóstico:
               </p>
               
               <div className="grid grid-cols-3 gap-2">
@@ -532,28 +545,27 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                   disabled={isStreaming}
                   className="px-2 py-2 bg-[#101010] hover:bg-[#151515] border border-[#3d3a39] hover:border-[#8a8380] rounded-[3px] font-mono text-[10px] text-[#eeeeee] uppercase text-center transition-colors disabled:opacity-40"
                 >
-                  Status
+                  Diagnóstico
                 </button>
                 <button
                   onClick={() => handleAiPromptClick('pendientes')}
                   disabled={isStreaming}
                   className="px-2 py-2 bg-[#101010] hover:bg-[#151515] border border-[#3d3a39] hover:border-[#8a8380] rounded-[3px] font-mono text-[10px] text-[#eeeeee] uppercase text-center transition-colors disabled:opacity-40"
                 >
-                  Critical Path
+                  Ruta Crítica
                 </button>
                 <button
                   onClick={() => handleAiPromptClick('ruta')}
                   disabled={isStreaming}
                   className="px-2 py-2 bg-[#101010] hover:bg-[#151515] border border-[#3d3a39] hover:border-[#8a8380] rounded-[3px] font-mono text-[10px] text-[#eeeeee] uppercase text-center transition-colors disabled:opacity-40"
                 >
-                  Directive
+                  Plan de Acción
                 </button>
               </div>
             </div>
 
-            {/* Streaming Output Box */}
             {(isStreaming || aiStreamedText) && (
-              <div className="p-3 bg-[#101010] border border-[#3d3a39] rounded-[3px] text-xs font-mono text-[#eeeeee] leading-relaxed">
+              <div className="p-3 bg-[#101010] border border-[#3d3a39] rounded-[3px] text-xs font-mono text-[#eeeeee] leading-relaxed max-h-48 overflow-y-auto">
                 <span>{aiStreamedText}</span>
                 {isStreaming && <span className="inline-block w-2 h-3.5 bg-[#ee6018] animate-pulse ml-1">▍</span>}
               </div>
@@ -567,30 +579,26 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
               className="w-full h-9 bg-[#1d1a18] hover:bg-[#252220] border border-[#3d3a39] text-[#eeeeee] font-mono text-xs uppercase rounded-[3px] flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
             >
               <Brain size={13} className="text-[#ee6018]" />
-              <span>{isStreaming ? 'Receiving Stream...' : 'Trigger Advisory Telemetry'}</span>
+              <span>{isStreaming ? 'Recibiendo Respuesta...' : 'Consultar Asesor de IA'}</span>
             </button>
           </div>
-
         </div>
 
       </div>
 
-      {/* ============================================================ */}
-      {/* 4. WORK DELIVERABLES TABLE (HAIRLINE DIVIDERS, DEBOUNCE)       */}
-      {/* ============================================================ */}
-      <div className="carbon-panel overflow-hidden">
+      {/* 4. TABLA DE ASIGNATURAS Y ENTREGAS */}
+      <div className="bg-[#1d1a18] border border-[#3d3a39] rounded-[10px] overflow-hidden">
         
-        {/* Table Filter Bar */}
         <div className="p-4 sm:p-5 border-b border-[#3d3a39] flex flex-col md:flex-row md:items-center justify-between gap-3 bg-[#101010]">
           <div>
             <div className="flex items-center gap-2">
               <FolderOpen size={16} className="text-[#a0ca92]" />
               <h3 className="font-mono text-xs uppercase tracking-wider text-[#eeeeee]">
-                Enrolled Curricular Units
+                Asignaturas y Módulos Matriculados
               </h3>
             </div>
             <p className="font-mono text-[10px] text-[#8a8380] mt-0.5">
-              ADSO Cohort #{fichaInfo.codigo} · Filtered with 300ms Debounce
+              Cohorte ADSO Ficha #{fichaInfo.codigo} · Filtro en tiempo real con 300ms de Debounce
             </p>
           </div>
 
@@ -604,35 +612,33 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                placeholder="Filter track..."
+                placeholder="Filtrar asignatura o instructor..."
                 className="w-full pl-8 pr-3 py-1 bg-[#1d1a18] border border-[#3d3a39] rounded-[3px] text-xs text-[#eeeeee] font-sans placeholder:text-[#8a8380] focus:outline-none focus:border-[#eeeeee]"
               />
             </div>
 
             <span className="font-mono text-[10px] text-[#8a8380] bg-[#1d1a18] border border-[#3d3a39] px-2 py-1 rounded-[3px]">
-              {filteredCursos.length} TRACKS
+              {filteredCursos.length} MÓDULOS
             </span>
           </div>
         </div>
 
-        {/* Table Body */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-[#101010] font-mono text-[10px] uppercase text-[#8a8380] border-b border-[#3d3a39]">
               <tr>
-                <th className="px-4 py-3">Module / Identifier</th>
-                <th className="px-4 py-3">Lead Instructor</th>
-                <th className="px-4 py-3">Target Completion</th>
-                <th className="px-4 py-3">Progress</th>
-                <th className="px-4 py-3">Verified GPA</th>
-                <th className="px-4 py-3 text-right">Dispatch Action</th>
+                <th className="px-4 py-3">Asignatura / Código</th>
+                <th className="px-4 py-3">Instructor Titular</th>
+                <th className="px-4 py-3">Fecha Límite</th>
+                <th className="px-4 py-3">Progreso</th>
+                <th className="px-4 py-3">Nota Definitiva</th>
+                <th className="px-4 py-3 text-right">Acción</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#3d3a39]">
               {paginatedCursos.length > 0 ? (
                 paginatedCursos.map((c) => (
                   <tr key={c.id} className="hover:bg-[#101010]/50 transition-colors">
-                    
                     <td className="px-4 py-3.5">
                       <p className="text-xs text-[#eeeeee] font-normal">{c.nombre}</p>
                       <p className="font-mono text-[10px] text-[#8a8380] mt-0.5">{c.codigo}</p>
@@ -668,16 +674,15 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
                         className="px-2.5 py-1 bg-[#101010] hover:bg-[#201d1b] border border-[#3d3a39] hover:border-[#8a8380] rounded-[3px] font-mono text-[10px] uppercase text-[#eeeeee] inline-flex items-center gap-1.5 transition-colors"
                       >
                         <RefreshCw size={11} className="text-[#a0ca92]" />
-                        <span>Fast Commit</span>
+                        <span>Registrar Entrega</span>
                       </button>
                     </td>
-
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td colSpan="6" className="px-4 py-8 text-center font-mono text-xs text-[#8a8380]">
-                    NO RECORDS MATCHING QUERY "{debouncedSearch}"
+                    NO SE ENCONTRARON REGISTROS PARA "{debouncedSearch}"
                   </td>
                 </tr>
               )}
@@ -685,10 +690,9 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
           </table>
         </div>
 
-        {/* Pagination bar */}
         <div className="p-3 border-t border-[#3d3a39] flex items-center justify-between font-mono text-[11px] text-[#8a8380] bg-[#101010]">
           <span>
-            PAGE <strong className="text-[#eeeeee]">{currentPage}</strong> OF <strong className="text-[#eeeeee]">{totalPages}</strong> ({filteredCursos.length} TOTAL)
+            PÁGINA <strong className="text-[#eeeeee]">{currentPage}</strong> DE <strong className="text-[#eeeeee]">{totalPages}</strong> ({filteredCursos.length} TOTAL)
           </span>
 
           <div className="flex items-center gap-2">
@@ -697,14 +701,14 @@ export default function ApprenticeDashboard({ user, onNavigate }) {
               disabled={currentPage === 1}
               className="px-2.5 py-1 bg-[#1d1a18] hover:bg-[#252220] border border-[#3d3a39] rounded-[3px] text-[#eeeeee] disabled:opacity-30 transition-colors"
             >
-              PREVIOUS
+              ANTERIOR
             </button>
             <button
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
               className="px-2.5 py-1 bg-[#1d1a18] hover:bg-[#252220] border border-[#3d3a39] rounded-[3px] text-[#eeeeee] disabled:opacity-30 transition-colors"
             >
-              NEXT
+              SIGUIENTE
             </button>
           </div>
         </div>

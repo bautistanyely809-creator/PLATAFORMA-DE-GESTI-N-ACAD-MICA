@@ -12,17 +12,16 @@ import {
   ChevronRight, 
   LogOut, 
   User, 
-  Settings,
-  ShieldCheck,
-  Terminal,
-  Award,
-  RotateCcw,
-  Bell,
-  Calendar,
-  UserCheck,
-  AlertTriangle,
-  Building2,
-  FileText
+  ShieldCheck, 
+  Award, 
+  RotateCcw, 
+  Bell, 
+  Calendar, 
+  UserCheck, 
+  AlertTriangle, 
+  Building2, 
+  FileText,
+  Layers
 } from 'lucide-react';
 
 export default function Sidebar({ 
@@ -31,7 +30,8 @@ export default function Sidebar({
   user, 
   onLogout,
   isMobileOpen,
-  setIsMobileOpen 
+  setIsMobileOpen,
+  onOpenPerfil
 }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -40,11 +40,11 @@ export default function Sidebar({
 
   const navItems = [
     {
-      group: 'ACADEMIC CORE',
+      group: 'NÚCLEO ACADÉMICO',
       items: [
         { 
           id: 'dashboard', 
-          label: 'Dashboard Operativo', 
+          label: 'Panel de Control', 
           icon: LayoutDashboard,
           code: '01'
         },
@@ -74,8 +74,25 @@ export default function Sidebar({
         },
       ]
     },
+    ...(user?.rol === 'ADMIN' || user?.rol === 'INSTRUCTOR' ? [{
+      group: 'GESTIÓN INSTITUCIONAL',
+      items: [
+        {
+          id: 'usuarios',
+          label: 'Directorio de Usuarios',
+          icon: Users,
+          code: 'U1'
+        },
+        {
+          id: 'academico',
+          label: 'Estructura Curricular',
+          icon: Layers,
+          code: 'U2'
+        }
+      ]
+    }] : []),
     {
-      group: 'ANALYTICS & COMMS',
+      group: 'ANALÍTICA Y COMUNICACIONES',
       items: [
         { 
           id: 'reportes', 
@@ -92,20 +109,20 @@ export default function Sidebar({
       ]
     },
     {
-      group: 'MACHINE INTELLIGENCE',
+      group: 'INTELIGENCIA ARTIFICIAL',
       items: [
         { 
           id: 'ai', 
           label: 'M7. EDUNOVA AI (MySQL 8)', 
           icon: Sparkles, 
-          badge: 'LIVE',
+          badge: 'EN VIVO',
           isAI: true,
           code: '08'
         },
       ]
     },
     {
-      group: 'EXPANSIÓN INTEGRAL',
+      group: 'MÓDULOS DE EXPANSIÓN',
       items: [
         { 
           id: 'calendario', 
@@ -155,85 +172,66 @@ export default function Sidebar({
 
   return (
     <>
-      {/* Mobile backdrop */}
+      {/* Fondo en móvil */}
       {isMobileOpen && (
         <div 
           onClick={() => setIsMobileOpen(false)}
-          className="fixed inset-0 bg-[#101010]/80 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/80 z-40 lg:hidden backdrop-blur-sm"
         />
       )}
 
-      {/* Factory Sidebar */}
+      {/* Contenedor del Sidebar */}
       <aside className={`
-        fixed lg:static top-0 left-0 h-screen z-50
-        transition-all duration-150 ease-in-out select-none
+        fixed lg:static top-0 bottom-0 left-0 z-50
         bg-[#101010] border-r border-[#3d3a39] flex flex-col justify-between
-        ${isCollapsed ? 'w-20' : 'w-64'}
+        transition-all duration-200 ease-in-out
+        ${isCollapsed ? 'w-16' : 'w-64'}
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         
-        <div>
-          {/* Top Wordmark & Header */}
-          <div className="h-16 px-4 flex items-center justify-between border-b border-[#3d3a39]">
-            
-            <div className={`flex items-center gap-2.5 overflow-hidden ${isCollapsed ? 'justify-center w-full' : ''}`}>
-              <div className="w-8 h-8 rounded-[3px] bg-[#1d1a18] border border-[#3d3a39] flex items-center justify-center shrink-0">
-                <img 
-                  src="/edunova-logo.png" 
-                  alt="EDUNOVA" 
-                  className="w-5 h-5 object-contain"
-                />
-              </div>
-
-              {!isCollapsed && (
-                <div className="truncate">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs uppercase tracking-wider text-[#eeeeee]">EDUNOVA</span>
-                    <span className="status-pulse-orange"></span>
-                  </div>
-                  <p className="font-mono text-[10px] text-[#8a8380] uppercase tracking-tight">
-                    FACTORY // CONTROL
-                  </p>
-                </div>
-              )}
+        {/* Cabecera del Sidebar */}
+        <div className="h-16 px-4 border-b border-[#3d3a39] flex items-center justify-between">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="w-8 h-8 rounded-[3px] bg-[#1d1a18] border border-[#3d3a39] flex items-center justify-center font-bold text-[#ee6018] shrink-0">
+              E
             </div>
-
+            
             {!isCollapsed && (
-              <button 
-                onClick={() => setIsCollapsed(true)}
-                title="Collapse sidebar"
-                className="hidden lg:flex p-1.5 rounded-[3px] text-[#8a8380] hover:text-[#eeeeee] hover:bg-[#1d1a18] border border-transparent hover:border-[#3d3a39] transition-colors"
-              >
-                <ChevronLeft size={16} />
-              </button>
+              <div className="truncate">
+                <span className="font-mono text-xs font-medium uppercase tracking-wider text-[#eeeeee] block truncate">
+                  EDUNOVA // AMS
+                </span>
+                <span className="font-mono text-[10px] text-[#8a8380] uppercase block">
+                  ADSO SENA HUILA
+                </span>
+              </div>
             )}
           </div>
 
-          {/* Expand button when collapsed */}
-          {isCollapsed && (
-            <div className="hidden lg:flex justify-center py-2 border-b border-[#3d3a39]">
-              <button 
-                onClick={() => setIsCollapsed(false)}
-                title="Expand sidebar"
-                className="p-1.5 rounded-[3px] text-[#8a8380] hover:text-[#eeeeee] hover:bg-[#1d1a18] transition-colors"
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
-          )}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="hidden lg:flex p-1.5 rounded-[3px] text-[#8a8380] hover:text-[#eeeeee] hover:bg-[#1d1a18] border border-transparent hover:border-[#3d3a39] transition-colors"
+            title={isCollapsed ? "Expandir menú" : "Contraer menú"}
+          >
+            {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          </button>
+        </div>
 
-          {/* Nav Items List */}
-          <nav className="p-3 space-y-6 overflow-y-auto max-h-[calc(100vh-140px)]">
+        {/* Lista de Navegación Scrolleable */}
+        <div className="flex-1 overflow-y-auto py-3 px-2 space-y-5">
+          <nav className="space-y-4">
             
-            {navItems.map((group, gIdx) => (
-              <div key={gIdx} className="space-y-1">
+            {navItems.map((section, idx) => (
+              <div key={idx} className="space-y-1">
                 {!isCollapsed && (
-                  <p className="px-3 pb-1 font-mono text-[11px] uppercase tracking-wider text-[#8a8380]">
-                    {group.group}
-                  </p>
+                  <div className="px-2.5 pb-1">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-[#8a8380]">
+                      {section.group}
+                    </span>
+                  </div>
                 )}
 
-                {group.items.map((item) => {
+                {section.items.map((item) => {
                   const Icon = item.icon;
                   const isActive = activeTab === item.id;
 
@@ -271,7 +269,7 @@ export default function Sidebar({
                         )}
                       </button>
 
-                      {/* Tooltip on collapsed */}
+                      {/* Tooltip cuando está contraído */}
                       {isCollapsed && (
                         <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2.5 py-1 bg-[#1d1a18] text-[#eeeeee] border border-[#3d3a39] font-mono text-[11px] uppercase rounded-[3px] whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity z-50">
                           {item.label}
@@ -286,7 +284,7 @@ export default function Sidebar({
           </nav>
         </div>
 
-        {/* User profile dock at bottom */}
+        {/* Pie de Página de Usuario */}
         <div className="p-3 border-t border-[#3d3a39] bg-[#101010] relative">
           
           <div className="flex items-center justify-between">
@@ -313,7 +311,7 @@ export default function Sidebar({
             {!isCollapsed && (
               <button
                 onClick={onLogout}
-                title="Log out"
+                title="Cerrar sesión segura (HU-05)"
                 className="p-1.5 text-[#8a8380] hover:text-[#ee6018] hover:bg-[#1d1a18] rounded-[3px] border border-transparent hover:border-[#3d3a39] transition-colors ml-1"
               >
                 <LogOut size={15} />
@@ -321,7 +319,7 @@ export default function Sidebar({
             )}
           </div>
 
-          {/* Profile Dropdown */}
+          {/* Menú Desplegable de Perfil */}
           {showProfileMenu && (
             <div className="absolute bottom-full left-3 right-3 mb-2 bg-[#1d1a18] border border-[#3d3a39] rounded-[3px] p-2 shadow-2xl space-y-1 text-xs z-50">
               <div className="px-2 py-1.5 border-b border-[#3d3a39]">
@@ -330,19 +328,22 @@ export default function Sidebar({
               </div>
               
               <button 
-                onClick={() => { setActiveTab('dashboard'); setShowProfileMenu(false); }}
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-[3px] text-[#eeeeee] hover:bg-[#101010] transition-colors"
+                onClick={() => { 
+                  if (onOpenPerfil) onOpenPerfil(); 
+                  setShowProfileMenu(false); 
+                }}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-[3px] text-[#eeeeee] hover:bg-[#101010] transition-colors text-left"
               >
-                <User size={13} className="text-[#8a8380]" />
-                <span>Operator Profile</span>
+                <User size={13} className="text-[#a0ca92]" />
+                <span>Perfil de Usuario (HU-04)</span>
               </button>
 
               <button 
                 onClick={onLogout}
-                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-[3px] text-[#ee6018] hover:bg-[#101010] transition-colors font-mono uppercase text-[11px]"
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-[3px] text-[#ee6018] hover:bg-[#101010] transition-colors font-mono uppercase text-[11px] text-left"
               >
                 <LogOut size={13} />
-                <span>Terminate Session</span>
+                <span>Cerrar Sesión</span>
               </button>
             </div>
           )}

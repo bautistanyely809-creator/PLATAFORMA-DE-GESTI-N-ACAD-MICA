@@ -1,0 +1,85 @@
+{
+  "total": 11,
+  "passed": 11,
+  "failed": 0,
+  "cannotRun": 0,
+  "tests": [
+    {
+      "id": "CSE-01",
+      "name": "Variables críticas de entorno (PORT, DATABASE_URL, JWT_SECRET >= 16 chars)",
+      "status": "PASS",
+      "details": "Variables verificadas correctamente",
+      "errorInfo": null
+    },
+    {
+      "id": "CSE-02",
+      "name": "Paridad de variables .env vs .env.example",
+      "status": "PASS",
+      "details": "Todas las 6 claves documentadas están definidas",
+      "errorInfo": null
+    },
+    {
+      "id": "CSE-03",
+      "name": "Conectividad activa TCP/SQL con MySQL 8 en puerto 3306",
+      "status": "PASS",
+      "details": "Conexión exitosa. Versión MySQL: 8.0.46",
+      "errorInfo": null
+    },
+    {
+      "id": "CSE-04",
+      "name": "Validación formal de integridad del esquema Prisma (schema.prisma)",
+      "status": "PASS",
+      "details": "Esquema syntactically valid y relaciones consistentes",
+      "errorInfo": null
+    },
+    {
+      "id": "CSE-05",
+      "name": "Rechazo de peticiones no autenticadas a endpoints protegidos (HTTP 401 Unauthorized)",
+      "status": "PASS",
+      "details": "Respuesta HTTP 401 correcta",
+      "errorInfo": null
+    },
+    {
+      "id": "CSE-06",
+      "name": "Rechazo de tokens JWT con firma manipulada/falsificada (HTTP 403/401)",
+      "status": "PASS",
+      "details": "Token inválido bloqueado con HTTP 403",
+      "errorInfo": null
+    },
+    {
+      "id": "CSE-07",
+      "name": "RBAC: Denegación de acceso a rol APRENDIZ en endpoints de rol ADMINISTRADOR (HTTP 403 Forbidden)",
+      "status": "PASS",
+      "details": "HTTP 403 Forbidden retornado",
+      "errorInfo": null
+    },
+    {
+      "id": "CSE-08",
+      "name": "RBAC: Denegación de acceso a rol APRENDIZ en endpoints de rol INSTRUCTOR (HTTP 403 Forbidden)",
+      "status": "PASS",
+      "details": "HTTP 403 Forbidden retornado",
+      "errorInfo": null
+    },
+    {
+      "id": "CSE-09",
+      "name": "Auditoría de vulnerabilidades en dependencias del Backend (npm audit server)",
+      "status": "PASS",
+      "details": "Cero vulnerabilidades críticas o altas (2 moderadas en devDependencies/nodemon)",
+      "errorInfo": null
+    },
+    {
+      "id": "CSE-10",
+      "name": "Auditoría de vulnerabilidades en dependencias del Frontend (npm audit client)",
+      "status": "PASS",
+      "details": "Cero vulnerabilidades críticas o altas",
+      "errorInfo": null
+    },
+    {
+      "id": "CSE-11",
+      "name": "Integridad de Compilación Frontend en Producción (npm run build --prefix client)",
+      "status": "PASS",
+      "details": "Bundle de producción generado exitosamente en client/dist",
+      "errorInfo": null
+    }
+  ]
+}

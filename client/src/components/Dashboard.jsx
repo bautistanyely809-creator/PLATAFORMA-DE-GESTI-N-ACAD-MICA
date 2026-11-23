@@ -16,6 +16,9 @@ import AlertasModule from './modules/AlertasModule';
 import AulaVirtualModule from './modules/AulaVirtualModule';
 import AmbientesModule from './modules/AmbientesModule';
 import SolicitudesModule from './modules/SolicitudesModule';
+import UsuariosModule from './modules/UsuariosModule';
+import AcademicoModule from './modules/AcademicoModule';
+import PerfilModal from './PerfilModal';
 import { 
   Users, 
   GraduationCap, 
@@ -37,6 +40,7 @@ import {
 export default function Dashboard({ currentUser, onLogout }) {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [showPerfilModal, setShowPerfilModal] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   const [isAiStreaming, setIsAiStreaming] = useState(false);
@@ -83,6 +87,7 @@ export default function Dashboard({ currentUser, onLogout }) {
         onLogout={onLogout}
         isMobileOpen={isMobileSidebarOpen}
         setIsMobileOpen={setIsMobileSidebarOpen}
+        onOpenPerfil={() => setShowPerfilModal(true)}
       />
 
       {/* ============================================================ */}
@@ -311,6 +316,16 @@ export default function Dashboard({ currentUser, onLogout }) {
             <SolicitudesModule user={user} />
           )}
 
+          {/* GESTIÓN INSTITUCIONAL: USUARIOS (HU-06 y HU-07) */}
+          {activeTab === 'usuarios' && (
+            <UsuariosModule currentUser={user} />
+          )}
+
+          {/* GESTIÓN INSTITUCIONAL: ESTRUCTURA CURRICULAR Y FICHAS (HU-08 a HU-11) */}
+          {activeTab === 'academico' && (
+            <AcademicoModule currentUser={user} />
+          )}
+
           {/* TAB CURSOS / CATÁLOGO */}
           {activeTab === 'cursos' && (
             <div className="space-y-6 max-w-7xl mx-auto animate-fadeIn font-sans">
@@ -380,6 +395,17 @@ export default function Dashboard({ currentUser, onLogout }) {
 
         </main>
       </div>
+
+      {/* Modal de Perfil de Usuario (HU-04) */}
+      {showPerfilModal && (
+        <PerfilModal
+          user={user}
+          onClose={() => setShowPerfilModal(false)}
+          onUserUpdated={(u) => {
+            // Refrescar estado local si aplica
+          }}
+        />
+      )}
 
     </div>
   );
