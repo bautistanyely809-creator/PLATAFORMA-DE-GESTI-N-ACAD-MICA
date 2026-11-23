@@ -293,6 +293,11 @@ exports.consultarIA = async (req, res) => {
   try {
     const { pregunta, id_usuario, rol, nombre } = req.body;
 
+    // HU-26: Validación obligatoria de mensaje no vacío
+    if (!pregunta || !pregunta.trim()) {
+      return res.status(400).json({ message: 'El mensaje de consulta a EDUNOVA AI no puede estar vacío.' });
+    }
+
     const usuario = {
       id_usuario: req.user ? req.user.id_usuario : Number(id_usuario || 4),
       rol: req.user ? req.user.rol : (rol || 'APRENDIZ'),
@@ -321,6 +326,11 @@ exports.consultarIA = async (req, res) => {
 exports.streamIA = async (req, res) => {
   try {
     const { pregunta, id_usuario, rol, nombre } = req.body;
+
+    // HU-26: Validación obligatoria de mensaje no vacío
+    if (!pregunta || !pregunta.trim()) {
+      return res.status(400).json({ message: 'El mensaje de consulta a EDUNOVA AI no puede estar vacío.' });
+    }
 
     const usuario = {
       id_usuario: req.user ? req.user.id_usuario : Number(id_usuario || 4),

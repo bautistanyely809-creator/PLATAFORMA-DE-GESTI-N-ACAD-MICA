@@ -89,7 +89,7 @@ export default function AiModule({ user }) {
 
         <div className="flex items-center gap-2 font-mono text-xs text-[#a0ca92] bg-[#101010] border border-[#a0ca92]/40 px-3 py-1.5 rounded-[3px]">
           <Database size={13} />
-          <span>MYSQL 8 // CONNECTED</span>
+          <span>MYSQL 8 // CONECTADO</span>
         </div>
       </div>
 
@@ -119,7 +119,7 @@ export default function AiModule({ user }) {
         <div className="px-4 py-3 bg-[#1d1a18] border-b border-[#3d3a39] flex items-center justify-between text-xs font-mono">
           <div className="flex items-center gap-2 text-[#fafafa]">
             <Terminal size={14} className="text-[#ee6018]" />
-            <span>EDUNOVA AI CONSOLE // CONTEXTUAL REASONING ENGINE</span>
+            <span>CONSOLA EDUNOVA AI // MOTOR DE RAZONAMIENTO CONTEXTUAL</span>
           </div>
           <span className="text-[#8c8682] text-[10px]">TIEMPO REAL · RESTRICCIÓN RBAC</span>
         </div>

@@ -68,6 +68,8 @@ app.get('/api/health', cacheService.middleware(60000), (req, res) => {
 
 // Importar rutas de los Módulos Base y Nuevos Módulos de Expansión
 const authRoutes = require('./routes/auth.routes');
+const usuariosRoutes = require('./routes/usuarios.routes');
+const academicoRoutes = require('./routes/academico.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
 const competenciasRoutes = require('./routes/competencias.routes');
 const evidenciasRoutes = require('./routes/evidencias.routes');
@@ -86,6 +88,8 @@ const ambientesRoutes = require('./routes/ambientes.routes');
 const solicitudesRoutes = require('./routes/solicitudes.routes');
 
 app.use('/api/auth', authRoutes);
+app.use('/api/usuarios', usuariosRoutes);
+app.use('/api/academico', academicoRoutes);
 app.use('/api/dashboard', cacheService.middleware(30000), dashboardRoutes);
 app.use('/api/competencias', competenciasRoutes);
 app.use('/api/evidencias', evidenciasRoutes);

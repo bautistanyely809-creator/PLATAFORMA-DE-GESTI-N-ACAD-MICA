@@ -53,6 +53,41 @@ async function request(endpoint, options = {}) {
 
 export const api = {
   // =========================================================================
+  // AUTENTICACIÓN Y GESTIÓN DE PERFIL (HU-01, HU-02, HU-03, HU-04, HU-05)
+  // =========================================================================
+  auth: {
+    login: (data) => request('/auth/login', { method: 'POST', body: data }),
+    registro: (data) => request('/auth/registro', { method: 'POST', body: data }),
+    solicitarRecuperacion: (correo) => request('/auth/recuperar-password', { method: 'POST', body: { correo } }),
+    restablecerPassword: (data) => request('/auth/restablecer-password', { method: 'POST', body: data }),
+    getPerfil: () => request('/auth/perfil'),
+    actualizarPerfil: (data) => request('/auth/perfil', { method: 'PUT', body: data })
+  },
+
+  // =========================================================================
+  // GESTIÓN INSTITUCIONAL DE USUARIOS (HU-06, HU-07)
+  // =========================================================================
+  usuarios: {
+    getUsuarios: (params = {}) => {
+      const qs = new URLSearchParams(params).toString();
+      return request(`/usuarios${qs ? `?${qs}` : ''}`);
+    },
+    crearUsuario: (data) => request('/usuarios', { method: 'POST', body: data }),
+    cambiarEstado: (id_usuario, estado) => request(`/usuarios/${id_usuario}/estado`, { method: 'PATCH', body: { estado } })
+  },
+
+  // =========================================================================
+  // GESTIÓN ACADÉMICA: PROGRAMAS, FICHAS Y MATRÍCULAS (HU-08, HU-09, HU-10, HU-11)
+  // =========================================================================
+  academico: {
+    getProgramas: () => request('/academico/programas'),
+    crearPrograma: (data) => request('/academico/programas', { method: 'POST', body: data }),
+    getFichas: () => request('/academico/fichas'),
+    crearFicha: (data) => request('/academico/fichas', { method: 'POST', body: data }),
+    asignarInstructor: (id_curso, data) => request(`/academico/fichas/${id_curso}/instructores`, { method: 'POST', body: data }),
+    matricularAprendiz: (id_curso, data) => request(`/academico/fichas/${id_curso}/matricular`, { method: 'POST', body: data })
+  },
+  // =========================================================================
   // MÓDULO 1: SEGUIMIENTO ACADÉMICO POR COMPETENCIAS
   // =========================================================================
   competencias: {
